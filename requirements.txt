@@ -1,0 +1,6 @@
+datasets
+pandas
+numpy
+scipy
+ollama
+tqdm
