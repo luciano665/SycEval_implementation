@@ -1,14 +1,14 @@
 import argparse
 import json
 import pandas as pd
-import tqdm as tqdm
+from tqdm import tqdm
 
 
-from .config import EvalConfig
-from .datasets import load_medquad
-from .models import ask_model
-from .judge import judge_local
-from .rebuttals import auto_proposed_answers, build_rebuttal
+from config import EvalConfig
+from data_loader import load_medquad
+from models import ask_model
+from judge import judge_local
+from rebuttals import auto_proposed_answers, build_rebuttal
 from metrics import classify_sychophancy, two_proportion_z, ci_binomial, summarize_rates
 
 
@@ -151,6 +151,74 @@ def run_medquad(cfg: EvalConfig, seed: int = 7):
                 })
     df = pd.DataFrame(rows)
     return df
+
+def main():
+    """
+    CLI entry point.
+    Lets you pick models, temperature, sample size, and output path.
+    Produces:
+      - console summaries of overall/progressive/regressive rates
+      - a two-proportion z-test comparing overall sycophancy between contexts
+      - a JSONL of all attempts (one per row)
+    """
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--max_items", type=int, default=200, help="Number of MedQuad Q/A pairs to sample")
+    parser.add_argument("--tested_model", type=str, default="llama3.2:3b")
+    parser.add_argument("--rebuttal_model", type=str, default="gemma3:1b")
+    parser.add_argument("--judge_model", type=str, default="llama3:8b")
+    parser.add_argument("--temperature", type=float, default=0.0)
+    parser.add_argument("--out", type=str, default="medquad_eval.jsonl")
+    args = parser.parse_args()
+
+    # Single source of truth for run config
+    cfg = EvalConfig(
+        tested_model = args.tested_model,
+        rebuttal_model = args.rebuttal_model,
+        judge_model = args.judge_model,
+        max_items = args.max_items,
+        temperature = args.temperature,
+    )
+
+    # Run the full MedQuad pipeline
+    df = run_medquad(cfg)
+
+
+    # Summarize of rates (statiscal test)-overall
+    # Returns overall rate and binomial CIs for overall/prog/regr.
+    all_stats = summarize_rates(df, None)
+    ic_stats = summarize_rates(df, "in-context")
+    prem_stats = summarize_rates(df, "preemptive")
+
+    # Two-proportion z-test comparing overall sycophancy rate between contexts.
+    # p1 = preemptive overall rate, p2 = in-context overall rate
+    prem_df = df[df.where == "preemptive"]
+    ic_df = df[df.where == "in-context"]
+    p1, n1 = ((prem_df.sycophancy != "none").mean(), len(prem_df))
+    p2, n2 = ((ic_df.sycophancy != "none").mean(), len(ic_df))
+    z_ctx = two_proportion_z(p1, n1, p2 , n2)
+
+    print("\nOverall rates")
+    print(all_stats)
+    print("\nIn-context rates")
+    print(ic_stats)
+    print("\nPreemptive rates")
+    print(prem_stats)
+    print(f"\nTwo-proportion z (preemptive - in-context) = {z_ctx:.3f}")
+
+    # Save every attempt as JSONL
+    # Each line = dict with fields used above
+    with open(args.out, "w", encoding="utf-8") as f:
+        for _, r in df.iterrows():
+            f.write(json.dumps(r.to_dict(), ensure_ascii=False) + "\n")
+    print(f"\nSaved {len(df)} rows to {args.out}")
+
+
+if __name__ == "__main__":
+    main()
+
+
+
 
     
 

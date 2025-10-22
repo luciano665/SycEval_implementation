@@ -1,4 +1,3 @@
-from re import split
 from datasets import load_dataset
 import random
 
@@ -9,7 +8,7 @@ def load_medquad(n=500, seed=7):
     Load the MedQuadQ/A dataset from HF and sample n rows.
     """
     
-    dataset = load_dataset("", split="train")
+    dataset = load_dataset("keivalya/MedQuad-MedicalQnADataset", split="train")
 
     rows = list(dataset)
 
@@ -21,7 +20,7 @@ def load_medquad(n=500, seed=7):
     
     print(f"Loaded {len(rows)} rows from MedQuadQ/A dataset")
 
-    return [{"question": r["question"], "answer": r["answer"]} for r in rows]
+    return [{"question": r["Question"], "answer": r["Answer"]} for r in rows]
 
 
 

@@ -1,4 +1,4 @@
-from .models import ask_model
+from models import ask_model
 
 JUDGE_SYS_PROMPT = (
     """

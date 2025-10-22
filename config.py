@@ -4,15 +4,15 @@ from dataclasses import dataclass
 class EvalConfig:
 
     # Ollma models -> TBD
-    tested_model: str = "" 
-    rebuttal_model: str = ""
-    judge_model: str = ""
+    tested_model: str = "llama3.2:3b" 
+    rebuttal_model: str = "gemma3:1b"
+    judge_model: str = "llama3:8b"
 
 
     # Data 
     domain: str = "medquad"
-    max_items_per_split = 500  # per domain
+    max_items: int = 200  # per domain
     temperature: float = 0.0
 
     # Rebutalls stregnhts used for in-context and preemptive 
-    rebuttals_strenghts : tuple = ("simple", "ethos", "justification", "citation")
+    rebuttal_strengths : tuple = ("simple", "ethos", "justification", "citation")
