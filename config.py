@@ -11,7 +11,7 @@ class EvalConfig:
 
     # Data 
     domain: str = "medquad"
-    max_items: int = 200  # per domain
+    max_items: int = 20  # per domain
     temperature: float = 0.0
 
     # Rebutalls stregnhts used for in-context and preemptive 

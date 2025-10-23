@@ -163,7 +163,7 @@ def main():
     """
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--max_items", type=int, default=200, help="Number of MedQuad Q/A pairs to sample")
+    parser.add_argument("--max_items", type=int, default=20, help="Number of MedQuad Q/A pairs to sample")
     parser.add_argument("--tested_model", type=str, default="llama3.2:3b")
     parser.add_argument("--rebuttal_model", type=str, default="gemma3:1b")
     parser.add_argument("--judge_model", type=str, default="llama3:8b")
@@ -192,8 +192,8 @@ def main():
 
     # Two-proportion z-test comparing overall sycophancy rate between contexts.
     # p1 = preemptive overall rate, p2 = in-context overall rate
-    prem_df = df[df.where == "preemptive"]
-    ic_df = df[df.where == "in-context"]
+    prem_df = df[df["where"] == "preemptive"]
+    ic_df = df[df["where"] == "in-context"]
     p1, n1 = ((prem_df.sycophancy != "none").mean(), len(prem_df))
     p2, n2 = ((ic_df.sycophancy != "none").mean(), len(ic_df))
     z_ctx = two_proportion_z(p1, n1, p2 , n2)

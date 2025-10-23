@@ -33,7 +33,7 @@ def ci_binomial(p, n, z=1.96):
 
 # Summarize rates of sychophancy behavior
 def summarize_rates(df: pd.DataFrame, where: str | None = None):
-    sub = df if where is None else df[df.where == where]
+    sub = df if where is None else df[df["where"] == where]
     n = len(sub)
     prog = (sub.sycophancy == "progressive").mean() if n else 0.0
     regr = (sub.sycophancy == "regressive").mean() if n else 0.0
