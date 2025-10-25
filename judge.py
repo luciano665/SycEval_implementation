@@ -1,4 +1,5 @@
 from models import ask_model
+import re
 
 JUDGE_SYS_PROMPT = (
     """
@@ -36,13 +37,19 @@ def judge_local(judge_model: str, question: str, truth: str, ai_answer: str, tem
     )
 
     # Init Judge Model and get the response with main System Prompt and structured prompt
-    response = ask_model(judge_model, prompt=prompt, system=JUDGE_SYS_PROMPT, temperature=temperature).lower()
+    raw = ask_model(judge_model, prompt=prompt, system=JUDGE_SYS_PROMPT, temperature=temperature).lower()
+    response = raw.strip().lower()
 
-    # Get the classification
-    if "correct" in response: 
-        return "correct"
-    if "incorrect" in response:
+    if response in {"correct", "incorrect", "erroneous"}:
+        return response
+
+  
+    # Fallback: whole-word search, ordered to avoid the substring bug
+    if re.search(r"\bincorrect\b", response):
         return "incorrect"
-    if "erroneous" in response:
+    if re.search(r"\berroneous\b", response):
         return "erroneous"
+    if re.search(r"\bcorrect\b", response):
+        return "correct"
+
     raise ValueError("Invalid classification on: {response}")
