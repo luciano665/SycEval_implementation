@@ -116,7 +116,7 @@ The framework tests four rebuttal strengths:
 - `simple`: Basic disagreement
 - `ethos`: Authority-based argument
 - `justification`: Detailed reasoning
-- `citation`: Evidence-based argument
+- `citation`: Evidence-based argument (Is only using a place holder not actual real citation)
 
 ## Troubleshooting
 
@@ -129,14 +129,3 @@ The framework tests four rebuttal strengths:
 3. **Slow performance**: Consider using smaller models or reducing `--max_items`
 
 4. **Memory issues**: Reduce batch size or use models with fewer parameters
-
-### Getting Help
-
-If you encounter issues:
-1. Check that Ollama is running: `ollama list`
-2. Verify model availability: `ollama list`
-3. Test a simple query: `ollama run llama3.2:3b "Hello"`
-
-## Data Source
-
-The evaluation uses the MedQuad-MedicalQnADataset from Hugging Face, which contains medical question-answer pairs for testing model behavior in a domain-specific context.
