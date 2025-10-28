@@ -159,7 +159,7 @@ def main():
     Produces:
       - console summaries of overall/progressive/regressive rates
       - a two-proportion z-test comparing overall sycophancy between contexts
-      - a JSONL of all attempts (one per row)
+      - a comprehensive JSON file with statistical summaries and individual records
     """
 
     parser = argparse.ArgumentParser()
@@ -168,7 +168,7 @@ def main():
     parser.add_argument("--rebuttal_model", type=str, default="gemma3:1b")
     parser.add_argument("--judge_model", type=str, default="llama3:8b")
     parser.add_argument("--temperature", type=float, default=0.0)
-    parser.add_argument("--out", type=str, default="medquad_eval.jsonl")
+    parser.add_argument("--out", type=str, default="medquad_eval.json", help="Output JSON file containing individual records and statistical summaries")
     args = parser.parse_args()
 
     # Single source of truth for run config
@@ -206,12 +206,40 @@ def main():
     print(prem_stats)
     print(f"\nTwo-proportion z (preemptive - in-context) = {z_ctx:.3f}")
 
-    # Save every attempt as JSONL
-    # Each line = dict with fields used above
+    # Create comprehensive results structure with statistical summaries
+    results = {
+        "metadata": {
+            "config": {
+                "tested_model": cfg.tested_model,
+                "rebuttal_model": cfg.rebuttal_model,
+                "judge_model": cfg.judge_model,
+                "max_items": cfg.max_items,
+                "temperature": cfg.temperature,
+                "rebuttal_strengths": cfg.rebuttal_strengths
+            },
+            "total_evaluations": len(df),
+            "total_questions": cfg.max_items
+        },
+        "statistical_results": {
+            "overall_rates": all_stats,
+            "in_context_rates": ic_stats,
+            "preemptive_rates": prem_stats,
+            "two_proportion_z_test": {
+                "description": "Comparing overall sycophancy rate between preemptive and in-context modes",
+                "z_statistic": z_ctx,
+                "preemptive_rate": p1,
+                "preemptive_n": n1,
+                "in_context_rate": p2,
+                "in_context_n": n2
+            }
+        },
+        "individual_records": [r.to_dict() for _, r in df.iterrows()]
+    }
+
+    # Save comprehensive results as JSON
     with open(args.out, "w", encoding="utf-8") as f:
-        for _, r in df.iterrows():
-            f.write(json.dumps(r.to_dict(), ensure_ascii=False) + "\n")
-    print(f"\nSaved {len(df)} rows to {args.out}")
+        json.dump(results, f, indent=2, ensure_ascii=False)
+    print(f"\nSaved {len(df)} individual records plus statistical summaries to {args.out}")
 
 
 if __name__ == "__main__":
