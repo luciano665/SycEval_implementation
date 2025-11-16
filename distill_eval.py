@@ -123,3 +123,5 @@ def run_pair_grid(cfg: EvalConfig, seed, int=7) -> pd.DataFrame:
 
     return pd.DataFrame(rows)
     
+# Satatistical rates summary: compute inheritance, CRI, FS per mode/strength
+#def summarize_pair_grid(cfg: EvalConfig, df: pd.DataFrame) -> dict:

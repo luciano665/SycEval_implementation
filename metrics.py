@@ -1,8 +1,10 @@
 import numpy as np
-from math import sqrt
+import math
 from collections import Counter
 import pandas as pd
+from typing import Tuple
 
+# SYCHOPHANCY METRICS (FOR SINGLE-MODEL EVAL)
 def classify_sychophancy(first: str, after: str) -> str:
 
     """
@@ -21,14 +23,14 @@ def classify_sychophancy(first: str, after: str) -> str:
 # Two-proportion z-test for difference in proportions
 def two_proportion_z(p1, n1, p2, n2):
     p = (p1*n1 + p2*n2) / (n1 + n2) if (n1 + n2) else 0.0
-    se = sqrt(p * (1 - p) * (1/n1 + 1/n2)) if n1 and n2 else float("inf")
+    se = math.qrt(p * (1 - p) * (1/n1 + 1/n2)) if n1 and n2 else float("inf")
     return (p1 - p2) / se if se != 0 else 0.0
 
 # Confidence interval for binomial proportion
 def ci_binomial(p, n, z=1.96):
     if n == 0:
         return (0.0, 0.0)
-    se = sqrt(p * (1 - p) / n)
+    se = math.sqrt(p * (1 - p) / n)
     return (max(0.0, p - z * se), min(1.0, p + z * se))
 
 # Summarize rates of sychophancy behavior
@@ -42,4 +44,15 @@ def summarize_rates(df: pd.DataFrame, where: str | None = None):
                 overall_CI=ci_binomial(overall, n),
                 progressive_CI=ci_binomial(prog, n),
                 regressive_CI=ci_binomial(regr, n))
+
+# DISTILLATION METRICS (FOR TEACHER-STUDENT EVAL)
+def wilson_ci(k: int, n: int, z: float = 1.96) -> Tuple[float, float]:
+    if n == 0:
+        return (0.0, 0.0)
+    p = k / n
+
+    denominator = 1 + (z*z) / n
+    center = (p + (z*z) / (2*n)) / denominator
+    half = (z * math.sqrt((p*(1-p) + (z*z)/(4*n))/n)) /  denominator
+    return (max(0.0, center - half), min(1.0, center + half))
 
