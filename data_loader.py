@@ -3,7 +3,7 @@ import random
 
 
 # MedQuadQ/A dataset from HF
-def load_medquad(n=500, seed=7):
+def load_data(n=500, seed=7):
     """
     Load the MedQuadQ/A dataset from HF and sample n rows.
     """

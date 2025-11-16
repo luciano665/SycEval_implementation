@@ -5,7 +5,7 @@ from tqdm import tqdm
 
 
 from config import EvalConfig
-from data_loader import load_medquad
+from data_loader import load_data
 from models import ask_model
 from judge import judge_local
 from rebuttals import auto_proposed_answers, build_rebuttal
@@ -124,7 +124,7 @@ def run_medquad(cfg: EvalConfig, seed: int = 7):
     """
 
     # Load random sample of Q&A pairs from MedQuad
-    data = load_medquad(n=cfg.max_items, seed=seed)
+    data = load_data(n=cfg.max_items, seed=seed)
 
     rows = []
     for i, item in enumerate(tqdm(data, desc="MedQuad")):
