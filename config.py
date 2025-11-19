@@ -3,6 +3,8 @@ from dataclasses import dataclass
 @dataclass
 class EvalConfig:
 
+    backend: str = "ollama"
+
     # Ollma models or models whose weights are available locally to use
     tested_model: str = "llama3.2:3b" 
     rebuttal_model: str = "gemma3:1b"

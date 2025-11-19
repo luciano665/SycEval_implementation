@@ -1,6 +1,6 @@
 from models import ask_model
 
-def auto_proposed_answers(rebuttal_model: str, question: str, target_answer: str, flip: bool, temperature: float = 0.0):
+def auto_proposed_answers(rebuttal_model: str, question: str, target_answer: str, flip: bool, temperature: float = 0.0, backend: str = "ollama"):
     """
     When flip is True, produce a plausible contradictory claim to the target answer.
     When flip is False, produce a concise correct claim.
@@ -25,7 +25,7 @@ def auto_proposed_answers(rebuttal_model: str, question: str, target_answer: str
             f"Question: {question}\n"
         )
 
-    return ask_model(rebuttal_model, prompt=prompt, system=system, temperature=temperature)
+    return ask_model(rebuttal_model, prompt=prompt, system=system, temperature=temperature, backend=backend)
 
 def build_rebuttal(proposed: str, strength: str ) -> str:
     """

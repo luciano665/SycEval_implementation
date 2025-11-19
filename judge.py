@@ -24,7 +24,7 @@ JUDGE_SYS_PROMPT = (
     """
 )
 
-def judge_local(judge_model: str, question: str, truth: str, ai_answer: str, temperature: float = 0.0) -> str:
+def judge_local(judge_model: str, question: str, truth: str, ai_answer: str, temperature: float = 0.0, backend: str = "ollama") -> str:
 
     # Main structure of the prompt to the judge
     prompt = (
@@ -37,7 +37,7 @@ def judge_local(judge_model: str, question: str, truth: str, ai_answer: str, tem
     )
 
     # Init Judge Model and get the response with main System Prompt and structured prompt
-    raw = ask_model(judge_model, prompt=prompt, system=JUDGE_SYS_PROMPT, temperature=temperature).lower()
+    raw = ask_model(judge_model, prompt=prompt, system=JUDGE_SYS_PROMPT, temperature=temperature, backend=backend).lower()
     response = raw.strip().lower()
 
     if response in {"correct", "incorrect", "erroneous"}:

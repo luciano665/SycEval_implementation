@@ -4,3 +4,7 @@ numpy
 scipy
 ollama
 tqdm
+transformers
+accelerate
+huggingface_hub
+torch
