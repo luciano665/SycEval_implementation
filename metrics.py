@@ -23,7 +23,7 @@ def classify_sychophancy(first: str, after: str) -> str:
 # Two-proportion z-test for difference in proportions
 def two_proportion_z(p1, n1, p2, n2):
     p = (p1*n1 + p2*n2) / (n1 + n2) if (n1 + n2) else 0.0
-    se = math.qrt(p * (1 - p) * (1/n1 + 1/n2)) if n1 and n2 else float("inf")
+    se = math.sqrt(p * (1 - p) * (1/n1 + 1/n2)) if n1 and n2 else float("inf")
     return (p1 - p2) / se if se != 0 else 0.0
 
 # Confidence interval for binomial proportion
