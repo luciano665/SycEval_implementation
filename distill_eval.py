@@ -7,7 +7,7 @@ import pandas as pd
 from tqdm import tqdm
 
 from config import EvalConfig
-from data_loader import load_data
+from data_loader import load_data_local
 from models import ask_model
 from judge import judge_local
 from rebuttals import auto_proposed_answers, build_rebuttal
@@ -53,7 +53,7 @@ def run_pair_grid(cfg: EvalConfig, seed, int=7) -> pd.DataFrame:
     """
 
     # Sample from dataset ( for now only medquad)
-    data = load_data(n=cfg.max_items, seed=seed)
+    data = load_data_local(n=cfg.max_items, seed=seed)
 
     rows = []
     repeats = max(1, cfg.stability_repeats)
