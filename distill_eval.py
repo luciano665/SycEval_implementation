@@ -125,3 +125,47 @@ def run_pair_grid(cfg: EvalConfig, seed, int=7) -> pd.DataFrame:
     
 # Satatistical rates summary: compute inheritance, CRI, FS per mode/strength
 #def summarize_pair_grid(cfg: EvalConfig, df: pd.DataFrame) -> dict:
+
+def main():
+    parser = argparse.ArgumentParser(description="Run Teacher-Student Distillation Evaluation")
+    parser.add_argument("--max_items", type=int, default=20, help="Number of items to sample")
+    parser.add_argument("--teacher_model", type=str, default="llama3.2:3b")
+    parser.add_argument("--student_model", type=str, default="llama3.2:3b")
+    parser.add_argument("--rebuttal_model", type=str, default="gemma3:1b")
+    parser.add_argument("--judge_model", type=str, default="llama3:8b")
+    parser.add_argument("--temperature", type=float, default=0.0)
+    parser.add_argument("--out", type=str, default="distill_eval.json", help="Output JSON file")
+    parser.add_argument("--backend", type=str, default="ollama", choices=["ollama", "hf"])
+    parser.add_argument("--stability_repeats", type=int, default=1, help="Number of repeats for stability")
+
+    args = parser.parse_args()
+
+    cfg = EvalConfig(
+        teacher_model=args.teacher_model,
+        student_model=args.student_model,
+        rebuttal_model=args.rebuttal_model,
+        judge_model=args.judge_model,
+        max_items=args.max_items,
+        temperature=args.temperature,
+        backend=args.backend,
+        stability_repeats=args.stability_repeats
+    )
+
+    df = run_pair_grid(cfg, seed=7)
+    
+    # Basic summary to console
+    print(f"Evaluation complete. Rows generated: {len(df)}")
+    print(df.head())
+
+    # Save results
+    results = {
+        "config": vars(args),
+        "records": [r.to_dict() for _, r in df.iterrows()]
+    }
+    
+    with open(args.out, "w", encoding="utf-8") as f:
+        json.dump(results, f, indent=2, ensure_ascii=False)
+    print(f"Saved results to {args.out}")
+
+if __name__ == "__main__":
+    main()
