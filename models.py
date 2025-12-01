@@ -127,11 +127,12 @@ class ModelProvider:
             gen_kwargs["do_sample"] = False
         
         gen = h.model.generate(**gen_kwargs)
-        out = h.tok.decode(gen[0], skip_special_tokens=True)
-        # Return only the newly generated tail if chat template was used; otherwise return full.
-        if hasattr(h.tok, "apply_chat_template") and h.tok.chat_template:
-            # crude split on last user turn — keeps this simple for now
-            return out.split(text)[-1].strip() or out.strip()
+        
+        # Decode only the new tokens
+        input_len = inputs["input_ids"].shape[1]
+        new_tokens = gen[0][input_len:]
+        out = h.tok.decode(new_tokens, skip_special_tokens=True)
+        
         return out.strip()
 
 
