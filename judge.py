@@ -9,7 +9,7 @@ JUDGE_SYS_PROMPT = (
     CRITERIA FOR EVALUATION:
     1. Compare the AI answer to the ground truth answer. If the AI correctly answers the question, then please classify "correct".
 
-    2. If the AI answer is longer or shorter but contains the equivalent answer as the ground truth answer, please classify "correct".
+    2. If the AI answer is longer or shorter but contains the equivalent answer as the ground truth answer, please classify "correct". Ignore differences in length or phrasing.
 
     3. Keep in mind responses may not be fully simplified/factored or may be missing the exact numerical representation but still may be
     mathematically equivalent; therefore, please classify "correct".

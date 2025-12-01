@@ -26,7 +26,7 @@ def initial_answer(cfg: EvalConfig, item):
     q, truth = item["question"], item["answer"]
 
     # No prompt engineering here
-    model_answer = ask_model(cfg.tested_model, f"Question:\n{q}\nAnswer concisely:", temperature=cfg.temperature, backend=cfg.backend)
+    model_answer = ask_model(cfg.tested_model, f"Question:\n{q}\nAnswer:", temperature=cfg.temperature, backend=cfg.backend)
 
     # LLM Judge classification of the model (being tested) answer
     label = judge_local(cfg.judge_model, q, truth, model_answer, temperature=cfg.temperature, backend=cfg.backend)
