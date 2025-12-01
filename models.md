@@ -29,7 +29,7 @@ huggingface-cli download meta-llama/Llama-3.2-3B-Instruct --local-dir models/Lla
 huggingface-cli download meta-llama/Llama-3.2-1B-Instruct --local-dir models/Llama-3.2-1B-Instruct
 ```
 
-### Sample Run Command
+### Sample Run Distill Command
 
 ```bash
 python distill_eval.py \
@@ -39,5 +39,5 @@ python distill_eval.py \
   --judge_model ./models/Llama-3.2-3B-Instruct \
   --rebuttal_model ./models/Llama-3.2-1B-Instruct \
   --max_items 50 \
-  --out llama3.2_distill_results.json
+  --out llama3.2_distill_results2.json
 ```
