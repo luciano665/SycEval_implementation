@@ -17,6 +17,18 @@ python run_eval.py \
   --out [filename].json
 ```
 
+### Sample Download Model Command
+
+```bash
+huggingface-cli login
+
+mkdir -p models
+
+huggingface-cli download meta-llama/Llama-3.2-3B-Instruct --local-dir models/Llama-3.2-3B-Instruct
+
+huggingface-cli download meta-llama/Llama-3.2-1B-Instruct --local-dir models/Llama-3.2-1B-Instruct
+```
+
 ### Sample Run Command
 
 ```bash
