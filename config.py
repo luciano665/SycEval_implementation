@@ -31,3 +31,6 @@ class EvalConfig:
     # Parallelization
     shard_id: int = 0
     num_shards: int = 1
+
+    # Output file
+    out: str = "distill_eval.json"
