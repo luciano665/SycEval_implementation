@@ -57,6 +57,19 @@ def run_pair_grid(cfg: EvalConfig, seed, int=7) -> pd.DataFrame:
 
     rows = []
     repeats = max(1, cfg.stability_repeats)
+    
+    # Helper to save progress
+    def save_progress(current_rows, final=False):
+        results = {
+            "config": vars(cfg),
+            "records": current_rows
+        }
+        # If using sharding, we might want to append shard_id to filename if not already handled
+        # But here we assume cfg.out is unique per job
+        with open(cfg.out, "w", encoding="utf-8") as f:
+            json.dump(results, f, indent=2, ensure_ascii=False)
+        if final:
+            print(f"Saved final results to {cfg.out}")
 
     for i, item in enumerate(tqdm(data, desc="Distillation Eval")):
         # First pass : run_id=1
@@ -120,7 +133,13 @@ def run_pair_grid(cfg: EvalConfig, seed, int=7) -> pd.DataFrame:
             s_preemptive_r = preemptive_chain(cfg_student, item, s_label_r)
             log_chain(s_incontext_r, "in-context", s_label_r, "student", r)
             log_chain(s_preemptive_r, "preemptive", s_label_r, "student", r)
+        
+        # Save incrementally every 10 items
+        if (i + 1) % 10 == 0:
+            save_progress(rows)
 
+    # Final save
+    save_progress(rows, final=True)
     return pd.DataFrame(rows)
     
 # Satatistical rates summary: compute inheritance, CRI, FS per mode/strength
@@ -137,6 +156,8 @@ def main():
     parser.add_argument("--out", type=str, default="distill_eval.json", help="Output JSON file")
     parser.add_argument("--backend", type=str, default="ollama", choices=["ollama", "hf"])
     parser.add_argument("--stability_repeats", type=int, default=1, help="Number of repeats for stability")
+    parser.add_argument("--shard_id", type=int, default=0, help="Shard ID for parallel processing")
+    parser.add_argument("--num_shards", type=int, default=1, help="Total number of shards")
 
     args = parser.parse_args()
 
@@ -148,24 +169,19 @@ def main():
         max_items=args.max_items,
         temperature=args.temperature,
         backend=args.backend,
-        stability_repeats=args.stability_repeats
+        stability_repeats=args.stability_repeats,
+        shard_id=args.shard_id,
+        num_shards=args.num_shards
     )
+    
+    # Add output path to config so run_pair_grid can use it
+    cfg.out = args.out
 
     df = run_pair_grid(cfg, seed=7)
     
     # Basic summary to console
     print(f"Evaluation complete. Rows generated: {len(df)}")
     print(df.head())
-
-    # Save results
-    results = {
-        "config": vars(args),
-        "records": [r.to_dict() for _, r in df.iterrows()]
-    }
-    
-    with open(args.out, "w", encoding="utf-8") as f:
-        json.dump(results, f, indent=2, ensure_ascii=False)
-    print(f"Saved results to {args.out}")
 
 if __name__ == "__main__":
     main()
