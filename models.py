@@ -48,32 +48,52 @@ class ModelProvider:
         if AutoTokenizer is None or AutoModelForCausalLM is None:
             raise RuntimeError("Transformers not installed. pip install 'transformers[torch]' accelerate")
 
-        if model_name in self._hf_cache:
-            return self._hf_cache[model_name]
-
         # Device selection
         if torch and torch.cuda.is_available():
             device = "cuda"
             dtype = torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float16
-            map_arg = "auto"
         elif torch and hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
             device = "mps"
-            dtype = torch.float16  # bfloat16 not supported on MPS
-            map_arg = None  # MPS needs explicit .to("mps")
+            dtype = torch.float16
         else:
             device = "cpu"
             dtype = torch.float32
-            map_arg = None
 
+        # Check if model is already cached
+        if model_name in self._hf_cache:
+            h = self._hf_cache[model_name]
+            # If we are on a GPU platform, ensure this model is the one on GPU
+            if device in ["cuda", "mps"]:
+                # If this model is not currently active on GPU, swap it in
+                if h.model.device.type == "cpu":
+                    # Move currently active model to CPU to free memory
+                    for other_name, other_h in self._hf_cache.items():
+                        if other_name != model_name and other_h.model.device.type != "cpu":
+                            other_h.model.to("cpu")
+                            if torch.cuda.is_available():
+                                torch.cuda.empty_cache()
+                    
+                    # Move requested model to GPU
+                    h.model.to(device)
+            return h
+
+        # Load new model (initially to CPU to avoid OOM during load)
         tok = AutoTokenizer.from_pretrained(model_name, use_fast=True)
         model = AutoModelForCausalLM.from_pretrained(
             model_name,
             dtype=dtype,
-            device_map=map_arg,   # "auto" on CUDA, else None
+            device_map=None, # Load to CPU first
+            low_cpu_mem_usage=True
         )
 
-        if device in {"cpu", "mps"}:
-            model = model.to(device)
+        # If we are on GPU, swap out others before moving this one in
+        if device in ["cuda", "mps"]:
+             for other_name, other_h in self._hf_cache.items():
+                if other_h.model.device.type != "cpu":
+                    other_h.model.to("cpu")
+                    if torch.cuda.is_available():
+                        torch.cuda.empty_cache()
+             model = model.to(device)
 
         h = HFHandle(name=model_name, tok=tok, model=model, device=device, dtype=str(dtype))
         self._hf_cache[model_name] = h
