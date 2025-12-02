@@ -43,3 +43,22 @@ python distill_eval.py \
   --max_items 50 \
   --out llama3.2_distill_results2.json
 ```
+
+### Gemma Models
+
+2nd Pair
+
+https://huggingface.co/google/gemma-3-4b-it
+https://huggingface.co/google/gemma-3-1b-it
+
+#### Download Gemma Models
+
+**Option 1: Git LFS**
+```bash
+# Make sure git-lfs is installed
+git lfs install
+
+git clone https://huggingface.co/google/gemma-3-4b-it models/gemma-3-4b-it
+git clone https://huggingface.co/google/gemma-3-1b-it models/gemma-3-1b-it
+```
+
