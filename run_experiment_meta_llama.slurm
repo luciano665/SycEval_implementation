@@ -7,7 +7,7 @@
 #SBATCH --gpus=1
 #SBATCH --cpus-per-task=2
 #SBATCH --time=24:00:00
-#SBATCH --partition=inter_a30
+#SBATCH --partition=gpu_2day
 
 # Load environment
 source /shared/software/conda/etc/profile.d/conda.sh
