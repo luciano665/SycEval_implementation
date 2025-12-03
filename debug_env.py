@@ -57,31 +57,23 @@ except Exception as e:
 
 print(f"\nAttempting to load MODEL from {model_path}...")
 try:
-    print("Attempting to load model by overriding model_type to 'mistral'...")
+    print("Attempting to load model by extracting text_config...")
     # Load config as dict
     import json
     with open(os.path.join(model_path, "config.json"), 'r') as f:
-        config_dict = json.load(f)
+        root_config = json.load(f)
     
+    # Extract text_config if present (this contains the actual Mistral params)
+    if 'text_config' in root_config:
+        print("Found text_config, promoting to top level...")
+        config_dict = root_config['text_config']
+    else:
+        config_dict = root_config
+
     # Force model_type to standard 'mistral'
     print(f"Original model_type: {config_dict.get('model_type')}")
     config_dict['model_type'] = 'mistral'
-    # Also fix text_config if present
-    if 'text_config' in config_dict:
-        config_dict['text_config']['model_type'] = 'mistral'
-    
-    # Force architecture to standard Mistral
     config_dict['architectures'] = ["MistralForCausalLM"]
-    
-    # Remove unsupported quantization config (fp8/static)
-    if 'quantization_config' in config_dict:
-        print("Removing unsupported quantization_config...")
-        del config_dict['quantization_config']
-
-    # Remove vision_config (we are loading text-only Mistral)
-    if 'vision_config' in config_dict:
-        print("Removing vision_config...")
-        del config_dict['vision_config']
 
     # Fix rope_parameters (MistralConfig expects rope_theta, not a dict)
     if 'rope_parameters' in config_dict:
@@ -94,6 +86,7 @@ try:
     from transformers import AutoModelForCausalLM, MistralConfig
     config = MistralConfig.from_dict(config_dict)
     print(f"Created config with model_type: {config.model_type}")
+    print(f"Hidden size: {config.hidden_size}") # Verify we have params
 
     # Load model with this config
     # We disable trust_remote_code to force using standard transformers paths
@@ -105,6 +98,6 @@ try:
         low_cpu_mem_usage=True,
         dtype=torch.bfloat16
     )
-    print("SUCCESS: Model loaded with overridden config.")
+    print("SUCCESS: Model loaded with extracted text_config.")
 except Exception as e:
-    print(f"FAILED Model load with override: {e}")
+    print(f"FAILED Model load with extract: {e}")
