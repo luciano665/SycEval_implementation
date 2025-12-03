@@ -243,6 +243,10 @@ class ModelProvider:
         inputs = h.tok(text, return_tensors="pt")
         if h.device != "cpu":
             inputs = {k: v.to(h.device) for k, v in inputs.items()}
+        
+        # Remove token_type_ids if present (some models like Nemotron don't support it)
+        if "token_type_ids" in inputs:
+            del inputs["token_type_ids"]
 
         gen_kwargs = {
             **inputs,
