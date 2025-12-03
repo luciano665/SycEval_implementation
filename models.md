@@ -62,3 +62,28 @@ git clone https://huggingface.co/google/gemma-3-4b-it models/gemma-3-4b-it
 git clone https://huggingface.co/google/gemma-3-1b-it models/gemma-3-1b-it
 ```
 
+### Ministral Models
+
+3rd Pair
+
+https://huggingface.co/mistralai/Ministral-3-8B-Instruct-2512
+https://huggingface.co/mistralai/Ministral-3-3B-Instruct-2512
+
+#### Download Ministral Models
+
+**Option 1: HuggingFace CLI (Recommended)**
+```bash
+huggingface-cli download mistralai/Ministral-3-8B-Instruct-2512 --local-dir models/Ministral-3-8B-Instruct-2512
+huggingface-cli download mistralai/Ministral-3-3B-Instruct-2512 --local-dir models/Ministral-3-3B-Instruct-2512
+```
+
+**Option 2: Git LFS**
+```bash
+# Make sure git-lfs is installed
+git lfs install
+
+git clone https://huggingface.co/mistralai/Ministral-3-8B-Instruct-2512 models/Ministral-3-8B-Instruct-2512
+git clone https://huggingface.co/mistralai/Ministral-3-3B-Instruct-2512 models/Ministral-3-3B-Instruct-2512
+```
+
+
