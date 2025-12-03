@@ -22,7 +22,10 @@ else:
     print("Model path exists.")
     if os.path.exists(os.path.join(model_path, "tokenizer_config.json")):
         print("tokenizer_config.json found.")
-    print(f"Config content: {f.read()}")
+        with open(os.path.join(model_path, "tokenizer_config.json"), 'r') as f:
+            print(f"Config content: {f.read()}")
+    else:
+        print("tokenizer_config.json NOT found.")
 
 print(f"\nAttempting to load tokenizer from {model_path}...")
 
