@@ -107,13 +107,61 @@ class ModelProvider:
                         tok.pad_token = "<pad>"
                 else:
                     raise
-        model = AutoModelForCausalLM.from_pretrained(
-            model_name,
-            dtype=dtype,
-            device_map=None, # Load to CPU first
-            low_cpu_mem_usage=True,
-            trust_remote_code=True
-        )
+
+        try:
+            # Try standard load first
+            model = AutoModelForCausalLM.from_pretrained(
+                model_name,
+                dtype=dtype,
+                device_map=None, # Load to CPU first
+                low_cpu_mem_usage=True,
+                trust_remote_code=True
+            )
+        except (KeyError, ValueError, TypeError) as e:
+            # Fallback for Ministral/Pixtral models with custom config structure
+            print(f"Standard load failed ({e}), attempting config override...")
+            import json
+            from transformers import MistralConfig
+            
+            config_path = os.path.join(model_name, "config.json")
+            if os.path.exists(config_path):
+                with open(config_path, 'r') as f:
+                    root_config = json.load(f)
+                
+                # Extract text_config if present (for multimodal models)
+                if 'text_config' in root_config:
+                    config_dict = root_config['text_config']
+                else:
+                    config_dict = root_config
+                
+                # Force standard Mistral configuration
+                config_dict['model_type'] = 'mistral'
+                config_dict['architectures'] = ["MistralForCausalLM"]
+                
+                # Clean up unsupported fields
+                if 'quantization_config' in config_dict:
+                    del config_dict['quantization_config']
+                if 'vision_config' in config_dict:
+                    del config_dict['vision_config']
+                    
+                # Fix rope_parameters structure
+                if 'rope_parameters' in config_dict:
+                    if 'rope_theta' in config_dict['rope_parameters']:
+                        config_dict['rope_theta'] = config_dict['rope_parameters']['rope_theta']
+                    del config_dict['rope_parameters']
+                
+                # Load with modified config
+                config = MistralConfig.from_dict(config_dict)
+                model = AutoModelForCausalLM.from_pretrained(
+                    model_name,
+                    config=config,
+                    trust_remote_code=False, # Use standard transformers code
+                    device_map=None,
+                    low_cpu_mem_usage=True,
+                    dtype=dtype
+                )
+            else:
+                raise e
 
         # If we are on GPU, swap out others before moving this one in
         if device in ["cuda", "mps"]:
