@@ -74,11 +74,12 @@ from transformers import AutoModelForCausalLM, AutoConfig, MistralConfig
 
 try:
     print("Patching AutoConfig with register...")
-    class Ministral3Config(MistralConfig):
-        model_type = "ministral3"
-    
-    AutoConfig.register("ministral3", Ministral3Config)
-    print("Registered ministral3.")
+    # The config.json has "model_type": "mistral3" (top level) and "ministral3" (text_config)
+    # We need to handle "mistral3" to match the main config.
+    # We map it to standard MistralConfig to use standard Mistral implementation.
+    AutoConfig.register("mistral3", MistralConfig)
+    AutoConfig.register("ministral3", MistralConfig)
+    print("Registered mistral3 and ministral3 to MistralConfig.")
 except Exception as e:
     print(f"Failed to register: {e}")
 
