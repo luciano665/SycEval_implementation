@@ -69,7 +69,14 @@ else:
     print("config.json NOT found.")
 
 print(f"\nAttempting to load MODEL from {model_path}...")
-from transformers import AutoModelForCausalLM
+from transformers import AutoModelForCausalLM, AutoConfig, MistralConfig
+
+try:
+    print("Patching AutoConfig with register...")
+    AutoConfig.register("ministral3", MistralConfig)
+    print("Registered ministral3.")
+except Exception as e:
+    print(f"Failed to register: {e}")
 
 try:
     print("Trying AutoModelForCausalLM with trust_remote_code=True...")
