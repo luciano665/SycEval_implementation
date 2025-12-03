@@ -27,27 +27,29 @@ else:
     else:
         print("tokenizer_config.json NOT found.")
 
+print(f"\nListing files in {model_path}:")
+try:
+    print(os.listdir(model_path))
+except Exception as e:
+    print(f"Error listing dir: {e}")
+
 print(f"\nAttempting to load tokenizer from {model_path}...")
 
-from transformers import LlamaTokenizer, LlamaTokenizerFast, AutoTokenizer
+from transformers import AutoTokenizer, LlamaTokenizerFast
 
 try:
-    print("Trying AutoTokenizer...")
-    tok = AutoTokenizer.from_pretrained(model_path)
-    print("SUCCESS: AutoTokenizer")
+    print("Trying AutoTokenizer with trust_remote_code=True...")
+    tok = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)
+    print("SUCCESS: AutoTokenizer (trust_remote_code=True)")
 except Exception as e:
-    print(f"FAILED AutoTokenizer: {e}")
+    print(f"FAILED AutoTokenizer (trust_remote_code=True): {e}")
 
 try:
-    print("Trying LlamaTokenizerFast...")
-    tok = LlamaTokenizerFast.from_pretrained(model_path)
-    print("SUCCESS: LlamaTokenizerFast")
+    from transformers import MistralTokenizerFast
+    print("Trying MistralTokenizerFast...")
+    tok = MistralTokenizerFast.from_pretrained(model_path)
+    print("SUCCESS: MistralTokenizerFast")
+except ImportError:
+    print("MistralTokenizerFast not available in this transformers version.")
 except Exception as e:
-    print(f"FAILED LlamaTokenizerFast: {e}")
-
-try:
-    print("Trying LlamaTokenizer...")
-    tok = LlamaTokenizer.from_pretrained(model_path)
-    print("SUCCESS: LlamaTokenizer")
-except Exception as e:
-    print(f"FAILED LlamaTokenizer: {e}")
+    print(f"FAILED MistralTokenizerFast: {e}")
