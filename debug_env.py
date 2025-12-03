@@ -72,6 +72,11 @@ try:
     
     # Force architecture to standard Mistral
     config_dict['architectures'] = ["MistralForCausalLM"]
+    
+    # Remove unsupported quantization config (fp8/static)
+    if 'quantization_config' in config_dict:
+        print("Removing unsupported quantization_config...")
+        del config_dict['quantization_config']
         
     # Create config object
     from transformers import AutoModelForCausalLM, MistralConfig
