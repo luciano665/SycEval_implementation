@@ -74,7 +74,10 @@ from transformers import AutoModelForCausalLM, AutoConfig, MistralConfig
 
 try:
     print("Patching AutoConfig with register...")
-    AutoConfig.register("ministral3", MistralConfig)
+    class Ministral3Config(MistralConfig):
+        model_type = "ministral3"
+    
+    AutoConfig.register("ministral3", Ministral3Config)
     print("Registered ministral3.")
 except Exception as e:
     print(f"Failed to register: {e}")
