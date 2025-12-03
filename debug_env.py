@@ -22,23 +22,29 @@ else:
     print("Model path exists.")
     if os.path.exists(os.path.join(model_path, "tokenizer_config.json")):
         print("tokenizer_config.json found.")
-        with open(os.path.join(model_path, "tokenizer_config.json"), 'r') as f:
-            print(f"Config content snippet: {f.read()[:200]}...")
-    else:
-        print("tokenizer_config.json NOT found.")
+    print(f"Config content: {f.read()}")
 
 print(f"\nAttempting to load tokenizer from {model_path}...")
 
+from transformers import LlamaTokenizer, LlamaTokenizerFast, AutoTokenizer
+
 try:
-    print("Trying use_fast=True...")
-    tok = AutoTokenizer.from_pretrained(model_path, use_fast=True)
-    print("SUCCESS: Loaded with use_fast=True")
+    print("Trying AutoTokenizer...")
+    tok = AutoTokenizer.from_pretrained(model_path)
+    print("SUCCESS: AutoTokenizer")
 except Exception as e:
-    print(f"FAILED with use_fast=True: {e}")
-    
-    try:
-        print("Trying use_fast=False...")
-        tok = AutoTokenizer.from_pretrained(model_path, use_fast=False)
-        print("SUCCESS: Loaded with use_fast=False")
-    except Exception as e2:
-        print(f"FAILED with use_fast=False: {e2}")
+    print(f"FAILED AutoTokenizer: {e}")
+
+try:
+    print("Trying LlamaTokenizerFast...")
+    tok = LlamaTokenizerFast.from_pretrained(model_path)
+    print("SUCCESS: LlamaTokenizerFast")
+except Exception as e:
+    print(f"FAILED LlamaTokenizerFast: {e}")
+
+try:
+    print("Trying LlamaTokenizer...")
+    tok = LlamaTokenizer.from_pretrained(model_path)
+    print("SUCCESS: LlamaTokenizer")
+except Exception as e:
+    print(f"FAILED LlamaTokenizer: {e}")
