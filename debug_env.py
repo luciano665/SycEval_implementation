@@ -77,6 +77,18 @@ try:
     if 'quantization_config' in config_dict:
         print("Removing unsupported quantization_config...")
         del config_dict['quantization_config']
+
+    # Remove vision_config (we are loading text-only Mistral)
+    if 'vision_config' in config_dict:
+        print("Removing vision_config...")
+        del config_dict['vision_config']
+
+    # Fix rope_parameters (MistralConfig expects rope_theta, not a dict)
+    if 'rope_parameters' in config_dict:
+        print("Fixing rope_parameters...")
+        if 'rope_theta' in config_dict['rope_parameters']:
+            config_dict['rope_theta'] = config_dict['rope_parameters']['rope_theta']
+        del config_dict['rope_parameters']
         
     # Create config object
     from transformers import AutoModelForCausalLM, MistralConfig
