@@ -67,11 +67,22 @@ try:
     class Ministral3Config(MistralConfig):
         model_type = "ministral3"
 
-    AutoConfig.register("mistral3", Mistral3Config)
-    AutoConfig.register("ministral3", Ministral3Config)
-    print("Registered mistral3 and ministral3.")
+    # Try registering mistral3
+    try:
+        AutoConfig.register("mistral3", Mistral3Config)
+        print("Registered mistral3.")
+    except Exception as e:
+        print(f"Skipping mistral3 registration: {e}")
+
+    # Try registering ministral3
+    try:
+        AutoConfig.register("ministral3", Ministral3Config)
+        print("Registered ministral3.")
+    except Exception as e:
+        print(f"Skipping ministral3 registration: {e}")
+
 except Exception as e:
-    print(f"Failed to register: {e}")
+    print(f"Failed to define config classes: {e}")
 
 try:
     print("Trying AutoModelForCausalLM with trust_remote_code=True...")
