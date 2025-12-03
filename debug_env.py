@@ -59,6 +59,27 @@ try:
     print("Trying PreTrainedTokenizerFast direct load...")
     tok = PreTrainedTokenizerFast(tokenizer_file=os.path.join(model_path, "tokenizer.json"))
     print("SUCCESS: PreTrainedTokenizerFast")
-    print(f"Vocab size: {len(tok)}")
-except Exception as e:
     print(f"FAILED PreTrainedTokenizerFast: {e}")
+
+print(f"\nChecking config.json...")
+if os.path.exists(os.path.join(model_path, "config.json")):
+    with open(os.path.join(model_path, "config.json"), 'r') as f:
+        print(f"Config content: {f.read()}")
+else:
+    print("config.json NOT found.")
+
+print(f"\nAttempting to load MODEL from {model_path}...")
+from transformers import AutoModelForCausalLM
+
+try:
+    print("Trying AutoModelForCausalLM with trust_remote_code=True...")
+    model = AutoModelForCausalLM.from_pretrained(
+        model_path, 
+        trust_remote_code=True, 
+        device_map="auto", 
+        low_cpu_mem_usage=True,
+        torch_dtype=torch.bfloat16
+    )
+    print("SUCCESS: Model loaded.")
+except Exception as e:
+    print(f"FAILED Model load: {e}")
