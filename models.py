@@ -200,10 +200,14 @@ class ModelProvider:
         if device in ["cuda", "mps"]:
              for other_name, other_h in self._hf_cache.items():
                 if other_h.model.device.type != "cpu":
+                    print(f"DEBUG: Moving {other_name} to CPU to free memory for {model_name}")
                     other_h.model.to("cpu")
                     if torch.cuda.is_available():
                         torch.cuda.empty_cache()
-             model = model.to(device)
+             
+             if model.device.type == "cpu":
+                 print(f"DEBUG: Moving {model_name} to {device}")
+                 model = model.to(device)
 
         h = HFHandle(name=model_name, tok=tok, model=model, device=device, dtype=str(dtype))
         self._hf_cache[model_name] = h
