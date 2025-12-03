@@ -20,18 +20,11 @@ if not os.path.exists(model_path):
     print("ERROR: Model path does not exist!")
 else:
     print("Model path exists.")
+    print("Model path exists.")
     if os.path.exists(os.path.join(model_path, "tokenizer_config.json")):
         print("tokenizer_config.json found.")
-        with open(os.path.join(model_path, "tokenizer_config.json"), 'r') as f:
-            print(f"Config content: {f.read()}")
     else:
         print("tokenizer_config.json NOT found.")
-
-print(f"\nListing files in {model_path}:")
-try:
-    print(os.listdir(model_path))
-except Exception as e:
-    print(f"Error listing dir: {e}")
 
 print(f"\nAttempting to load tokenizer from {model_path}...")
 
@@ -62,24 +55,21 @@ try:
 except Exception as e:
     print(f"FAILED PreTrainedTokenizerFast: {e}")
 
-print(f"\nChecking config.json...")
-if os.path.exists(os.path.join(model_path, "config.json")):
-    with open(os.path.join(model_path, "config.json"), 'r') as f:
-        print(f"Config content: {f.read()}")
-else:
-    print("config.json NOT found.")
-
 print(f"\nAttempting to load MODEL from {model_path}...")
 from transformers import AutoModelForCausalLM, AutoConfig, MistralConfig
 
 try:
     print("Patching AutoConfig with register...")
-    # The config.json has "model_type": "mistral3" (top level) and "ministral3" (text_config)
-    # We need to handle "mistral3" to match the main config.
-    # We map it to standard MistralConfig to use standard Mistral implementation.
-    AutoConfig.register("mistral3", MistralConfig)
-    AutoConfig.register("ministral3", MistralConfig)
-    print("Registered mistral3 and ministral3 to MistralConfig.")
+    
+    class Mistral3Config(MistralConfig):
+        model_type = "mistral3"
+        
+    class Ministral3Config(MistralConfig):
+        model_type = "ministral3"
+
+    AutoConfig.register("mistral3", Mistral3Config)
+    AutoConfig.register("ministral3", Ministral3Config)
+    print("Registered mistral3 and ministral3.")
 except Exception as e:
     print(f"Failed to register: {e}")
 
@@ -90,7 +80,7 @@ try:
         trust_remote_code=True, 
         device_map="auto", 
         low_cpu_mem_usage=True,
-        torch_dtype=torch.bfloat16
+        dtype=torch.bfloat16
     )
     print("SUCCESS: Model loaded.")
 except Exception as e:
