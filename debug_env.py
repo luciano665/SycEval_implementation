@@ -59,6 +59,7 @@ try:
     print("Trying PreTrainedTokenizerFast direct load...")
     tok = PreTrainedTokenizerFast(tokenizer_file=os.path.join(model_path, "tokenizer.json"))
     print("SUCCESS: PreTrainedTokenizerFast")
+except Exception as e:
     print(f"FAILED PreTrainedTokenizerFast: {e}")
 
 print(f"\nChecking config.json...")
