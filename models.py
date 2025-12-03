@@ -83,8 +83,20 @@ class ModelProvider:
         try:
             tok = AutoTokenizer.from_pretrained(model_name, use_fast=True)
         except Exception:
-            # Fallback for some models/environments where fast tokenizer fails
-            tok = AutoTokenizer.from_pretrained(model_name, use_fast=False)
+            try:
+                # Fallback 1: Slow tokenizer
+                tok = AutoTokenizer.from_pretrained(model_name, use_fast=False)
+            except Exception:
+                # Fallback 2: Direct load of tokenizer.json (bypassing config)
+                # This fixes "Tokenizer class TokenizersBackend does not exist"
+                tokenizer_json = os.path.join(model_name, "tokenizer.json")
+                if os.path.exists(tokenizer_json):
+                    tok = PreTrainedTokenizerFast(tokenizer_file=tokenizer_json)
+                    # Manually set pad token if it exists in the model but wasn't loaded
+                    if tok.pad_token is None:
+                        tok.pad_token = "<pad>"
+                else:
+                    raise
         model = AutoModelForCausalLM.from_pretrained(
             model_name,
             dtype=dtype,
