@@ -6,21 +6,23 @@ from typing import Optional, List, Dict
 # Optional HF imports are lazy — so you can still run Ollama-only environments.
 try:
     import torch
-    from transformers import AutoTokenizer, AutoModelForCausalLM, PreTrainedTokenizerFast
-    from transformers.models.auto.configuration_auto import CONFIG_MAPPING
-    from transformers import MistralConfig
+    from transformers import AutoTokenizer, AutoModelForCausalLM, PreTrainedTokenizerFast, AutoConfig, MistralConfig
     import transformers
     print(f"DEBUG: Transformers version: {transformers.__version__}")
     
-    # Patch for Ministral 3
-    if "ministral3" not in CONFIG_MAPPING:
-        print("DEBUG: Patching CONFIG_MAPPING for ministral3")
-        CONFIG_MAPPING["ministral3"] = MistralConfig
+    # Patch for Ministral 3 using official register API
+    try:
+        AutoConfig.register("ministral3", MistralConfig)
+        print("DEBUG: Registered ministral3 config via AutoConfig.register")
+    except Exception as e:
+        print(f"DEBUG: Failed to register ministral3: {e}")
 except Exception:
     torch = None
     AutoTokenizer = None
     AutoModelForCausalLM = None
     PreTrainedTokenizerFast = None
+    AutoConfig = None
+    MistralConfig = None
 
 # Optional Ollama import (lazy as well)
 try:
