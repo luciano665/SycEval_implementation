@@ -6,13 +6,14 @@ from typing import Optional, List, Dict
 # Optional HF imports are lazy — so you can still run Ollama-only environments.
 try:
     import torch
-    from transformers import AutoTokenizer, AutoModelForCausalLM
+    from transformers import AutoTokenizer, AutoModelForCausalLM, PreTrainedTokenizerFast
     import transformers
     print(f"DEBUG: Transformers version: {transformers.__version__}")
 except Exception:
     torch = None
     AutoTokenizer = None
     AutoModelForCausalLM = None
+    PreTrainedTokenizerFast = None
 
 # Optional Ollama import (lazy as well)
 try:
