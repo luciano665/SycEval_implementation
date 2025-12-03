@@ -56,43 +56,35 @@ except Exception as e:
     print(f"FAILED PreTrainedTokenizerFast: {e}")
 
 print(f"\nAttempting to load MODEL from {model_path}...")
-from transformers import AutoModelForCausalLM, AutoConfig, MistralConfig
-
 try:
-    print("Patching AutoConfig with register...")
+    print("Attempting to load model by overriding model_type to 'mistral'...")
+    # Load config as dict
+    import json
+    with open(os.path.join(model_path, "config.json"), 'r') as f:
+        config_dict = json.load(f)
     
-    class Mistral3Config(MistralConfig):
-        model_type = "mistral3"
+    # Force model_type to standard 'mistral'
+    print(f"Original model_type: {config_dict.get('model_type')}")
+    config_dict['model_type'] = 'mistral'
+    # Also fix text_config if present
+    if 'text_config' in config_dict:
+        config_dict['text_config']['model_type'] = 'mistral'
         
-    class Ministral3Config(MistralConfig):
-        model_type = "ministral3"
+    # Create config object
+    from transformers import AutoConfig, AutoModelForCausalLM
+    config = AutoConfig.from_dict(config_dict)
+    print(f"Created config with model_type: {config.model_type}")
 
-    # Try registering mistral3
-    try:
-        AutoConfig.register("mistral3", Mistral3Config)
-        print("Registered mistral3.")
-    except Exception as e:
-        print(f"Skipping mistral3 registration: {e}")
-
-    # Try registering ministral3
-    try:
-        AutoConfig.register("ministral3", Ministral3Config)
-        print("Registered ministral3.")
-    except Exception as e:
-        print(f"Skipping ministral3 registration: {e}")
-
-except Exception as e:
-    print(f"Failed to define config classes: {e}")
-
-try:
-    print("Trying AutoModelForCausalLM with trust_remote_code=True...")
+    # Load model with this config
+    # We disable trust_remote_code to force using standard transformers paths
     model = AutoModelForCausalLM.from_pretrained(
-        model_path, 
-        trust_remote_code=True, 
-        device_map="auto", 
+        model_path,
+        config=config,
+        trust_remote_code=False,
+        device_map="auto",
         low_cpu_mem_usage=True,
         dtype=torch.bfloat16
     )
-    print("SUCCESS: Model loaded.")
+    print("SUCCESS: Model loaded with overridden config.")
 except Exception as e:
-    print(f"FAILED Model load: {e}")
+    print(f"FAILED Model load with override: {e}")
