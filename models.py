@@ -7,6 +7,8 @@ from typing import Optional, List, Dict
 try:
     import torch
     from transformers import AutoTokenizer, AutoModelForCausalLM
+    import transformers
+    print(f"DEBUG: Transformers version: {transformers.__version__}")
 except Exception:
     torch = None
     AutoTokenizer = None

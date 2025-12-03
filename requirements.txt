@@ -8,3 +8,5 @@ transformers>=4.46.0
 accelerate
 huggingface_hub
 torch
+sentencepiece
+protobuf
