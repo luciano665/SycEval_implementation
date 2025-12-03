@@ -53,3 +53,12 @@ except ImportError:
     print("MistralTokenizerFast not available in this transformers version.")
 except Exception as e:
     print(f"FAILED MistralTokenizerFast: {e}")
+
+try:
+    from transformers import PreTrainedTokenizerFast
+    print("Trying PreTrainedTokenizerFast direct load...")
+    tok = PreTrainedTokenizerFast(tokenizer_file=os.path.join(model_path, "tokenizer.json"))
+    print("SUCCESS: PreTrainedTokenizerFast")
+    print(f"Vocab size: {len(tok)}")
+except Exception as e:
+    print(f"FAILED PreTrainedTokenizerFast: {e}")
