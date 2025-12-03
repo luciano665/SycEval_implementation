@@ -117,49 +117,82 @@ class ModelProvider:
                 low_cpu_mem_usage=True,
                 trust_remote_code=True
             )
-        except (KeyError, ValueError, TypeError) as e:
-            # Fallback for Ministral/Pixtral models with custom config structure
-            print(f"Standard load failed ({e}), attempting config override...")
-            import json
-            from transformers import MistralConfig
-            
-            config_path = os.path.join(model_name, "config.json")
-            if os.path.exists(config_path):
-                with open(config_path, 'r') as f:
-                    root_config = json.load(f)
-                
-                # Extract text_config if present (for multimodal models)
-                if 'text_config' in root_config:
-                    config_dict = root_config['text_config']
-                else:
-                    config_dict = root_config
-                
-                # Force standard Mistral configuration
-                config_dict['model_type'] = 'mistral'
-                config_dict['architectures'] = ["MistralForCausalLM"]
-                
-                # Clean up unsupported fields
-                if 'quantization_config' in config_dict:
-                    del config_dict['quantization_config']
-                if 'vision_config' in config_dict:
-                    del config_dict['vision_config']
+        except Exception as e:
+            # Fix for Nemotron missing triton_attention.py
+            if "triton_attention.py" in str(e) and "No such file or directory" in str(e):
+                print(f"DEBUG: Detected missing triton_attention.py in cache. Attempting fix...")
+                import re
+                import shutil
+                # Extract path from error message
+                match = re.search(r"'(.*triton_attention.py)'", str(e))
+                if match:
+                    missing_path = match.group(1)
+                    cache_dir = os.path.dirname(missing_path)
+                    # Assume model_name is the local path
+                    src_path = os.path.join(model_name, "triton_attention.py")
                     
-                # Fix rope_parameters structure
-                if 'rope_parameters' in config_dict:
-                    if 'rope_theta' in config_dict['rope_parameters']:
-                        config_dict['rope_theta'] = config_dict['rope_parameters']['rope_theta']
-                    del config_dict['rope_parameters']
+                    if os.path.exists(src_path) and os.path.exists(cache_dir):
+                        print(f"DEBUG: Copying {src_path} to {missing_path}")
+                        shutil.copy2(src_path, missing_path)
+                        # Retry load
+                        model = AutoModelForCausalLM.from_pretrained(
+                            model_name,
+                            dtype=dtype,
+                            device_map=None,
+                            low_cpu_mem_usage=True,
+                            trust_remote_code=True
+                        )
+                    else:
+                        print(f"DEBUG: Cannot fix. Source {src_path} or cache {cache_dir} missing.")
+                        raise e
+                else:
+                    raise e
+
+            # Fallback for Ministral/Pixtral models with custom config structure
+            elif isinstance(e, (KeyError, ValueError, TypeError)):
+                print(f"Standard load failed ({e}), attempting config override...")
+                import json
+                from transformers import MistralConfig
                 
-                # Load with modified config
-                config = MistralConfig.from_dict(config_dict)
-                model = AutoModelForCausalLM.from_pretrained(
-                    model_name,
-                    config=config,
-                    trust_remote_code=False, # Use standard transformers code
-                    device_map=None,
-                    low_cpu_mem_usage=True,
-                    dtype=dtype
-                )
+                config_path = os.path.join(model_name, "config.json")
+                if os.path.exists(config_path):
+                    with open(config_path, 'r') as f:
+                        root_config = json.load(f)
+                    
+                    # Extract text_config if present (for multimodal models)
+                    if 'text_config' in root_config:
+                        config_dict = root_config['text_config']
+                    else:
+                        config_dict = root_config
+                    
+                    # Force standard Mistral configuration
+                    config_dict['model_type'] = 'mistral'
+                    config_dict['architectures'] = ["MistralForCausalLM"]
+                    
+                    # Clean up unsupported fields
+                    if 'quantization_config' in config_dict:
+                        del config_dict['quantization_config']
+                    if 'vision_config' in config_dict:
+                        del config_dict['vision_config']
+                        
+                    # Fix rope_parameters structure
+                    if 'rope_parameters' in config_dict:
+                        if 'rope_theta' in config_dict['rope_parameters']:
+                            config_dict['rope_theta'] = config_dict['rope_parameters']['rope_theta']
+                        del config_dict['rope_parameters']
+                    
+                    # Load with modified config
+                    config = MistralConfig.from_dict(config_dict)
+                    model = AutoModelForCausalLM.from_pretrained(
+                        model_name,
+                        config=config,
+                        trust_remote_code=False, # Use standard transformers code
+                        device_map=None,
+                        low_cpu_mem_usage=True,
+                        dtype=dtype
+                    )
+                else:
+                    raise e
             else:
                 raise e
 
