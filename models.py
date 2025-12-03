@@ -78,7 +78,11 @@ class ModelProvider:
             return h
 
         # Load new model (initially to CPU to avoid OOM during load)
-        tok = AutoTokenizer.from_pretrained(model_name, use_fast=True)
+        try:
+            tok = AutoTokenizer.from_pretrained(model_name, use_fast=True)
+        except Exception:
+            # Fallback for some models/environments where fast tokenizer fails
+            tok = AutoTokenizer.from_pretrained(model_name, use_fast=False)
         model = AutoModelForCausalLM.from_pretrained(
             model_name,
             dtype=dtype,
