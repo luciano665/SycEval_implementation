@@ -7,8 +7,15 @@ from typing import Optional, List, Dict
 try:
     import torch
     from transformers import AutoTokenizer, AutoModelForCausalLM, PreTrainedTokenizerFast
+    from transformers.models.auto.configuration_auto import CONFIG_MAPPING
+    from transformers import MistralConfig
     import transformers
     print(f"DEBUG: Transformers version: {transformers.__version__}")
+    
+    # Patch for Ministral 3
+    if "ministral3" not in CONFIG_MAPPING:
+        print("DEBUG: Patching CONFIG_MAPPING for ministral3")
+        CONFIG_MAPPING["ministral3"] = MistralConfig
 except Exception:
     torch = None
     AutoTokenizer = None
