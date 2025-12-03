@@ -69,10 +69,13 @@ try:
     # Also fix text_config if present
     if 'text_config' in config_dict:
         config_dict['text_config']['model_type'] = 'mistral'
+    
+    # Force architecture to standard Mistral
+    config_dict['architectures'] = ["MistralForCausalLM"]
         
     # Create config object
-    from transformers import AutoConfig, AutoModelForCausalLM
-    config = AutoConfig.from_dict(config_dict)
+    from transformers import AutoModelForCausalLM, MistralConfig
+    config = MistralConfig.from_dict(config_dict)
     print(f"Created config with model_type: {config.model_type}")
 
     # Load model with this config
