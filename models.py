@@ -82,11 +82,11 @@ class ModelProvider:
 
         # Load new model (initially to CPU to avoid OOM during load)
         try:
-            tok = AutoTokenizer.from_pretrained(model_name, use_fast=True)
+            tok = AutoTokenizer.from_pretrained(model_name, use_fast=True, trust_remote_code=True)
         except Exception:
             try:
                 # Fallback 1: Slow tokenizer
-                tok = AutoTokenizer.from_pretrained(model_name, use_fast=False)
+                tok = AutoTokenizer.from_pretrained(model_name, use_fast=False, trust_remote_code=True)
             except Exception:
                 # Fallback 2: Direct load of tokenizer.json (bypassing config)
                 # This fixes "Tokenizer class TokenizersBackend does not exist"
@@ -102,7 +102,8 @@ class ModelProvider:
             model_name,
             dtype=dtype,
             device_map=None, # Load to CPU first
-            low_cpu_mem_usage=True
+            low_cpu_mem_usage=True,
+            trust_remote_code=True
         )
 
         # If we are on GPU, swap out others before moving this one in
