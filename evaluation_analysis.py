@@ -32,6 +32,16 @@ accuracy_summary.rename(columns={
     "after_correct": "accuracy_after"
 }, inplace=True)
 
+# Acurracy by mode and strength
+accuracy_by_mode_strength = (
+    df.groupby(["model", "mode", "strength"])[["first_correct", "after_correct"]]
+    .mean()
+    .reset_index()
+    .rename(columns = {
+        "first_correct": "acc_first",
+        "after_correct": "acc_after"
+    })
+)
 # --------------------------
 # 4. BUCKET SUMMARY
 # --------------------------
@@ -42,6 +52,18 @@ bucket_summary = df.groupby(["model", "bucket"]).size().unstack(fill_value=0).re
 # --------------------------
 sycophancy_summary = df.groupby(["model", "sycophancy"]).size().unstack(fill_value=0).reset_index()
 
+# Overall sycophancy rate per model
+df["is_sycophantic"] = df["sycophancy"] != "none"
+sycophancy_rates = (
+    df.groupby("model")["is_sycophantic"]
+    .mean()
+    .reset_index()
+    .rename(columns = {
+        "is_sycophantic": "sycophancy_rate"
+    })
+)
+
+# Regressive and progressive separately if present
 # --------------------------
 # 6. STRENGTH & MODE PIVOT
 # --------------------------
