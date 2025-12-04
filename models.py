@@ -6,11 +6,23 @@ from typing import Optional, List, Dict
 # Optional HF imports are lazy — so you can still run Ollama-only environments.
 try:
     import torch
-    from transformers import AutoTokenizer, AutoModelForCausalLM
+    from transformers import AutoTokenizer, AutoModelForCausalLM, PreTrainedTokenizerFast, AutoConfig, MistralConfig
+    import transformers
+    print(f"DEBUG: Transformers version: {transformers.__version__}")
+    
+    # Patch for Ministral 3 using official register API
+    try:
+        AutoConfig.register("ministral3", MistralConfig)
+        print("DEBUG: Registered ministral3 config via AutoConfig.register")
+    except Exception as e:
+        print(f"DEBUG: Failed to register ministral3: {e}")
 except Exception:
     torch = None
     AutoTokenizer = None
     AutoModelForCausalLM = None
+    PreTrainedTokenizerFast = None
+    AutoConfig = None
+    MistralConfig = None
 
 # Optional Ollama import (lazy as well)
 try:
@@ -48,32 +60,154 @@ class ModelProvider:
         if AutoTokenizer is None or AutoModelForCausalLM is None:
             raise RuntimeError("Transformers not installed. pip install 'transformers[torch]' accelerate")
 
-        if model_name in self._hf_cache:
-            return self._hf_cache[model_name]
-
         # Device selection
         if torch and torch.cuda.is_available():
             device = "cuda"
             dtype = torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float16
-            map_arg = "auto"
         elif torch and hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
             device = "mps"
-            dtype = torch.float16  # bfloat16 not supported on MPS
-            map_arg = None  # MPS needs explicit .to("mps")
+            dtype = torch.float16
         else:
             device = "cpu"
             dtype = torch.float32
-            map_arg = None
 
-        tok = AutoTokenizer.from_pretrained(model_name, use_fast=True)
-        model = AutoModelForCausalLM.from_pretrained(
-            model_name,
-            dtype=dtype,
-            device_map=map_arg,   # "auto" on CUDA, else None
-        )
+        # Check if model is already cached
+        if model_name in self._hf_cache:
+            h = self._hf_cache[model_name]
+            # If we are on a GPU platform, ensure this model is the one on GPU
+            if device in ["cuda", "mps"]:
+                # If this model is not currently active on GPU, swap it in
+                if h.model.device.type == "cpu":
+                    # Move currently active model to CPU to free memory
+                    for other_name, other_h in self._hf_cache.items():
+                        if other_name != model_name and other_h.model.device.type != "cpu":
+                            other_h.model.to("cpu")
+                            if torch.cuda.is_available():
+                                torch.cuda.empty_cache()
+                    
+                    # Move requested model to GPU
+                    h.model.to(device)
+            return h
 
-        if device in {"cpu", "mps"}:
-            model = model.to(device)
+        # Load new model (initially to CPU to avoid OOM during load)
+        try:
+            tok = AutoTokenizer.from_pretrained(model_name, use_fast=True, trust_remote_code=True)
+        except Exception:
+            try:
+                # Fallback 1: Slow tokenizer
+                tok = AutoTokenizer.from_pretrained(model_name, use_fast=False, trust_remote_code=True)
+            except Exception:
+                # Fallback 2: Direct load of tokenizer.json (bypassing config)
+                # This fixes "Tokenizer class TokenizersBackend does not exist"
+                tokenizer_json = os.path.join(model_name, "tokenizer.json")
+                if os.path.exists(tokenizer_json):
+                    tok = PreTrainedTokenizerFast(tokenizer_file=tokenizer_json)
+                    # Manually set pad token if it exists in the model but wasn't loaded
+                    if tok.pad_token is None:
+                        tok.pad_token = "<pad>"
+                else:
+                    raise
+
+        try:
+            # Try standard load first
+            model = AutoModelForCausalLM.from_pretrained(
+                model_name,
+                dtype=dtype,
+                device_map=None, # Load to CPU first
+                low_cpu_mem_usage=True,
+                trust_remote_code=True
+            )
+        except Exception as e:
+            # Fix for Nemotron missing triton_attention.py
+            if "triton_attention.py" in str(e) and "No such file or directory" in str(e):
+                print(f"DEBUG: Detected missing triton_attention.py in cache. Attempting fix...")
+                import re
+                import shutil
+                # Extract path from error message
+                match = re.search(r"'(.*triton_attention.py)'", str(e))
+                if match:
+                    missing_path = match.group(1)
+                    cache_dir = os.path.dirname(missing_path)
+                    # Assume model_name is the local path
+                    src_path = os.path.join(model_name, "triton_attention.py")
+                    
+                    if os.path.exists(src_path) and os.path.exists(cache_dir):
+                        print(f"DEBUG: Copying {src_path} to {missing_path}")
+                        shutil.copy2(src_path, missing_path)
+                        # Retry load
+                        model = AutoModelForCausalLM.from_pretrained(
+                            model_name,
+                            dtype=dtype,
+                            device_map=None,
+                            low_cpu_mem_usage=True,
+                            trust_remote_code=True
+                        )
+                    else:
+                        print(f"DEBUG: Cannot fix. Source {src_path} or cache {cache_dir} missing.")
+                        raise e
+                else:
+                    raise e
+
+            # Fallback for Ministral/Pixtral models with custom config structure
+            elif isinstance(e, (KeyError, ValueError, TypeError)):
+                print(f"Standard load failed ({e}), attempting config override...")
+                import json
+                from transformers import MistralConfig
+                
+                config_path = os.path.join(model_name, "config.json")
+                if os.path.exists(config_path):
+                    with open(config_path, 'r') as f:
+                        root_config = json.load(f)
+                    
+                    # Extract text_config if present (for multimodal models)
+                    if 'text_config' in root_config:
+                        config_dict = root_config['text_config']
+                    else:
+                        config_dict = root_config
+                    
+                    # Force standard Mistral configuration
+                    config_dict['model_type'] = 'mistral'
+                    config_dict['architectures'] = ["MistralForCausalLM"]
+                    
+                    # Clean up unsupported fields
+                    if 'quantization_config' in config_dict:
+                        del config_dict['quantization_config']
+                    if 'vision_config' in config_dict:
+                        del config_dict['vision_config']
+                        
+                    # Fix rope_parameters structure
+                    if 'rope_parameters' in config_dict:
+                        if 'rope_theta' in config_dict['rope_parameters']:
+                            config_dict['rope_theta'] = config_dict['rope_parameters']['rope_theta']
+                        del config_dict['rope_parameters']
+                    
+                    # Load with modified config
+                    config = MistralConfig.from_dict(config_dict)
+                    model = AutoModelForCausalLM.from_pretrained(
+                        model_name,
+                        config=config,
+                        trust_remote_code=False, # Use standard transformers code
+                        device_map=None,
+                        low_cpu_mem_usage=True,
+                        dtype=dtype
+                    )
+                else:
+                    raise e
+            else:
+                raise e
+
+        # If we are on GPU, swap out others before moving this one in
+        if device in ["cuda", "mps"]:
+             for other_name, other_h in self._hf_cache.items():
+                if other_h.model.device.type != "cpu":
+                    print(f"DEBUG: Moving {other_name} to CPU to free memory for {model_name}")
+                    other_h.model.to("cpu")
+                    if torch.cuda.is_available():
+                        torch.cuda.empty_cache()
+             
+             if model.device.type == "cpu":
+                 print(f"DEBUG: Moving {model_name} to {device}")
+                 model = model.to(device)
 
         h = HFHandle(name=model_name, tok=tok, model=model, device=device, dtype=str(dtype))
         self._hf_cache[model_name] = h
@@ -113,6 +247,10 @@ class ModelProvider:
         inputs = h.tok(text, return_tensors="pt")
         if h.device != "cpu":
             inputs = {k: v.to(h.device) for k, v in inputs.items()}
+        
+        # Remove token_type_ids if present (some models like Nemotron don't support it)
+        if "token_type_ids" in inputs:
+            del inputs["token_type_ids"]
 
         gen_kwargs = {
             **inputs,
@@ -127,11 +265,12 @@ class ModelProvider:
             gen_kwargs["do_sample"] = False
         
         gen = h.model.generate(**gen_kwargs)
-        out = h.tok.decode(gen[0], skip_special_tokens=True)
-        # Return only the newly generated tail if chat template was used; otherwise return full.
-        if hasattr(h.tok, "apply_chat_template") and h.tok.chat_template:
-            # crude split on last user turn — keeps this simple for now
-            return out.split(text)[-1].strip() or out.strip()
+        
+        # Decode only the new tokens
+        input_len = inputs["input_ids"].shape[1]
+        new_tokens = gen[0][input_len:]
+        out = h.tok.decode(new_tokens, skip_special_tokens=True)
+        
         return out.strip()
 
 

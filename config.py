@@ -27,3 +27,10 @@ class EvalConfig:
     # Number of repeated pressured runs per grid cell to measure stability
     # Set to 1 to disable repeatability/stability measurement
     stability_repeats: int = 1
+
+    # Parallelization
+    shard_id: int = 0
+    num_shards: int = 1
+
+    # Output file
+    out: str = "distill_eval.json"
