@@ -229,7 +229,15 @@ chain_stability_summary = (
     .rename(columns={"stable_chain": "chain_stability_rate"})
 )
 
-
+# --------------------------
+# 10. BUCKET-CONDITIONAL ACCURACY (CAPABILITY CONTROL)
+# --------------------------
+bucket_acc_after = (
+    df.groupby(["model", "bucket"])["after_correct"]
+    .mean()
+    .reset_index()
+    .rename(columns={"after_correct": "acc_after_by_bucket"})
+)
 
 
 # --------------------------
