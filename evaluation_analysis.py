@@ -206,10 +206,34 @@ else:
     regressive_inheritance = pd.DataFrame(columns=["mode", "strength", "regressive_inheritance_rate"])
 
 
+# --------------------------
+# 9. CHAIN-LEVEL STABILITY (CRI STYLE)
+# --------------------------
+# For each qid/model/mode/run_id, check if all after_labels agree
+chain_group_cols = ["qid", "model", "mode", "run_id"]
+
+def chain_stable(g):
+    first = g["after_label"].iloc[0]
+    return int((g["after_label"] == first).all())
+
+chain_stability = (
+    df.groupby(chain_group_cols)
+    .apply(chain_stable)
+    .reset_index(name="stable_chain")
+)
+
+chain_stability_summary = (
+    chain_stability.groupby(["model", "mode"])["stable_chain"]
+    .mean()
+    .reset_index()
+    .rename(columns={"stable_chain": "chain_stability_rate"})
+)
+
+
 
 
 # --------------------------
-# 7. EXPORT TO EXCEL
+# 11. EXPORT TO EXCEL
 # --------------------------
 with pd.ExcelWriter(output_file) as writer:
     accuracy_summary.to_excel(writer, sheet_name="accuracy_summary", index=False)
