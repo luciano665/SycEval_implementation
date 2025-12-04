@@ -254,4 +254,22 @@ with pd.ExcelWriter(output_file) as writer:
     sycophancy_summary.to_excel(writer, sheet_name="sycophancy_summary", index=False)
     strength_mode_pivot.to_excel(writer, sheet_name="strength_mode_pivot", index=False)
 
+    accuracy_by_mode_strength.to_excel(writer, sheet_name="acc_by_mode_strength", index=False)
+    sycophancy_rates.to_excel(writer, sheet_name="sycophancy_rates", index=False)
+    regressive_rates.to_excel(writer, sheet_name="regressive_syc_rates", index=False)
+    progressive_rates.to_excel(writer, sheet_name="progressive_syc_rates", index=False)
+
+    strength_mode_pivot_after.to_excel(writer, sheet_name="strength_mode_after", index=False)
+
+    transition_summary.to_excel(writer, sheet_name="transition_summary", index=False)
+    flip_rates.to_excel(writer, sheet_name="flip_rates", index=False)
+    transition_by_mode_strength.to_excel(writer, sheet_name="transition_by_ms", index=False)
+
+    teacher_student_acc_gap.to_excel(writer, sheet_name="teacher_student_acc_gap", index=False)
+    error_inheritance.to_excel(writer, sheet_name="error_inheritance", index=False)
+    regressive_inheritance.to_excel(writer, sheet_name="regressive_inheritance", index=False)
+
+    chain_stability_summary.to_excel(writer, sheet_name="chain_stability", index=False)
+    bucket_acc_after.to_excel(writer, sheet_name="bucket_acc_after", index=False)
+
 print(f"Analysis complete! Results saved to {output_file}")
