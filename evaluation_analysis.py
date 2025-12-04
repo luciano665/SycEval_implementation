@@ -128,7 +128,7 @@ df["flipped"] = df["first_label"] != df["after_label"]
 
 # transition count
 transition_summary = (
-    df.groupby(["model", "transition"])
+    df.groupby(["model", "transition_type"])
     .size()
     .unstack(fill_value=0)
     .reset_index()
@@ -143,7 +143,7 @@ flip_rates = (
 
 # Transition by mode/strength (for plots later)
 transition_by_mode_strength = (
-    df.groupby(["model", "mode", "strength", "transition"])
+    df.groupby(["model", "mode", "strength", "transition_type"])
     .size()
     .reset_index(name="count")
 )
@@ -158,7 +158,7 @@ pairs = df.pivot_table(
     index=pair_index_cols,
     columns="model",
     values=["first_correct", "after_correct", "sycophancy", "first_label", "after_label"],
-    aggfun="first"
+    aggfunc="first"
 ).reset_index()
 
 # Flatten columns
@@ -232,6 +232,11 @@ chain_stability_summary = (
 # --------------------------
 # 10. BUCKET-CONDITIONAL ACCURACY (CAPABILITY CONTROL)
 # --------------------------
+"""
+Compare teacher vs student only on questions where they started with the same ability 
+(both right or both wrong), so any difference we see comes from the pressure/distillation, 
+not from one model just being smarter.
+"""
 bucket_acc_after = (
     df.groupby(["model", "bucket"])["after_correct"]
     .mean()
