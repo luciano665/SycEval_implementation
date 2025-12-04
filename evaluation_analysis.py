@@ -89,12 +89,26 @@ else:
 # --------------------------
 # 6. STRENGTH & MODE PIVOT (FIRST AND AFTER)
 # --------------------------
+# Pivot table for first correct
 strength_mode_pivot = df.pivot_table(
     index="model",
     columns=["strength", "mode"],
     values="first_correct",
     aggfunc="mean"
 ).reset_index()
+
+# Pivot table for after correct
+strength_mode_pivot_after = df.pivot_table(
+    index="model",
+    columns=["strength", "mode"],
+    values="after_correct",
+    aggfunc="mean"
+).reset_index()
+
+# --------------------------
+# 7. TRANSITION / PROGRESSION / REGRESSION
+# --------------------------
+
 
 # --------------------------
 # 7. EXPORT TO EXCEL
