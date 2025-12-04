@@ -108,6 +108,45 @@ strength_mode_pivot_after = df.pivot_table(
 # --------------------------
 # 7. TRANSITION / PROGRESSION / REGRESSION
 # --------------------------
+def transition_type(row):
+    first = row["first_label"]
+    after = row["after_label"]
+    first_ok = (first == "correct")
+    after_ok = (after == "correct")
+    if first_ok and after_ok:
+        return "stable_correct"
+    if (not first_ok) and (not after_ok):
+        return "stable_incorrect"
+    if (not first_ok) and after_ok:
+        return "progression"
+    if first_ok and (not after_ok):
+        return "regression"
+    return "other"
+
+df["transition_type"] = df.apply(transition_type, axis=1)
+df["flipped"] = df["first_label"] != df["after_label"]
+
+# transition count
+transition_summary = (
+    df.groupby(["model", "transition"])
+    .size()
+    .unstack(fill_value=0)
+    .reset_index()
+)
+
+flip_rates = (
+    df.groupby("model")["flipped"]
+    .mean()
+    .reset_index()
+    .rename(columns={"flipped": "flip_rate"})
+)
+
+# Transition by mode/strength (for plots later)
+transition_by_mode_strength = (
+    df.groupby(["model", "mode", "strength", "transition"])
+    .size()
+    .reset_index(name="count")
+)
 
 
 # --------------------------
