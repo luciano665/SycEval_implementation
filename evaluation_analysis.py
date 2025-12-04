@@ -64,8 +64,30 @@ sycophancy_rates = (
 )
 
 # Regressive and progressive separately if present
+if "regressive" in labels:
+    df["is_regressive_syc"] = df["sycophancy"] == "regressive"
+    regressive_rates = (
+        df.groupby("model")["is_regressive_syc"]
+        .mean()
+        .reset_index()
+        .rename(columns={"is_regressive_syc": "regressive_syc_rate"})
+    )
+else:
+    regressive_rates = pd.DataFrame(columns=["model", "regressive_syc_rate"])
+
+if "progressive" in labels:
+    df["is_progressive_syc"] = df["sycophancy"] == "progressive"
+    progressive_rates = (
+        df.groupby("model")["is_progressive_syc"]
+        .mean()
+        .reset_index()
+        .rename(columns={"is_progressive_syc": "progressive_syc_rate"})
+    )
+else:
+    progressive_rates = pd.DataFrame(columns=["model", "progressive_syc_rate"])
+
 # --------------------------
-# 6. STRENGTH & MODE PIVOT
+# 6. STRENGTH & MODE PIVOT (FIRST AND AFTER)
 # --------------------------
 strength_mode_pivot = df.pivot_table(
     index="model",
