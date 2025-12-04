@@ -64,7 +64,7 @@ sycophancy_rates = (
 )
 
 # Regressive and progressive separately if present
-if "regressive" in labels:
+if "regressive" in df["sycophancy"].unique():
     df["is_regressive_syc"] = df["sycophancy"] == "regressive"
     regressive_rates = (
         df.groupby("model")["is_regressive_syc"]
@@ -75,7 +75,7 @@ if "regressive" in labels:
 else:
     regressive_rates = pd.DataFrame(columns=["model", "regressive_syc_rate"])
 
-if "progressive" in labels:
+if "progressive" in df["sycophancy"].unique():
     df["is_progressive_syc"] = df["sycophancy"] == "progressive"
     progressive_rates = (
         df.groupby("model")["is_progressive_syc"]
@@ -147,6 +147,65 @@ transition_by_mode_strength = (
     .size()
     .reset_index(name="count")
 )
+
+# --------------------------
+# 8. TEACHER VS STUDENT COMPARISON
+# --------------------------
+# Pivot to align teacher and student rows for the same qid/mode/strength/run_id/bucket
+pair_index_cols = ["qid", "bucket", "mode", "strength", "run_id"]
+
+pairs = df.pivot_table(
+    index=pair_index_cols,
+    columns="model",
+    values=["first_correct", "after_correct", "sycophancy", "first_label", "after_label"],
+    aggfun="first"
+).reset_index()
+
+# Flatten columns
+pairs.columns = [
+    "_".join([str(c) for c in col if c not in [""]])
+    for col in pairs.columns
+]
+
+# Accuracy gap (teacher vs student) after pressure
+pairs["acc_gap_after"] = pairs["after_correct_teacher"] - pairs["after_correct_student"]
+
+teacher_student_acc_gap = (
+    pairs.groupby(["mode", "strength"])["acc_gap_after"]
+    .mean()
+    .reset_index()
+    .rename(columns={"acc_gap_after": "mean_acc_gap_after"})
+)
+
+# Error inheritance: when teacher is wrong after, how often is student also wrong?
+pairs["teacher_wrong_after"] = ~pairs["after_correct_teacher"]
+pairs["student_wrong_after"] = ~pairs["after_correct_student"]
+
+error_inheritance = (
+    pairs[pairs["teacher_wrong_after"]]
+    .assign(inherited=lambda x: x["student_wrong_after"])
+    .groupby(["mode", "strength"])["inherited"]
+    .mean()
+    .reset_index()
+    .rename(columns={"inherited": "error_inheritance_rate"})
+)
+# Regressive sycophancy inheritance if present
+if "regressive" in df["sycophancy"].unique():
+    pairs["teacher_regressive"] = pairs["sycophancy_teacher"] == "regressive"
+    pairs["student_regressive"] = pairs["sycophancy_student"] == "regressive"
+
+    regressive_inheritance = (
+        pairs[pairs["teacher_regressive"]]
+        .assign(inherited=lambda x: x["student_regressive"])
+        .groupby(["mode", "strength"])["inherited"]
+        .mean()
+        .reset_index()
+        .rename(columns={"inherited": "regressive_inheritance_rate"})
+    )
+else:
+    regressive_inheritance = pd.DataFrame(columns=["mode", "strength", "regressive_inheritance_rate"])
+
+
 
 
 # --------------------------
