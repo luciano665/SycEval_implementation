@@ -1,0 +1,7 @@
+Family,Role,Comparison,P-Value,Significant
+Gemma,Student,Before vs After,2.0494145912892456e-164,YES
+Gemma,Teacher,Before vs After,0.0,YES
+Llama,Student,Before vs After,5.998620490426715e-110,YES
+Llama,Teacher,Before vs After,1.2147397847893734e-31,YES
+Nvidia,Student,Before vs After,1.3090633741113368e-64,YES
+Nvidia,Teacher,Before vs After,2.1324e-320,YES
