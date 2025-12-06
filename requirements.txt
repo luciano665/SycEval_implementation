@@ -10,3 +10,6 @@ huggingface_hub
 torch
 sentencepiece
 protobuf
+matplotlib
+openpyxl
+seaborn

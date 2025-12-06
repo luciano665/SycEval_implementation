@@ -63,7 +63,7 @@ def autolabel(rects, ax, fontsize=9):
 # --- 2. GRAPH GENERATION FUNCTIONS ---
 
 def generate_graph_1(df):
-    """Graph 1: Teacher Model Accuracy"""
+    """Teacher Model Accuracy"""
     labels = df['model_family']
     acc_first = df['Acc_First_T']
     acc_after = df['Acc_After_T']
@@ -81,7 +81,7 @@ def generate_graph_1(df):
                     color=BLUE, edgecolor=EDGE_COLOR, linewidth=EDGE_WIDTH)
 
     ax.set_ylabel('Accuracy Score (0.0 to 1.0)', fontsize=11, fontweight='bold')
-    ax.set_title('Graph 1: Teacher Model Accuracy - Before vs. After Intervention', 
+    ax.set_title('Teacher Model Accuracy - Before vs. After Intervention', 
                  fontsize=13, fontweight='bold', pad=15)
     ax.set_xticks(x, labels, fontsize=10)
     ax.set_ylim(0, 1.05)
@@ -97,7 +97,7 @@ def generate_graph_1(df):
 
 
 def generate_graph_2(df):
-    """Graph 2: Student Model Accuracy"""
+    """Student Model Accuracy"""
     labels = df['model_family']
     acc_first = df['Acc_First_S']
     acc_after = df['Acc_After_S']
@@ -115,7 +115,7 @@ def generate_graph_2(df):
                     color=BLUE, edgecolor=EDGE_COLOR, linewidth=EDGE_WIDTH)
 
     ax.set_ylabel('Accuracy Score (0.0 to 1.0)', fontsize=11, fontweight='bold')
-    ax.set_title('Graph 2: Student Model Accuracy - Before vs. After Intervention', 
+    ax.set_title('Student Model Accuracy - Before vs. After Intervention', 
                  fontsize=13, fontweight='bold', pad=15)
     ax.set_xticks(x, labels, fontsize=10)
     ax.set_ylim(0, 1.05)
@@ -131,7 +131,7 @@ def generate_graph_2(df):
 
 
 def generate_graph_3(df):
-    """Graph 3: Teacher vs. Student Accuracy Gap"""
+    """Teacher vs. Student Accuracy Gap"""
     df['gap_first'] = df['Acc_First_T'] - df['Acc_First_S']
     df['gap_after'] = df['Acc_After_T'] - df['Acc_After_S']
     
@@ -151,9 +151,9 @@ def generate_graph_3(df):
                     label='Post-Intervention Gap (Teacher - Student)', 
                     color=BLUE, edgecolor=EDGE_COLOR, linewidth=EDGE_WIDTH)
 
-    ax.set_ylabel('Accuracy Difference (Acc_Teacher - Acc_Student)', 
+    ax.set_ylabel('Accuracy Difference', 
                   fontsize=11, fontweight='bold')
-    ax.set_title('Graph 3: Teacher vs. Student Accuracy Gap', 
+    ax.set_title('Teacher vs. Student Accuracy Gap', 
                  fontsize=13, fontweight='bold', pad=15)
     ax.set_xticks(x, labels, fontsize=10)
     ax.axhline(y=0.0, color='black', linestyle='-', linewidth=1.2, alpha=0.7)
@@ -173,7 +173,7 @@ def generate_graph_3(df):
 
 
 def generate_graph_4(df):
-    """Graph 4: Overall Sycophancy Rate"""
+    """Overall Sycophancy Rate"""
     labels = df['model_family']
     rate_student = df['Syc_Student']
     rate_teacher = df['Syc_Teacher']
@@ -191,7 +191,7 @@ def generate_graph_4(df):
                     color=BLUE, edgecolor=EDGE_COLOR, linewidth=EDGE_WIDTH)
 
     ax.set_ylabel('Sycophancy Rate (0.0 to 1.0)', fontsize=11, fontweight='bold')
-    ax.set_title('Graph 4: Overall Sycophancy Rate Comparison', 
+    ax.set_title('Overall Sycophancy Rate Comparison', 
                  fontsize=13, fontweight='bold', pad=15)
     ax.set_xticks(x, labels, fontsize=10)
     ax.set_ylim(0, max(rate_student.max(), rate_teacher.max()) * 1.15)
@@ -207,7 +207,7 @@ def generate_graph_4(df):
 
 
 def generate_graph_5(df):
-    """Graph 5: Teacher Sycophancy Dynamics"""
+    """Teacher Sycophancy Dynamics"""
     labels = df['model_family']
     rate_regressive = df['Syc_Regressive']
     rate_progressive = df['Syc_Progressive']
@@ -225,7 +225,7 @@ def generate_graph_5(df):
                     color=BLUE, edgecolor=EDGE_COLOR, linewidth=EDGE_WIDTH)
 
     ax.set_ylabel('Sycophancy Rate (0.0 to 1.0)', fontsize=11, fontweight='bold')
-    ax.set_title('Graph 5: Teacher Model Sycophancy Dynamics', 
+    ax.set_title('Teacher Model Sycophancy Dynamics', 
                  fontsize=13, fontweight='bold', pad=15)
     ax.set_xticks(x, labels, fontsize=10)
     ax.set_ylim(0, max(rate_regressive.max(), rate_progressive.max()) * 1.15)
@@ -241,7 +241,7 @@ def generate_graph_5(df):
 
 
 def generate_graph_6(df):
-    """Graph 6: Student Sycophancy Dynamics"""
+    """Student Sycophancy Dynamics"""
     labels = df['model_family']
     rate_regressive = df['Syc_Regressive']
     rate_progressive = df['Syc_Progressive']
@@ -259,7 +259,7 @@ def generate_graph_6(df):
                     color=BLUE, edgecolor=EDGE_COLOR, linewidth=EDGE_WIDTH)
 
     ax.set_ylabel('Sycophancy Rate (0.0 to 1.0)', fontsize=11, fontweight='bold')
-    ax.set_title('Graph 6: Student Model Sycophancy Dynamics', 
+    ax.set_title('Student Model Sycophancy Dynamics', 
                  fontsize=13, fontweight='bold', pad=15)
     ax.set_xticks(x, labels, fontsize=10)
     ax.set_ylim(0, max(rate_regressive.max(), rate_progressive.max()) * 1.15)
@@ -275,7 +275,7 @@ def generate_graph_6(df):
 
 
 def generate_table_5(df):
-    """Table 5: Comprehensive Metric Summary"""
+    """Comprehensive Metric Summary"""
     df.to_csv('Table_5_Comprehensive_Summary.csv', index=False, float_format='%.3f')
 
 
