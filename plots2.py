@@ -568,18 +568,122 @@ def plot_mode_regressive(df):
     print("Saved Plot_Mode_Regressive.png")
 
 
+def plot_model_accuracy_before(df):
+    """
+    Model Family on X-axis: Baseline Accuracy (first_correct).
+    Colored by Teacher/Student.
+    Ordered: Teacher First.
+    Labels: 2 decimals.
+    """
+    data = []
+    for (family, role), group in df.groupby(["family", "role"]):
+        if role == "Unknown": continue
+        
+        # Calculate Accuracy (Prop. of Correct Initial Answers)
+        acc = group["first_correct"].mean() # Boolean to float
+        
+        data.append({"Family": family, "Role": role, "Accuracy": acc})
+        
+    plot_df = pd.DataFrame(data)
+    
+    plt.figure(figsize=(10, 6))
+    
+    ax = sns.barplot(
+        data=plot_df,
+        x="Family",
+        y="Accuracy",
+        hue="Role",
+        hue_order=["Teacher", "Student"], # Teacher First
+        palette={ "Teacher": TEACHER_COLOR, "Student": STUDENT_COLOR },
+        edgecolor="black"
+    )
+    
+    plt.title("Model Accuracy by Family (Before Intervention)", fontsize=14, fontweight='bold')
+    plt.ylabel("Baseline Accuracy", fontsize=11)
+    plt.xlabel("Model Family")
+    plt.ylim(0, 1.0)
+    plt.grid(axis='y', linestyle='--', alpha=0.5)
+    plt.legend(title="Model Type")
+    
+    for container in ax.containers:
+        ax.bar_label(container, fmt='%.2f', padding=3)
+        
+    plt.tight_layout()
+    plt.savefig("Plot_Model_Accuracy_Before.png", dpi=300)
+    plt.close()
+    print("Saved Plot_Model_Accuracy_Before.png")
+
+
+def plot_model_accuracy_after(df):
+    """
+    Model Family on X-axis: Post-Intervention Accuracy (after_correct).
+    Colored by Teacher/Student.
+    Ordered: Teacher First.
+    Labels: 2 decimals.
+    """
+    data = []
+    for (family, role), group in df.groupby(["family", "role"]):
+        if role == "Unknown": continue
+        
+        # Calculate Accuracy (Prop. of Correct Final Answers)
+        acc = group["after_correct"].mean() # Boolean to float
+        
+        data.append({"Family": family, "Role": role, "Accuracy": acc})
+        
+    plot_df = pd.DataFrame(data)
+    
+    plt.figure(figsize=(10, 6))
+    
+    ax = sns.barplot(
+        data=plot_df,
+        x="Family",
+        y="Accuracy",
+        hue="Role",
+        hue_order=["Teacher", "Student"], # Teacher First
+        palette={ "Teacher": TEACHER_COLOR, "Student": STUDENT_COLOR },
+        edgecolor="black"
+    )
+    
+    plt.title("Model Accuracy by Family (After Intervention)", fontsize=14, fontweight='bold')
+    plt.ylabel("Post-Intervention Accuracy", fontsize=11)
+    plt.xlabel("Model Family")
+    plt.ylim(0, 1.0)
+    plt.grid(axis='y', linestyle='--', alpha=0.5)
+    plt.legend(title="Model Type")
+    
+    for container in ax.containers:
+        ax.bar_label(container, fmt='%.2f', padding=3)
+        
+    plt.tight_layout()
+    plt.savefig("Plot_Model_Accuracy_After.png", dpi=300)
+    plt.close()
+    print("Saved Plot_Model_Accuracy_After.png")
+
+
 if __name__ == "__main__":
     df = load_data()
     if not df.empty:
-        plot_sycophancy_types(df)
-        plot_accuracy_impact(df)
-        plot_mode_comparison(df)
-        plot_rebuttal_comparison(df)
-        plot_overall_model_comparison(df)
+        # 1. Overall Comparison
+        # plot_overall_comparison(df)
+        
+        # 2. Sycophancy Types (Regressive vs Progressive)
+        # plot_sycophancy_types(df)
+        
+        # 3. Accuracy Impact (Before vs After) - Model Specific
         plot_model_accuracy_impact(df)
+        
+        # 4. Rebuttal Comparison
+        plot_rebuttal_comparison(df)
         plot_rebuttal_progressive(df)
         plot_rebuttal_regressive(df)
+        
+        # 5. Mode Comparison
+        plot_mode_comparison(df)
         plot_mode_progressive(df)
         plot_mode_regressive(df)
+        
+        # 6. Model Accuracy Comparisons (Before & After)
+        plot_model_accuracy_before(df)
+        plot_model_accuracy_after(df)
     else:
         print("No data found.")
