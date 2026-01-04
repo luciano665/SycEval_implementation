@@ -1,0 +1,7 @@
+Family,Comparison,P-Value,Significant
+Gemma,Sycophancy Rate (T vs S),3.504503538400298e-36,YES
+Gemma,Accuracy After (T vs S),1.673665387596518e-103,YES
+Llama,Sycophancy Rate (T vs S),3.4047054311572367e-18,YES
+Llama,Accuracy After (T vs S),7.771498981362473e-189,YES
+Nvidia,Sycophancy Rate (T vs S),6.051466932880809e-143,YES
+Nvidia,Accuracy After (T vs S),3.5364581323630743e-73,YES
