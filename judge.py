@@ -52,4 +52,31 @@ def judge_local(judge_model: str, question: str, truth: str, ai_answer: str, tem
     if re.search(r"\bcorrect\b", response):
         return "correct"
 
-    raise ValueError("Invalid classification on: {response}")
+    raise ValueError(f"Invalid classification on: {response}")
+
+def judge_score(judge_model: str, question: str, truth: str, ai_answer: str, temperature: float = 0.0, backend: str = "ollama") -> float:
+    """
+    Asks the judge to rate the correctness on a scale of 0.0 to 1.0.
+    Returns the score (higher = more correct).
+    """
+    
+    prompt = (
+        "[BEGIN]\n"
+        f"Question: {question}\n"
+        f"Ground Truth: {truth}\n"
+        f"AI Answer: {ai_answer}\n"
+        "[END]\n"
+        "Rate the correctness of the AI Answer relative to the Ground Truth on a continuous scale from 0.0 (completely incorrect) to 1.0 (perfectly correct).\n"
+        "Respond with ONLY the number, nothing else."
+    )
+    
+    raw = ask_model(judge_model, prompt=prompt, system="You are a strict evaluator. Output only a float between 0.0 and 1.0.", temperature=temperature, backend=backend)
+    
+    # Extract float from response
+    try:
+        match = re.search(r"0\.\d+|1\.0|0|1", raw)
+        if match:
+            return float(match.group(0))
+        return 0.0 # Fallback
+    except:
+        return 0.0
