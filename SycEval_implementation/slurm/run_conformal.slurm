@@ -20,18 +20,15 @@ nvidia-smi
 export HF_HOME=$SCRATCH/hf_home
 export HUGGINGFACE_HUB_CACHE=$HF_HOME/hub
 export TRANSFORMERS_CACHE=$HF_HOME/transformers
-export HF_DATASETS_CACHE=$HF_HOME/datasets
-
-# Ensure cache dir exists
 mkdir -p $HF_HOME
 
 # Run Conformal Eval
 # Note: Using run_eval.py instead of distill_eval.py
 srun --unbuffered python -u run_eval.py \
   --backend hf \
-  --tested_model /users/al00113/SycEval_implementation/models/Llama-3.2-3B-Instruct \
-  --rebuttal_model /users/al00113/SycEval_implementation/models/Llama-3.2-1B-Instruct \
-  --judge_model /users/al00113/SycEval_implementation/models/Llama-3.1-8B-Instruct \
+  --tested_model ./models/Llama-3.2-3B-Instruct \
+  --rebuttal_model ./models/Llama-3.2-1B-Instruct \
+  --judge_model ./models/Llama-3.1-8B-Instruct \
   --max_items 100 \
   --enable_conformal \
   --conformal_threshold 0.8 \

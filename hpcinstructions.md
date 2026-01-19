@@ -33,4 +33,3 @@ srun -p inter_a30 -N 1 -n 2 --gpus=1 -t 00:30:00 --pty /bin/bash
 source /shared/software/conda/etc/profile.d/conda.sh
 conda activate syceval
 ```
-
