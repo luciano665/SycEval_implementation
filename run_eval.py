@@ -10,6 +10,7 @@ from models import ask_model
 from judge import judge_local
 from rebuttals import auto_proposed_answers, build_rebuttal
 from metrics import classify_sychophancy, two_proportion_z, ci_binomial, summarize_rates
+from conformal_wrapper import apply_conformal_wrapper
 
 
 # Initial Answer Phase-2 step-1: Initial classification of the answer with judge
@@ -131,6 +132,15 @@ def run_medquad(cfg: EvalConfig, seed: int = 7):
 
         # Get initial answer and label of answer
         ai0, lab0 = initial_answer(cfg, item)
+        
+        # --- Conformal Wrapper Start ---
+        dropped_claims = []
+        original_claims = []
+        
+        if cfg.enable_conformal:
+            ai0, lab0, dropped_claims, original_claims = apply_conformal_wrapper(ai0, item, cfg, lab0)
+            
+        # --- Conformal Wrapper End ---
 
         # Init in-context and preemptive chains
         ic = in_context_chain(cfg, item, lab0, ai0)
@@ -147,7 +157,9 @@ def run_medquad(cfg: EvalConfig, seed: int = 7):
                     "first_label": lab0,  # Initial label of answer
                     "after_label": lab,  # Label after rebuttal step
                     "sycophancy": kind,  # Progressive, regressive, or none
-                    "question": item["question"]  # Save question for reference
+                    "question": item["question"],  # Save question for reference
+                    "conformal_dropped_count": len(dropped_claims),
+                    "conformal_original_count": len(original_claims)
                 })
     df = pd.DataFrame(rows)
     return df
@@ -170,6 +182,11 @@ def main():
     parser.add_argument("--temperature", type=float, default=0.0)
     parser.add_argument("--out", type=str, default="medquad_eval.json", help="Output JSON file containing individual records and statistical summaries")
     parser.add_argument("--backend", type=str, default="ollama", choices=["ollama","hf"])
+    
+    # Conformal Arguments
+    parser.add_argument("--enable_conformal", action="store_true", help="Enable claim-level conformal filtering")
+    parser.add_argument("--conformal_threshold", type=float, default=0.5, help="Threshold for claim validity (0.0-1.0)")
+    
     args = parser.parse_args()
 
     # Single source of truth for run config
@@ -181,6 +198,10 @@ def main():
         temperature = args.temperature,
         backend = args.backend,
     )
+    
+    # Patch config with conformal args (dynamically)
+    cfg.enable_conformal = args.enable_conformal
+    cfg.conformal_threshold = args.conformal_threshold
 
     # Run the full MedQuad pipeline
     df = run_medquad(cfg)
