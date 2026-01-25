@@ -206,6 +206,8 @@ class ModelProvider:
         # HF path
         h = self._ensure_hf(model)
         text = self._apply_chat_template(h.tok, system, prompt)
+        
+        print(f"DEBUG: Tokenizing for {model}...")
         inputs = h.tok(text, return_tensors="pt")
         if h.device != "cpu":
             inputs = {k: v.to(h.device) for k, v in inputs.items()}
@@ -226,7 +228,10 @@ class ModelProvider:
         else:
             gen_kwargs["do_sample"] = False
         
-        gen = h.model.generate(**gen_kwargs)
+        print(f"DEBUG: Generating with {model} on {h.device}...")
+        with torch.no_grad():
+            gen = h.model.generate(**gen_kwargs)
+        print(f"DEBUG: Generation complete.")
         
         # Decode only the new tokens
         input_len = inputs["input_ids"].shape[1]

@@ -40,14 +40,18 @@ def run_calibration(cfg, n_calib=50, target_alpha=0.1):
         
         # We need to import ask_model here locally to avoid circular deps if any
         from models import ask_model
+        print(f"DEBUG: asking tested model for item...")
         ans = ask_model(cfg.tested_model, f"Question:\n{q}\nAnswer:", temperature=cfg.temperature, backend=cfg.backend)
+        print(f"DEBUG: tested model answered. Decomposing...")
         
         # Decompose
         claims = decompose_answer(ans, cfg.rebuttal_model, backend=cfg.backend)
+        print(f"DEBUG: Decomposed into {len(claims)} claims. Scoring...")
         
         for c in claims:
             # 3. Score (Validity 0-1)
             validity_score = score_claim_sycophancy(c, q, cfg.judge_model, backend=cfg.backend)
+            print(f"DEBUG: Scored claim: {validity_score}")
             
             # 4. Label (Ground Truth Check)
             # judge_local returns "correct", "incorrect", "erroneous"
