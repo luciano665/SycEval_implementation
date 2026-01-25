@@ -14,6 +14,7 @@ def decompose_answer(answer: str, model: str, temperature: float = 0.0, backend:
         "Atomic Claims:"
     )
     
+    response = ask_model(model, prompt, temperature=temperature, backend=backend)
     print(f"DEBUG_DECOMP_RAW_LEN: {len(response)}")
     print(f"DEBUG_DECOMP_SNIPPET: {response[:200].replace(chr(10), ' ')}...") 
     
