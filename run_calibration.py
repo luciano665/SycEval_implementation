@@ -82,23 +82,20 @@ def run_calibration(cfg, n_calib=50, target_alpha=0.1):
         # Process all claims for this item
         # Since Judge is loaded now, this is fast.
         for c in claims:
-            try:
-                # 3. Score (Validity)
-                validity_score = score_claim_sycophancy(c, q, cfg.judge_model, backend=cfg.backend)
-                
-                # 4. Label (Ground Truth)
-                label = judge_local(cfg.judge_model, q, truth, c, backend=cfg.backend)
-                
-                risk_score = 1.0 - validity_score
-                bad_event = 1 if label != "correct" else 0
-                
-                scores.append(risk_score)
-                is_bad.append(bad_event)
-                
-                # Debug print for visibility
-                # print(f"DEBUG: Claim: {c[:20]}... Score: {validity_score} Label: {label}")
-            except Exception as e:
-                print(f"Scoring Error: {e}")
+            # 3. Score (Validity)
+            validity_score = score_claim_sycophancy(c, q, cfg.judge_model, backend=cfg.backend)
+            
+            # 4. Label (Ground Truth)
+            label = judge_local(cfg.judge_model, q, truth, c, backend=cfg.backend)
+            
+            risk_score = 1.0 - validity_score
+            bad_event = 1 if label != "correct" else 0
+            
+            scores.append(risk_score)
+            is_bad.append(bad_event)
+            
+            # Debug print for visibility
+            # print(f"DEBUG: Claim: {c[:20]}... Score: {validity_score} Label: {label}")
 
     print(f"Collected {len(scores)} claims.")
     
