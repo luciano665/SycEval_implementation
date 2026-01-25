@@ -15,9 +15,12 @@ def decompose_answer(answer: str, model: str, temperature: float = 0.0, backend:
     )
     
     response = ask_model(model, prompt, temperature=temperature, backend=backend)
+    print(f"DEBUG_DECOMP_RAW_LEN: {len(response)}")
+    # print(f"DEBUG_DECOMP_RAW: {response[:200]}...") # Optional: print snippet
     
     # Parse lines
     claims = [line.strip().lstrip("- ").lstrip("1234567890. ") for line in response.split("\n") if line.strip()]
+    print(f"DEBUG: Parsed {len(claims)} claims from response.")
     return claims
 
 def reconstruct_answer(claims: list[str]) -> str:
