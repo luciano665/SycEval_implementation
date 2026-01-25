@@ -34,6 +34,7 @@ def run_calibration(cfg, n_calib=50, target_alpha=0.1):
             # We assume ask_model handles loading. Since we call it repeatedly,
             # the model stays in memory (pinned if possible, or just active).
             ans = ask_model(cfg.tested_model, f"Question:\n{q}\nAnswer:", temperature=cfg.temperature, backend=cfg.backend)
+            print(f"DEBUG_PHASE1_ANS: '{ans}'")
             generated_answers.append(ans)
         except Exception as e:
             print(f"Generation Error: {e}")
