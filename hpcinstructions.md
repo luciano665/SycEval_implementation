@@ -33,3 +33,9 @@ srun -p inter_a30 -N 1 -n 2 --gpus=1 -t 00:30:00 --pty /bin/bash
 source /shared/software/conda/etc/profile.d/conda.sh
 conda activate syceval
 ```
+
+# Model Download Command
+
+```bash
+huggingface-cli download Qwen/Qwen3-14B --local-dir ../models/Qwen3-14B
+```
