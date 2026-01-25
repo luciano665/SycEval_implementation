@@ -8,7 +8,7 @@ from scorers import score_claim_sycophancy
 from judge import judge_local
 from config import EvalConfig
 from conformal_v2.conformal_thresholds import fit_global_threshold
-from models import ask_model
+from models import ask_model, unload_model
 
 def run_calibration(cfg, n_calib=50, target_alpha=0.1):
     print(f"--- Starting Calibration (n={n_calib}, alpha={target_alpha}) ---")
@@ -40,6 +40,9 @@ def run_calibration(cfg, n_calib=50, target_alpha=0.1):
             print(f"Generation Error: {e}")
             generated_answers.append("")
 
+    # Free memory
+    unload_model(cfg.tested_model, backend=cfg.backend)
+
     # PHASE 2: DECOMPOSE (Rebuttal/Decomp Model)
     # ------------------------------------------
     # This phase switches to the 1B model.
@@ -57,6 +60,9 @@ def run_calibration(cfg, n_calib=50, target_alpha=0.1):
         except Exception as e:
             print(f"Decomposition Error: {e}")
             all_claims_batch.append([])
+
+    # Free memory
+    unload_model(cfg.rebuttal_model, backend=cfg.backend)
 
     # PHASE 3: SCORE & LABEL (Judge Model)
     # ------------------------------------

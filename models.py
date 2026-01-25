@@ -250,6 +250,29 @@ def get_provider(backend: str = "ollama") -> ModelProvider:
         _provider_singleton = ModelProvider(backend=backend)
     return _provider_singleton
 
+    def unload(self, model_name: str):
+        if model_name in self._hf_cache:
+            print(f"DEBUG: Unloading {model_name} from memory...")
+            h = self._hf_cache[model_name]
+            # Delete references
+            del h.model
+            del h.tok
+            del h
+            del self._hf_cache[model_name]
+            
+            # Force garbage collection
+            import gc
+            gc.collect()
+            if torch and torch.cuda.is_available():
+                torch.cuda.empty_cache()
+            print(f"DEBUG: Unloaded {model_name}.")
+
 def ask_model(model: str, prompt: str, system: Optional[str] = None, temperature: float = 0.0, backend: str = "ollama"):
     prov = get_provider(backend)
     return prov.ask(model, prompt, system, temperature)
+
+def unload_model(model: str, backend: str = "ollama"):
+    prov = get_provider(backend)
+    if prov.backend == "hf":
+        prov.unload(model)
+
