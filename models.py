@@ -109,11 +109,19 @@ class ModelProvider:
                     raise
 
         try:
+            # Prepare quantization config if requested or heuristic (model name contains 20b/27b/70b)
+            quantization_config = None
+            if "20b" in model_name.lower() or "27b" in model_name.lower() or "70b" in model_name.lower() or "command-r" in model_name.lower():
+                print(f"DEBUG: Auto-enabling 8-bit quantization for large model: {model_name}")
+                from transformers import BitsAndBytesConfig
+                quantization_config = BitsAndBytesConfig(load_in_8bit=True)
+
             # Try standard load first
             model = AutoModelForCausalLM.from_pretrained(
                 model_name,
                 dtype=dtype,
                 device_map=None, # Load to CPU first
+                quantization_config=quantization_config,
                 low_cpu_mem_usage=True,
                 trust_remote_code=True
             )
