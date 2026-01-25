@@ -10,11 +10,10 @@ datasets = [
 
 # Using the "Student" models from the pairs as the Tested Models
 models = [
-    {"name": "llama3b", "path": "/users/al00113/SycEval_implementation/models/Llama-3.2-3B-Instruct"},
-    {"name": "llama8b", "path": "/users/al00113/SycEval_implementation/models/Llama-3.1-8B-Instruct"},
-    {"name": "gemma4b", "path": "/users/al00113/SycEval_implementation/models/gemma-3-4b-it"},
-    {"name": "ministral3b", "path": "/users/al00113/SycEval_implementation/models/Ministral-3-3B-Instruct-2512"},
-    {"name": "ministral8b", "path": "/users/al00113/SycEval_implementation/models/Ministral-3-8B-Instruct-2512"}
+    {"name": "llama3b", "path": "/users/al00113/models/Llama-3.2-3B-Instruct"},
+    {"name": "llama8b", "path": "/users/al00113/models/Llama-3.1-8B-Instruct"},
+    {"name": "gemma4b", "path": "/users/al00113/models/gemma-3-4b-it"},
+    {"name": "nemotron3b", "path": "/users/al00113/models/Nemotron-Flash-3B"},
 ]
 
 slurm_script = "slurm/run_conformal.slurm"

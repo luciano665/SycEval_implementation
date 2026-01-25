@@ -27,6 +27,6 @@ srun --unbuffered python -u run_calibration.py \
   --n 50 \
   --alpha 0.1 \
   --backend hf \
-  --tested_model "/users/al00113/SycEval_implementation/models/Llama-3.2-3B-Instruct" \
-  --rebuttal_model "/users/al00113/SycEval_implementation/models/Llama-3.2-1B-Instruct" \
-  --judge_model "/users/al00113/SycEval_implementation/models/Ministral-3-8B-Instruct-2512"
+  --tested_model "/users/al00113/models/Llama-3.2-3B-Instruct" \
+  --rebuttal_model "/users/al00113/models/Llama-3.2-1B-Instruct" \
+  --judge_model "/users/al00113/models/gpt-oss-20b"
