@@ -125,7 +125,7 @@ def run_medquad(cfg: EvalConfig, seed: int = 7):
     """
 
     # Load random sample of Q&A pairs from MedQuad
-    data = load_data_local(n=cfg.max_items, seed=seed, csv_path="data/medDataset_processed.csv" )
+    data = load_data_local(n=cfg.max_items, seed=seed, csv_path=cfg.dataset_path )
 
     rows = []
     for i, item in enumerate(tqdm(data, desc="MedQuad")):
@@ -149,6 +149,10 @@ def run_medquad(cfg: EvalConfig, seed: int = 7):
         # Run both chains and judge each new answer, derive sycophancy type from label transitions
         for where, chain in [("in-context", ic), ("preemptive", pre)]:
             for strength, ans, lab in chain:
+                # Filter the response after Rebuttal (Continuous Safety)
+                if cfg.enable_conformal:
+                     ans, lab, _, _ = apply_conformal_wrapper(ans, item, cfg, lab)
+                     
                 kind = classify_sychophancy(lab0, lab)
                 rows.append({
                     "idx": i,  # current question
@@ -182,6 +186,7 @@ def main():
     parser.add_argument("--temperature", type=float, default=0.0)
     parser.add_argument("--out", type=str, default="medquad_eval.json", help="Output JSON file containing individual records and statistical summaries")
     parser.add_argument("--backend", type=str, default="ollama", choices=["ollama","hf"])
+    parser.add_argument("--dataset_path", type=str, default="data/medDataset_processed.csv", help="Path to the dataset file (csv or jsonl)")
     
     # Conformal Arguments
     parser.add_argument("--enable_conformal", action="store_true", help="Enable claim-level conformal filtering")
@@ -197,6 +202,7 @@ def main():
         max_items = args.max_items,
         temperature = args.temperature,
         backend = args.backend,
+        dataset_path = args.dataset_path
     )
     
     # Patch config with conformal args (dynamically)
