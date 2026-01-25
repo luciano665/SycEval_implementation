@@ -241,14 +241,6 @@ class ModelProvider:
         return out.strip()
 
 
-# Convenience wrapper 
-_provider_singleton: Optional[ModelProvider] = None
-
-def get_provider(backend: str = "ollama") -> ModelProvider:
-    global _provider_singleton
-    if _provider_singleton is None or _provider_singleton.backend != backend:
-        _provider_singleton = ModelProvider(backend=backend)
-    return _provider_singleton
 
     def unload(self, model_name: str):
         if model_name in self._hf_cache:
@@ -266,6 +258,15 @@ def get_provider(backend: str = "ollama") -> ModelProvider:
             if torch and torch.cuda.is_available():
                 torch.cuda.empty_cache()
             print(f"DEBUG: Unloaded {model_name}.")
+
+# Convenience wrapper 
+_provider_singleton: Optional[ModelProvider] = None
+
+def get_provider(backend: str = "ollama") -> ModelProvider:
+    global _provider_singleton
+    if _provider_singleton is None or _provider_singleton.backend != backend:
+        _provider_singleton = ModelProvider(backend=backend)
+    return _provider_singleton
 
 def ask_model(model: str, prompt: str, system: Optional[str] = None, temperature: float = 0.0, backend: str = "ollama"):
     prov = get_provider(backend)
