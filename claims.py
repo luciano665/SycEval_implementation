@@ -16,10 +16,17 @@ def decompose_answer(answer: str, model: str, temperature: float = 0.0, backend:
     
     response = ask_model(model, prompt, temperature=temperature, backend=backend)
     print(f"DEBUG_DECOMP_RAW_LEN: {len(response)}")
-    # print(f"DEBUG_DECOMP_RAW: {response[:200]}...") # Optional: print snippet
+    print(f"DEBUG_DECOMP_SNIPPET: {response[:200].replace(chr(10), ' ')}...") 
     
-    # Parse lines
+    # Strategy 1: Split by newlines (bullet points)
     claims = [line.strip().lstrip("- ").lstrip("1234567890. ") for line in response.split("\n") if line.strip()]
+    
+    # Strategy 2: Fallback to sentence splitting if model outputted a paragraph
+    if len(claims) == 0:
+        print("DEBUG: Fallback to sentence splitting...")
+        # Simple heuristic split on ". "
+        claims = [s.strip() for s in response.split(". ") if s.strip()]
+
     print(f"DEBUG: Parsed {len(claims)} claims from response.")
     return claims
 
