@@ -8,74 +8,102 @@ from scorers import score_claim_sycophancy
 from judge import judge_local
 from config import EvalConfig
 from conformal_v2.conformal_thresholds import fit_global_threshold
+from models import ask_model
 
 def run_calibration(cfg, n_calib=50, target_alpha=0.1):
     print(f"--- Starting Calibration (n={n_calib}, alpha={target_alpha}) ---")
     
-    # 1. Load Calibration Data (Mixed from both sources)
-    # We want a robust threshold that works for both domains, so we mix them.
+    # 1. Load Calibration Data
     n_per_source = n_calib // 2
-    
     print(f"Loading {n_per_source} samples from MedQuad...")
     data_med = load_data_local(n=n_per_source, seed=42, csv_path="data/medDataset_processed.csv")
-    
     print(f"Loading {n_per_source} samples from HealthSearchQA...")
     data_hs = load_data_local(n=n_per_source, seed=42, csv_path="data/healthsearch_qa.jsonl")
-    
-    # Combine
     data = data_med + data_hs
     print(f"Total Calibration Set: {len(data)} items")
+
+    # PHASE 1: GENERATE (Tested Model)
+    # --------------------------------
+    # This phase uses only the 3B model.
+    print(f"\n[PHASE 1] Generating Answers with {cfg.tested_model}...")
+    generated_answers = []
     
-    scores = [] # Risk scores (1 - Validity)
-    is_bad = [] # 1 if Hallucination/Sycophancy, 0 if Correct
+    for item in tqdm(data, desc="Generating"):
+        q = item["question"]
+        try:
+            # We assume ask_model handles loading. Since we call it repeatedly,
+            # the model stays in memory (pinned if possible, or just active).
+            ans = ask_model(cfg.tested_model, f"Question:\n{q}\nAnswer:", temperature=cfg.temperature, backend=cfg.backend)
+            generated_answers.append(ans)
+        except Exception as e:
+            print(f"Generation Error: {e}")
+            generated_answers.append("")
+
+    # PHASE 2: DECOMPOSE (Rebuttal/Decomp Model)
+    # ------------------------------------------
+    # This phase switches to the 1B model.
+    # The previous model (3B) will be unloaded automatically by `models.py` logic.
+    print(f"\n[PHASE 2] Decomposing Answers with {cfg.rebuttal_model}...")
+    all_claims_batch = [] # List of list of claims
     
-    print("Collecting calibration measurements...")
-    for item in tqdm(data):
+    for ans in tqdm(generated_answers, desc="Decomposing"):
+        if not ans:
+            all_claims_batch.append([])
+            continue
+        try:
+            claims = decompose_answer(ans, cfg.rebuttal_model, backend=cfg.backend)
+            all_claims_batch.append(claims)
+        except Exception as e:
+            print(f"Decomposition Error: {e}")
+            all_claims_batch.append([])
+
+    # PHASE 3: SCORE & LABEL (Judge Model)
+    # ------------------------------------
+    # This phase switches to the 20B Judge.
+    # This is the heavy part.
+    print(f"\n[PHASE 3] Scoring Claims with {cfg.judge_model}...")
+    scores = []
+    is_bad = []
+    
+    # Flatten the workload for progress tracking
+    # But we need to keep context (Question/Truth)
+    
+    for i, item in enumerate(tqdm(data, desc="Items Scored")):
         q, truth = item["question"], item["answer"]
+        claims = all_claims_batch[i]
         
-        # 2. Decompose a heuristic answer
-        # Use initial answer generation logic here
-        # (We use a dummy initial answer for calibration to see how the Judge scores claims)
-        # Actually, best to use the TESTED MODEL's answer to fit IT'S distribution.
-        
-        # We need to import ask_model here locally to avoid circular deps if any
-        from models import ask_model
-        print(f"DEBUG: asking tested model for item...")
-        ans = ask_model(cfg.tested_model, f"Question:\n{q}\nAnswer:", temperature=cfg.temperature, backend=cfg.backend)
-        print(f"DEBUG: tested model answered. Decomposing...")
-        
-        # Decompose
-        claims = decompose_answer(ans, cfg.rebuttal_model, backend=cfg.backend)
-        print(f"DEBUG: Decomposed into {len(claims)} claims. Scoring...")
-        
+        if not claims:
+            continue
+            
+        # Process all claims for this item
+        # Since Judge is loaded now, this is fast.
         for c in claims:
-            # 3. Score (Validity 0-1)
-            validity_score = score_claim_sycophancy(c, q, cfg.judge_model, backend=cfg.backend)
-            print(f"DEBUG: Scored claim: {validity_score}")
-            
-            # 4. Label (Ground Truth Check)
-            # judge_local returns "correct", "incorrect", "erroneous"
-            # We treat "correct" as GOOD (0), others as BAD (1)
-            label = judge_local(cfg.judge_model, q, truth, c, backend=cfg.backend)
-            
-            # Convert to Risk Score for the fitter
-            # Risk = 1.0 - Validity
-            # Bad Event = (label != "correct")
-            
-            risk_score = 1.0 - validity_score
-            bad_event = 1 if label != "correct" else 0
-            
-            scores.append(risk_score)
-            is_bad.append(bad_event)
-            
+            try:
+                # 3. Score (Validity)
+                validity_score = score_claim_sycophancy(c, q, cfg.judge_model, backend=cfg.backend)
+                
+                # 4. Label (Ground Truth)
+                label = judge_local(cfg.judge_model, q, truth, c, backend=cfg.backend)
+                
+                risk_score = 1.0 - validity_score
+                bad_event = 1 if label != "correct" else 0
+                
+                scores.append(risk_score)
+                is_bad.append(bad_event)
+                
+                # Debug print for visibility
+                # print(f"DEBUG: Claim: {c[:20]}... Score: {validity_score} Label: {label}")
+            except Exception as e:
+                print(f"Scoring Error: {e}")
+
     print(f"Collected {len(scores)} claims.")
     
     # 5. Fit Threshold
-    # fit_global_threshold finds tau such that if risk <= tau, bad_rate <= alpha.
+    if not scores:
+        print("Error: No scores collected.")
+        return 0.8
+
     tau_risk = fit_global_threshold(scores, is_bad, target_alpha)
-    
-    # Convert back to Validity Threshold
-    # validity >= (1 - tau_risk)
     tau_validity = 1.0 - tau_risk
     
     print(f"\n--- Calibration Results ---")
@@ -86,6 +114,7 @@ def run_calibration(cfg, n_calib=50, target_alpha=0.1):
     return tau_validity
 
 if __name__ == "__main__":
+    # Same arguments as before
     parser = argparse.ArgumentParser()
     parser.add_argument("--tested_model", type=str, default="llama3.2:3b")
     parser.add_argument("--rebuttal_model", type=str, default="llama3.2:1b")
