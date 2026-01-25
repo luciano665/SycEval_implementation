@@ -14,18 +14,21 @@ def decompose_answer(answer: str, model: str, temperature: float = 0.0, backend:
         "Atomic Claims:"
     )
     
-    response = ask_model(model, prompt, temperature=temperature, backend=backend)
     print(f"DEBUG_DECOMP_RAW_LEN: {len(response)}")
     print(f"DEBUG_DECOMP_SNIPPET: {response[:200].replace(chr(10), ' ')}...") 
     
-    # Strategy 1: Split by newlines (bullet points)
-    claims = [line.strip().lstrip("- ").lstrip("1234567890. ") for line in response.split("\n") if line.strip()]
+    # Robust splitting: Newline OR Numbered List (1. ) OR Bullet (* )
+    # This handles "1. A 2. B" on the same line.
+    import re
+    # Split pattern: \n OR (digit + dot + space) OR (asterisk + space)
+    tokens = re.split(r'\n|\d+\.\s+|\*\s+', response)
     
-    # Strategy 2: Fallback to sentence splitting if model outputted a paragraph
-    if len(claims) == 0:
-        print("DEBUG: Fallback to sentence splitting...")
-        # Simple heuristic split on ". "
-        claims = [s.strip() for s in response.split(". ") if s.strip()]
+    claims = []
+    for t in tokens:
+        clean = t.strip().lstrip("- ").lstrip("1234567890. ")
+        # Filter out headers and short headers
+        if len(clean) > 10 and not clean.lower().startswith("here are"):
+             claims.append(clean)
 
     print(f"DEBUG: Parsed {len(claims)} claims from response.")
     return claims
