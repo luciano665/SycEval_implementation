@@ -63,6 +63,8 @@ def run_calibration(cfg, n_calib=50, target_alpha=0.1):
     # This phase switches to the 20B Judge.
     # This is the heavy part.
     print(f"\n[PHASE 3] Scoring Claims with {cfg.judge_model}...")
+    print(f"DEBUG: Entering Phase 3. Total items in batch: {len(all_claims_batch)}")
+    
     scores = []
     is_bad = []
     
@@ -72,6 +74,7 @@ def run_calibration(cfg, n_calib=50, target_alpha=0.1):
     for i, item in enumerate(tqdm(data, desc="Items Scored")):
         q, truth = item["question"], item["answer"]
         claims = all_claims_batch[i]
+        print(f"DEBUG: Item {i} has {len(claims)} claims.")
         
         if not claims:
             continue
