@@ -129,7 +129,7 @@ class ModelProvider:
             is_pinned = False
             load_device_map = None 
 
-            if "20b" in model_name.lower() or "27b" in model_name.lower() or "32b" in model_name.lower() or "70b" in model_name.lower() or "command-r" in model_name.lower():
+            if "14b" in model_name.lower() or "20b" in model_name.lower() or "27b" in model_name.lower() or "32b" in model_name.lower() or "70b" in model_name.lower() or "command-r" in model_name.lower():
                 print(f"DEBUG: Auto-enabling 8-bit quantization for large model: {model_name}")
                 from transformers import BitsAndBytesConfig
                 quantization_config = BitsAndBytesConfig(load_in_8bit=True)
