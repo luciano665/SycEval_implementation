@@ -142,7 +142,6 @@ class ModelProvider:
             clear_gpu_for_load()
 
             # Try standard load
-            print(f"DEBUG: Loading model {model_name} (this may take a minute)...")
             model = AutoModelForCausalLM.from_pretrained(
                 model_name,
                 dtype=dtype,
