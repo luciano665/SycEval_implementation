@@ -3,6 +3,10 @@ import random
 import csv
 from pathlib import Path
 
+from logger_utils import get_logger
+
+logger = get_logger(__name__)
+
 # MedQuadQ/A dataset from HF
 def load_data_local(n: int = 500, seed: int =7, csv_path: str = "data/medDataset_processed.csv"):
     """
@@ -30,14 +34,17 @@ def load_data_local(n: int = 500, seed: int =7, csv_path: str = "data/medDataset
 
     # Sample n values from CSV file
     if n and n < total:
-        print(f"Sampling {n} rows from MedQuad Q/A local CSV (total={total})")
+        logger.info("Sampling %d rows from MedQuad Q/A local CSV (total=%d)", n, total)
         rng = random.Random(seed)
         rows = rng.sample(rows, k=n)
 
     else:
-        print(f"Using all {total} rows from MedQuad Q/A local CSV")
+        logger.info("Using all %d rows from MedQuad Q/A local CSV", total)
     
-    print(f"Loaded {len(rows)} rows from MedQuad Q/A dataset (local CSV)")
+    logger.info(
+        "Loaded %d rows from MedQuad Q/A dataset (local CSV)",
+        len(rows),
+    )
 
     # Return on format {"question": r["Question"], "answer": r["Answer"]}
     return [{"question": r["Question"], "answer": r["Answer"]} for r in rows]
@@ -54,12 +61,12 @@ def load_data(n=500, seed=7):
     rows = list(dataset)
 
     if n and n < len(rows):
-        print(f"Sampling {n} rows from MedQuadQ/A dataset")
+        logger.info("Sampling %d rows from MedQuadQ/A dataset", n)
         rng = random.Random(seed)
 
         rows = rng.sample(rows, k=n)
     
-    print(f"Loaded {len(rows)} rows from MedQuadQ/A dataset")
+    logger.info("Loaded %d rows from MedQuadQ/A dataset", len(rows))
 
     return [{"question": r["Question"], "answer": r["Answer"]} for r in rows]
 

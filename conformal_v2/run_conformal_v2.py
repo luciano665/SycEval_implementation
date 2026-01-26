@@ -38,6 +38,9 @@ from .conformal_thresholds import (
     choose_threshold,
 )
 from .safe_rewrite import anti_sycophancy_rewrite
+from logger_utils import get_logger
+
+logger = get_logger(__name__)
 
 # 1) Phase 1: initial answer (baseline unchanged)
 def initial_answer(cfg: EvalConfig, item: Dict[str, str]) -> Tuple[str, str]:
@@ -549,8 +552,8 @@ def main() -> None:
         with open(args.out, "w", encoding="utf-8") as f:  
             json.dump(output_obj, f, indent=2, ensure_ascii=False)  
 
-        print(f"\nSaved thresholds to {args.thresholds_out}")  
-        print(f"Saved calibration logs to {args.out}")  
+        logger.info("Saved thresholds to %s", args.thresholds_out)
+        logger.info("Saved calibration logs to %s", args.out)
         return  # exit main after calibration-only
 
     # Mode: TEST ONLY
@@ -582,13 +585,10 @@ def main() -> None:
 
         z_ctx = two_proportion_z(p1, n1, p2, n2)  # z-test between contexts
 
-        print("\nOverall rates (FINAL answers)")  
-        print(all_stats)  
-        print("\nIn-context rates (FINAL answers)")  
-        print(ic_stats)  
-        print("\nPreemptive rates (FINAL answers)")  
-        print(prem_stats) 
-        print(f"\nTwo-proportion z (preemptive - in-context) = {z_ctx:.3f}") 
+        logger.info("Overall rates (FINAL answers)\n%s", all_stats)
+        logger.info("In-context rates (FINAL answers)\n%s", ic_stats)
+        logger.info("Preemptive rates (FINAL answers)\n%s", prem_stats)
+        logger.info("Two-proportion z (preemptive - in-context) = %.3f", z_ctx)
 
         output_obj = { 
             "metadata": {  # metadata
@@ -625,7 +625,7 @@ def main() -> None:
         with open(args.out, "w", encoding="utf-8") as f:  
             json.dump(output_obj, f, indent=2, ensure_ascii=False)  
 
-        print(f"\nSaved {len(df)} instances to {args.out}")  
+        logger.info("Saved %d instances to %s", len(df), args.out)
         return  # exit main after test-only
     
     # Mode: BOTH (calibrate + test)
@@ -676,13 +676,10 @@ def main() -> None:
 
     z_ctx = two_proportion_z(p1, n1, p2, n2)  # z-test between contexts
 
-    print("\nOverall rates (FINAL answers)")  
-    print(all_stats)  
-    print("\nIn-context rates (FINAL answers)")  
-    print(ic_stats)  
-    print("\nPreemptive rates (FINAL answers)") 
-    print(prem_stats)  
-    print(f"\nTwo-proportion z (preemptive - in-context) = {z_ctx:.3f}")  
+    logger.info("Overall rates (FINAL answers)\n%s", all_stats)
+    logger.info("In-context rates (FINAL answers)\n%s", ic_stats)
+    logger.info("Preemptive rates (FINAL answers)\n%s", prem_stats)
+    logger.info("Two-proportion z (preemptive - in-context) = %.3f", z_ctx)
 
     output_obj = { 
         "metadata": {  # metadata block
@@ -725,7 +722,11 @@ def main() -> None:
     with open(args.out, "w", encoding="utf-8") as f:  
         json.dump(output_obj, f, indent=2, ensure_ascii=False) 
 
-    print(f"\nSaved {len(df)} test instances + calibration logs to {args.out}")  # log
+    logger.info(
+        "Saved %d test instances + calibration logs to %s",
+        len(df),
+        args.out,
+    )
 
 
 if __name__ == "__main__":

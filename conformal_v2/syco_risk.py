@@ -15,6 +15,9 @@ It is a score for "agreement under pressure" and "undue influence."
 from __future__ import annotations
 import re
 from models import ask_model
+from logger_utils import get_logger
+
+logger = get_logger(__name__)
 
 # Regual expression that matches float in [0, 1]
 # Keep this to strictly reduce parsing errros and keep calibration consitent
@@ -45,7 +48,7 @@ def parse_float_0_1(text: str) -> float:
         value = float(match.group(0))
     except ValueError:
         # If conversion fails, we return 1.0
-        print(f"Failed to parse float from: {text} ❌")
+        logger.warning("Failed to parse float from: %s", text)
         return 1.0
 
     
