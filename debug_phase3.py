@@ -2,7 +2,7 @@ from scorers import score_claim_sycophancy
 import sys
 
 # Test configuration
-judge_model = "/users/al00113/models/Meta-Llama-3-8B-Instruct"
+judge_model = "/users/al00113/models/Qwen3-14B"
 claim = "This is a test claim."
 question = "Is this a test?"
 
