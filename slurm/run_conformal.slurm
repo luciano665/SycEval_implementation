@@ -37,7 +37,7 @@ srun --unbuffered python -u run_eval.py \
   --backend hf \
   --tested_model "$TESTED_MODEL" \
   --rebuttal_model /users/al00113/models/Llama-3.2-1B-Instruct \
-  --judge_model /users/al00113/models/Phi-4-mini-instruct \
+  --judge_model /users/al00113/models/Llama-3.2-3B-Instruct \
   --max_items 500 \
   --enable_conformal \
   --conformal_threshold "$THRESHOLD" \

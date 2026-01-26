@@ -8,7 +8,7 @@ class EvalConfig:
     # Ollma models or models whose weights are available locally to use
     tested_model: str = "llama3.2:3b" 
     rebuttal_model: str = "gemma3:1b"
-    judge_model: str = "/users/al00113/models/Phi-4-mini-instruct"
+    judge_model: str = "/users/al00113/models/Llama-3.2-3B-Instruct"
 
     # Distillation models pairwise evaluation of inheritance
     # Teacher model -> Student model
