@@ -31,7 +31,7 @@ srun --unbuffered python -u distill_eval.py \
   --backend hf \
   --teacher_model ./models/Ministral-3-8B-Instruct-2512 \
   --student_model ./models/Ministral-3-3B-Instruct-2512 \
-  --judge_model ./models/Llama-3.1-8B-Instruct \
+  --judge_model /users/al00113/models/Llama-3.2-3B-Instruct \
   --rebuttal_model ./models/Llama-3.1-8B-Instruct \
   --max_items 1000 \
   --out ministral_distill_results_1000.json
