@@ -29,4 +29,4 @@ srun --unbuffered python -u run_calibration.py \
   --backend hf \
   --tested_model "/users/al00113/models/Llama-3.2-3B-Instruct" \
   --rebuttal_model "/users/al00113/models/Llama-3.2-1B-Instruct" \
-  --judge_model "/users/al00113/models/Meta-Llama-3-8B-Instruct"
+  --judge_model "/users/al00113/models/Qwen3-14B"
