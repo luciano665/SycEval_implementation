@@ -137,6 +137,13 @@ def run_calibration(cfg, n_calib=50, target_alpha=0.1):
             # Debug print for visibility
             # print(f"DEBUG: Claim: {c[:20]}... Score: {validity_score} Label: {label}")
 
+        # Intermediate Checkpoint (Safety for 14B model slowness)
+        if i % 5 == 0:
+            cp_phase3 = f"results/calib_phase3_partial_{params_hash}.json"
+            with open(cp_phase3, "w") as f:
+                json.dump({"scores": scores, "is_bad": is_bad, "item_idx": i}, f)
+            print(f"DEBUG: Saved partial Phase 3 checkpoint to {cp_phase3}")
+
     print(f"Collected {len(scores)} claims.")
     
     # 5. Fit Threshold

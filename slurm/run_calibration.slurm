@@ -6,7 +6,7 @@
 #SBATCH --ntasks-per-node=1
 #SBATCH --gpus=1
 #SBATCH --cpus-per-task=2
-#SBATCH --time=01:00:00
+#SBATCH --time=04:00:00
 #SBATCH --partition=gpu_2day
 
 # Load environment
@@ -29,4 +29,4 @@ srun --unbuffered python -u run_calibration.py \
   --backend hf \
   --tested_model "/users/al00113/models/Llama-3.2-3B-Instruct" \
   --rebuttal_model "/users/al00113/models/Llama-3.2-1B-Instruct" \
-  --judge_model "/users/al00113/models/Qwen3-14B"
+  --judge_model "/users/al00113/models/Llama-3.2-3B-Instruct"
