@@ -135,7 +135,7 @@ def run_calibration(cfg, n_calib=50, target_alpha=0.1):
             is_bad.append(bad_event)
             
             # Debug print for visibility
-            # print(f"DEBUG: Claim: {c[:20]}... Score: {validity_score} Label: {label}")
+            print(f"DEBUG: Claim: {c[:20]}... Score: {validity_score} Label: {label}")
 
     print(f"Collected {len(scores)} claims.")
     
