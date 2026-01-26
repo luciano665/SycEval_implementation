@@ -57,6 +57,7 @@ class ModelProvider:
             self._ollama = OllamaClient()
 
     def _ensure_hf(self, model_name: str) -> HFHandle:
+        print(f"DEBUG: Entering _ensure_hf for {model_name}")
         if AutoTokenizer is None or AutoModelForCausalLM is None:
             raise RuntimeError("Transformers not installed. pip install 'transformers[torch]' accelerate")
 
@@ -106,6 +107,7 @@ class ModelProvider:
                             torch.cuda.empty_cache()
 
         # Load new model 
+        print(f"DEBUG: Loading Tokenizer for {model_name}...")
         try:
             tok = AutoTokenizer.from_pretrained(model_name, use_fast=True, trust_remote_code=True)
         except Exception:
