@@ -1,0 +1,6 @@
+With Llama 3B
+
+--- Calibration Results ---
+Target Risk (Alpha): 0.1
+Calibrated Risk Threshold (tau): 0.1000
+RECOMMENDED VALIDITY THRESHOLD: 0.9000
