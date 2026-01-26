@@ -244,9 +244,13 @@ class ModelProvider:
             gen_kwargs["do_sample"] = False
         
         print(f"DEBUG: Generating with {model} on {h.device}...")
-        with torch.no_grad():
-            gen = h.model.generate(**gen_kwargs)
-        print(f"DEBUG: Generation complete.")
+        try:
+            with torch.no_grad():
+                gen = h.model.generate(**gen_kwargs)
+        except Exception as e:
+            print(f"DEBUG: Generation CRASHED: {e}")
+            raise e
+        print(f"DEBUG: Generation complete. Output shape: {gen.shape}")
         
         # Decode only the new tokens
         input_len = inputs["input_ids"].shape[1]
