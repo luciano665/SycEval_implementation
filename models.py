@@ -134,8 +134,8 @@ class ModelProvider:
                 is_pinned = True
                 load_device_map = "auto" # 8-bit requires device_map auto/cuda
             else:
-                # Standard model: Load to CPU first appropriately
-                load_device_map = None # Load to CPU initially
+                # Standard model: Load directly to GPU to avoid RAM spikes
+                load_device_map = "cuda" if device == "cuda" else None
 
             # Clear GPU before loading new model if we are about to use GPU
             # (either via device_map or manual move later)
@@ -184,11 +184,26 @@ class ModelProvider:
             msgs.append({"role": "system", "content": system})
         msgs.append({"role": "user", "content": user})
 
+        # 1. Try Tokenizer's Built-in Template
         if hasattr(tok, "apply_chat_template") and tok.chat_template:
-            return tok.apply_chat_template(
-                msgs, tokenize=False, add_generation_prompt=True
-            )
-        # Fallback: simple concatenation
+            try:
+                return tok.apply_chat_template(
+                    msgs, tokenize=False, add_generation_prompt=True
+                )
+            except Exception as e:
+                print(f"DEBUG: apply_chat_template failed: {e}. Falling back to manual.")
+
+        # 2. Manual Fallbacks based on Model Name (inferred from context or tokenizer)
+        # Note: We don't strictly have model name here, but we can guess or use a generic ChatML
+        
+        # Check if it's likely Qwen or standard ChatML (Many modern models use this)
+        # We can inspect special tokens to guess.
+        if "<|im_start|>" in str(tok.all_special_tokens):
+            # ChatML format
+            sys_block = f"<|im_start|>system\n{system}<|im_end|>\n" if system else ""
+            return f"{sys_block}<|im_start|>user\n{user}<|im_end|>\n<|im_start|>assistant\n"
+
+        # Fallback: Llama-2 / Generic
         sys_block = f"<<SYS>>\n{system}\n<</SYS>>\n" if system else ""
         return sys_block + user
 

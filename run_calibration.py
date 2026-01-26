@@ -22,23 +22,46 @@ def run_calibration(cfg, n_calib=50, target_alpha=0.1):
     data = data_med + data_hs
     print(f"Total Calibration Set: {len(data)} items")
 
+    
+    import json
+    import os
+
+    # CHECKPOINT PATHS
+    params_hash = f"{n_calib}_{cfg.tested_model.replace('/','_')}"
+    cp_gen = f"results/calib_generated_{params_hash}.json"
+    cp_claims = f"results/calib_claims_{params_hash}.json"
+    
+    os.makedirs("results", exist_ok=True)
+
     # PHASE 1: GENERATE (Tested Model)
     # --------------------------------
     # This phase uses only the 3B model.
     print(f"\n[PHASE 1] Generating Answers with {cfg.tested_model}...")
+    
     generated_answers = []
     
-    for item in tqdm(data, desc="Generating"):
-        q = item["question"]
-        try:
-            # We assume ask_model handles loading. Since we call it repeatedly,
-            # the model stays in memory (pinned if possible, or just active).
-            ans = ask_model(cfg.tested_model, f"Question:\n{q}\nAnswer:", temperature=cfg.temperature, backend=cfg.backend)
-            print(f"DEBUG_PHASE1_ANS: '{ans}'")
-            generated_answers.append(ans)
-        except Exception as e:
-            print(f"Generation Error: {e}")
-            generated_answers.append("")
+    if os.path.exists(cp_gen):
+        print(f"DEBUG: Found checkpoint {cp_gen}. Resuming Phase 1...")
+        with open(cp_gen, "r") as f:
+            generated_answers = json.load(f)
+        print(f"Loaded {len(generated_answers)} answers from disk.")
+    else: 
+        for item in tqdm(data, desc="Generating"):
+            q = item["question"]
+            try:
+                # We assume ask_model handles loading. Since we call it repeatedly,
+                # the model stays in memory (pinned if possible, or just active).
+                ans = ask_model(cfg.tested_model, f"Question:\n{q}\nAnswer:", temperature=cfg.temperature, backend=cfg.backend)
+                # print(f"DEBUG_PHASE1_ANS: '{ans}'")
+                generated_answers.append(ans)
+            except Exception as e:
+                print(f"Generation Error: {e}")
+                generated_answers.append("")
+        
+        # Save Checkpoint
+        with open(cp_gen, "w") as f:
+            json.dump(generated_answers, f)
+        print(f"Saved checkpoint Phase 1 to {cp_gen}")
 
     # Free memory
     unload_model(cfg.tested_model, backend=cfg.backend)
@@ -50,16 +73,27 @@ def run_calibration(cfg, n_calib=50, target_alpha=0.1):
     print(f"\n[PHASE 2] Decomposing Answers with {cfg.rebuttal_model}...")
     all_claims_batch = [] # List of list of claims
     
-    for ans in tqdm(generated_answers, desc="Decomposing"):
-        if not ans:
-            all_claims_batch.append([])
-            continue
-        try:
-            claims = decompose_answer(ans, cfg.rebuttal_model, backend=cfg.backend)
-            all_claims_batch.append(claims)
-        except Exception as e:
-            print(f"Decomposition Error: {e}")
-            all_claims_batch.append([])
+    if os.path.exists(cp_claims):
+        print(f"DEBUG: Found checkpoint {cp_claims}. Resuming Phase 2...")
+        with open(cp_claims, "r") as f:
+            all_claims_batch = json.load(f)
+        print(f"Loaded {len(all_claims_batch)} claim sets from disk.")
+    else:
+        for ans in tqdm(generated_answers, desc="Decomposing"):
+            if not ans:
+                all_claims_batch.append([])
+                continue
+            try:
+                claims = decompose_answer(ans, cfg.rebuttal_model, backend=cfg.backend)
+                all_claims_batch.append(claims)
+            except Exception as e:
+                print(f"Decomposition Error: {e}")
+                all_claims_batch.append([])
+        
+        # Save Checkpoint
+        with open(cp_claims, "w") as f:
+            json.dump(all_claims_batch, f)
+        print(f"Saved checkpoint Phase 2 to {cp_claims}")
 
     # Free memory
     unload_model(cfg.rebuttal_model, backend=cfg.backend)
