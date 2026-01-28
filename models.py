@@ -3,19 +3,23 @@ import os
 from dataclasses import dataclass
 from typing import Optional, List, Dict
 
+from logger_utils import get_logger
+
+logger = get_logger(__name__)
+
 # Optional HF imports are lazy — so you can still run Ollama-only environments.
 try:
     import torch
     from transformers import AutoTokenizer, AutoModelForCausalLM, PreTrainedTokenizerFast, AutoConfig, MistralConfig
     import transformers
-    print(f"DEBUG: Transformers version: {transformers.__version__}")
+    logger.debug("Transformers version: %s", transformers.__version__)
     
     # Patch for Ministral 3 using official register API
     try:
         AutoConfig.register("ministral3", MistralConfig)
-        print("DEBUG: Registered ministral3 config via AutoConfig.register")
+        logger.debug("Registered ministral3 config via AutoConfig.register")
     except Exception as e:
-        print(f"DEBUG: Failed to register ministral3: {e}")
+        logger.warning("Failed to register ministral3: %s", e)
 except Exception:
     torch = None
     AutoTokenizer = None
@@ -120,7 +124,7 @@ class ModelProvider:
         except Exception as e:
             # Fix for Nemotron missing triton_attention.py
             if "triton_attention.py" in str(e) and "No such file or directory" in str(e):
-                print(f"DEBUG: Detected missing triton_attention.py in cache. Attempting fix...")
+                logger.warning("Detected missing triton_attention.py in cache. Attempting fix...")
                 import re
                 import shutil
                 # Extract path from error message
@@ -132,7 +136,7 @@ class ModelProvider:
                     src_path = os.path.join(model_name, "triton_attention.py")
                     
                     if os.path.exists(src_path) and os.path.exists(cache_dir):
-                        print(f"DEBUG: Copying {src_path} to {missing_path}")
+                        logger.info("Copying %s to %s", src_path, missing_path)
                         shutil.copy2(src_path, missing_path)
                         # Retry load
                         model = AutoModelForCausalLM.from_pretrained(
@@ -143,14 +147,18 @@ class ModelProvider:
                             trust_remote_code=True
                         )
                     else:
-                        print(f"DEBUG: Cannot fix. Source {src_path} or cache {cache_dir} missing.")
+                        logger.error(
+                            "Cannot fix. Source %s or cache %s missing.",
+                            src_path,
+                            cache_dir,
+                        )
                         raise e
                 else:
                     raise e
 
             # Fallback for Ministral/Pixtral models with custom config structure
             elif isinstance(e, (KeyError, ValueError, TypeError)):
-                print(f"Standard load failed ({e}), attempting config override...")
+                logger.warning("Standard load failed (%s), attempting config override...", e)
                 import json
                 from transformers import MistralConfig
                 
@@ -200,13 +208,17 @@ class ModelProvider:
         if device in ["cuda", "mps"]:
              for other_name, other_h in self._hf_cache.items():
                 if other_h.model.device.type != "cpu":
-                    print(f"DEBUG: Moving {other_name} to CPU to free memory for {model_name}")
+                    logger.info(
+                        "Moving %s to CPU to free memory for %s",
+                        other_name,
+                        model_name,
+                    )
                     other_h.model.to("cpu")
                     if torch.cuda.is_available():
                         torch.cuda.empty_cache()
              
              if model.device.type == "cpu":
-                 print(f"DEBUG: Moving {model_name} to {device}")
+                 logger.info("Moving %s to %s", model_name, device)
                  model = model.to(device)
 
         h = HFHandle(name=model_name, tok=tok, model=model, device=device, dtype=str(dtype))

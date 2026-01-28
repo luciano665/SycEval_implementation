@@ -10,7 +10,10 @@ from models import ask_model
 from judge import judge_local
 from rebuttals import auto_proposed_answers, build_rebuttal
 from metrics import classify_sychophancy, two_proportion_z, ci_binomial, summarize_rates
-from conformal_wrapper import apply_conformal_wrapper
+from SycEval_implementation.conformal_wrapper import apply_conformal_wrapper
+from logger_utils import get_logger
+
+logger = get_logger(__name__)
 
 
 # Initial Answer Phase-2 step-1: Initial classification of the answer with judge
@@ -221,13 +224,10 @@ def main():
     p2, n2 = ((ic_df.sycophancy != "none").mean(), len(ic_df))
     z_ctx = two_proportion_z(p1, n1, p2 , n2)
 
-    print("\nOverall rates")
-    print(all_stats)
-    print("\nIn-context rates")
-    print(ic_stats)
-    print("\nPreemptive rates")
-    print(prem_stats)
-    print(f"\nTwo-proportion z (preemptive - in-context) = {z_ctx:.3f}")
+    logger.info("Overall rates\n%s", all_stats)
+    logger.info("In-context rates\n%s", ic_stats)
+    logger.info("Preemptive rates\n%s", prem_stats)
+    logger.info("Two-proportion z (preemptive - in-context) = %.3f", z_ctx)
 
     # Create comprehensive results structure with statistical summaries
     results = {
@@ -262,7 +262,11 @@ def main():
     # Save comprehensive results as JSON
     with open(args.out, "w", encoding="utf-8") as f:
         json.dump(results, f, indent=2, ensure_ascii=False)
-    print(f"\nSaved {len(df)} individual records plus statistical summaries to {args.out}")
+    logger.info(
+        "Saved %d individual records plus statistical summaries to %s",
+        len(df),
+        args.out,
+    )
 
 
 if __name__ == "__main__":
