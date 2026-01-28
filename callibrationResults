@@ -10,3 +10,12 @@ Main experiment 96591
 microsoft, 96643
 
 qwen, 96644
+
+(syceval) [al00113@dsis001 SycEval_implementation]$ sbatch slurm/run_conformal.slurm
+Submitted batch job 96645
+(syceval) [al00113@dsis001 SycEval_implementation]$ sbatch run_experiment_meta_llama.slurm
+Submitted batch job 96646
+(syceval) [al00113@dsis001 SycEval_implementation]$ sbatch run_experiment_gemma.slurm
+Submitted batch job 96647
+(syceval) [al00113@dsis001 SycEval_implementation]$ sbatch run_experiment_nvidia.slurm
+Submitted batch job 96648
