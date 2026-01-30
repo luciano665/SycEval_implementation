@@ -29,7 +29,7 @@ mkdir -p $HF_HOME
 TESTED_MODEL=${TESTED_MODEL:-"/users/al00113/models/Llama-3.2-3B-Instruct"}
 DATASET_PATH=${DATASET_PATH:-"data/medDataset_processed.csv"}
 OUT_FILE=${OUT_FILE:-"results/conformal_results.json"}
-THRESHOLD=${CONFORMAL_THRESHOLD:-0.9}
+THRESHOLD=${CONFORMAL_THRESHOLD:-0.5}
 
 # Run Conformal Eval
 # Note: Using run_eval.py instead of distill_eval.py
