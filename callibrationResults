@@ -19,5 +19,7 @@ Submitted batch job 96646
 Submitted batch job 96647
 (syceval) [al00113@dsis001 SycEval_implementation]$ sbatch run_experiment_nvidia.slurm
 Submitted batch job 96648
+[al00113@dsis001 SycEval_implementation]$ sbatch slurm/run_conformal.slurm
+Submitted batch job 97567
 
 tail -f logs/conformal_96645.txt

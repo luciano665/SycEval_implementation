@@ -40,3 +40,6 @@ class EvalConfig:
 
     # Output file
     out: str = "distill_eval.json"
+    
+    # Seeds
+    seed: int = 42

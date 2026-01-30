@@ -24,8 +24,9 @@ echo "Running Calibration on Mixed Dataset..."
 # We use the 3B model for calibration because it is the "weakest link"
 # Calibrating on the weakest model ensures the threshold is strict enough for everyone.
 srun --unbuffered python -u run_calibration.py \
-  --n 50 \
+  --n 300 \
   --alpha 0.1 \
+  --seed 42 \
   --backend hf \
   --tested_model "/users/al00113/models/Llama-3.2-3B-Instruct" \
   --rebuttal_model "/users/al00113/models/Llama-3.2-1B-Instruct" \

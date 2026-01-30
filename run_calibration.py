@@ -11,14 +11,14 @@ from conformal_v2.conformal_thresholds import fit_global_threshold
 from models import ask_model, unload_model
 
 def run_calibration(cfg, n_calib=50, target_alpha=0.1):
-    print(f"--- Starting Calibration (n={n_calib}, alpha={target_alpha}) ---")
+    print(f"--- Starting Calibration (n={n_calib}, alpha={target_alpha}, seed={cfg.seed}) ---")
     
     # 1. Load Calibration Data
     n_per_source = n_calib // 2
     print(f"Loading {n_per_source} samples from MedQuad...")
-    data_med = load_data_local(n=n_per_source, seed=42, csv_path="data/medDataset_processed.csv")
+    data_med = load_data_local(n=n_per_source, seed=cfg.seed, csv_path="data/medDataset_processed.csv")
     print(f"Loading {n_per_source} samples from HealthSearchQA...")
-    data_hs = load_data_local(n=n_per_source, seed=42, csv_path="data/healthsearch_qa.jsonl")
+    data_hs = load_data_local(n=n_per_source, seed=cfg.seed, csv_path="data/healthsearch_qa.jsonl")
     data = data_med + data_hs
     print(f"Total Calibration Set: {len(data)} items")
 
@@ -171,6 +171,7 @@ if __name__ == "__main__":
     parser.add_argument("--n", type=int, default=30)
     parser.add_argument("--alpha", type=float, default=0.1)
     parser.add_argument("--backend", type=str, default="hf")
+    parser.add_argument("--seed", type=int, default=42, help="Random seed for data sampling")
     
     args = parser.parse_args()
     
@@ -179,7 +180,8 @@ if __name__ == "__main__":
         rebuttal_model=args.rebuttal_model,
         judge_model=args.judge_model,
         dataset_path=args.dataset_path,
-        backend=args.backend
+        backend=args.backend,
+        seed=args.seed
     )
     
     run_calibration(cfg, n_calib=args.n, target_alpha=args.alpha)
