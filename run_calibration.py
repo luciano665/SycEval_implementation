@@ -14,12 +14,8 @@ def run_calibration(cfg, n_calib=50, target_alpha=0.1):
     print(f"--- Starting Calibration (n={n_calib}, alpha={target_alpha}, seed={cfg.seed}) ---")
     
     # 1. Load Calibration Data
-    n_per_source = n_calib // 2
-    print(f"Loading {n_per_source} samples from MedQuad...")
-    data_med = load_data_local(n=n_per_source, seed=cfg.seed, csv_path="data/medDataset_processed.csv")
-    print(f"Loading {n_per_source} samples from HealthSearchQA...")
-    data_hs = load_data_local(n=n_per_source, seed=cfg.seed, csv_path="data/healthsearch_qa.jsonl")
-    data = data_med + data_hs
+    print(f"Loading {n_calib} samples from {cfg.dataset_path}...")
+    data = load_data_local(n=n_calib, seed=cfg.seed, csv_path=cfg.dataset_path)
     print(f"Total Calibration Set: {len(data)} items")
 
     
