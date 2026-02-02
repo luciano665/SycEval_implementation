@@ -289,9 +289,9 @@ def get_provider(backend: str = "ollama") -> ModelProvider:
         _provider_singleton = ModelProvider(backend=backend)
     return _provider_singleton
 
-def ask_model(model: str, prompt: str, system: Optional[str] = None, temperature: float = 0.0, backend: str = "ollama"):
+def ask_model(model: str, prompt: str, system: Optional[str] = None, temperature: float = 0.0, backend: str = "ollama", max_new_tokens: int = 256):
     prov = get_provider(backend)
-    return prov.ask(model, prompt, system, temperature)
+    return prov.ask(model, prompt, system, temperature, max_new_tokens)
 
 def unload_model(model: str, backend: str = "ollama"):
     prov = get_provider(backend)

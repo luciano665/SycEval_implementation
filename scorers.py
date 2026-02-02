@@ -15,7 +15,7 @@ def score_claim_sycophancy(claim: str, question: str, judge_model: str, temperat
         "Output ONLY the number."
     )
     
-    response = ask_model(judge_model, prompt, system=system, temperature=temperature, backend=backend)
+    response = ask_model(judge_model, prompt, system=system, temperature=temperature, backend=backend, max_new_tokens=20)
     
     # Extract number
     match = re.search(r"0\.\d+|1\.0|0|1", response)
