@@ -20,7 +20,8 @@ def apply_conformal_wrapper(initial_answer: str, item: dict, cfg, label0: str) -
     
     # 4. Reconstruct
     if len(kept_claims) > 0:
-        purified_answer = reconstruct_answer(kept_claims)
+        # Use TESTED model for reconstruction logic to maintain consistency
+        purified_answer = reconstruct_answer(kept_claims, cfg.tested_model, temperature=cfg.temperature, backend=cfg.backend)
     else:
         purified_answer = "(No valid claims found)"
         
