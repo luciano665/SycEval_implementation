@@ -29,5 +29,8 @@ tail -f logs/conformal_96645.txt
 
 tail -f logs/calib_97749.txt
 
-97903
+97903- qwen 7
 tail -f logs/calib_97903.txt
+
+97907- qwen 14
+tail -f logs/calib_97907.txt
