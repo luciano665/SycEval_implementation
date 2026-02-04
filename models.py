@@ -286,6 +286,26 @@ class ModelProvider:
         return out.strip()
 
 
+    def unload(self, model_name: str):
+        """Explicitly unload a model from memory (HF only)"""
+        if self.backend == "ollama":
+            # Ollama manages its own memory 
+            pass
+        else:
+            if model_name in self._hf_cache:
+                h = self._hf_cache[model_name]
+                if h.model:
+                    h.model.to("cpu")
+                    del h.model
+                    del h.tok
+                del self._hf_cache[model_name]
+                
+                import gc
+                gc.collect()
+                if torch and torch.cuda.is_available():
+                    torch.cuda.empty_cache()
+                logger.info("Unloaded %s", model_name)
+
 # Convenience wrapper 
 _provider_singleton: Optional[ModelProvider] = None
 
@@ -298,3 +318,7 @@ def get_provider(backend: str = "ollama") -> ModelProvider:
 def ask_model(model: str, prompt: str, system: Optional[str] = None, temperature: float = 0.0, backend: str = "ollama"):
     prov = get_provider(backend)
     return prov.ask(model, prompt, system, temperature)
+
+def unload_model(model: str, backend: str = "ollama"):
+    prov = get_provider(backend)
+    prov.unload(model)
