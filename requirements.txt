@@ -13,3 +13,4 @@ protobuf
 matplotlib
 openpyxl
 seaborn
+bitsandbytes
