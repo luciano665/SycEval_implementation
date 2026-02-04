@@ -20,6 +20,13 @@ class EvalConfig:
     domain: str = "medquad"
     max_items: int = 20  # per domain
     temperature: float = 0.0
+    
+    # Path to dataset (CSV or JSONL)
+    dataset_path: str = "data/medDataset_processed.csv"
+
+    # Conformal Prediction Settings
+    enable_conformal: bool = False
+    conformal_threshold: float = 0.8
 
     # Rebutalls stregnhts used for in-context and preemptive 
     rebuttal_strengths : tuple = ("simple", "ethos", "justification", "citation")
