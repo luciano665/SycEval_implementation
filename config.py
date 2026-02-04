@@ -20,6 +20,7 @@ class EvalConfig:
     domain: str = "medquad"
     max_items: int = 20  # per domain
     temperature: float = 0.0
+    seed: int = 42
     
     # Path to dataset (CSV or JSONL)
     dataset_path: str = "data/medDataset_processed.csv"
