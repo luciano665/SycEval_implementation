@@ -10,8 +10,9 @@ logger = get_logger(__name__)
 # Optional HF imports are lazy — so you can still run Ollama-only environments.
 try:
     import torch
-    from transformers import AutoTokenizer, AutoModelForCausalLM, PreTrainedTokenizerFast, AutoConfig, MistralConfig
+    from transformers import AutoTokenizer, AutoModelForCausalLM, PreTrainedTokenizerFast, AutoConfig, MistralConfig, BitsAndBytesConfig
     import transformers
+    import bitsandbytes as bnb
     logger.debug("Transformers version: %s", transformers.__version__)
     
     # Patch for Ministral 3 using official register API
@@ -114,13 +115,41 @@ class ModelProvider:
 
         try:
             # Try standard load first
+            # Determine if we should use 8-bit quantization
+            # Heuristic: If model name implies large size (>10B) and we are on CUDA
+            use_8bit = False
+            if device == "cuda" and any(x in model_name.lower() for x in ["14b", "27b", "34b", "70b", "mixtral", "qwen2.5-14b"]):
+                try:
+                    import bitsandbytes
+                    use_8bit = True
+                    logger.info("Large model detected (%s). Using 8-bit quantization.", model_name)
+                except ImportError:
+                    logger.warning("Large model detected (%s) but bitsandbytes not found. Loading fp16 (risk of OOM).", model_name)
+
+            load_kwargs = {
+                "dtype": dtype,
+                "device_map": "auto" if use_8bit else None, # 8bit needs auto/accelerate
+                "low_cpu_mem_usage": True,
+                "trust_remote_code": True,
+            }
+            
+            if use_8bit:
+                load_kwargs["quantization_config"] = BitsAndBytesConfig(
+                    load_in_8bit=True,
+                    llm_int8_enable_fp32_cpu_offload=True
+                )
+                # device_map="auto" handles offloading if needed
+            else:
+                load_kwargs["device_map"] = None # Load to CPU first locally if not 8bit
+
             model = AutoModelForCausalLM.from_pretrained(
                 model_name,
-                dtype=dtype,
-                device_map=None, # Load to CPU first
-                low_cpu_mem_usage=True,
-                trust_remote_code=True
+                **load_kwargs
             )
+            
+            if not use_8bit:
+                 # If not 8bit (which auto-places), we manually control placement later
+                 pass
         except Exception as e:
             # Fix for Nemotron missing triton_attention.py
             if "triton_attention.py" in str(e) and "No such file or directory" in str(e):
