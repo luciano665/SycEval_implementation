@@ -29,10 +29,10 @@ mkdir -p $HF_HOME
 # Note: Using run_eval.py instead of distill_eval.py
 srun --unbuffered python -u run_eval.py \
   --backend hf \
-  --tested_model /users/al00113/SycEval_implementation/models/Llama-3.2-3B-Instruct \
-  --rebuttal_model /users/al00113/SycEval_implementation/models/Llama-3.2-1B-Instruct \
-  --judge_model /users/al00113/SycEval_implementation/models/Llama-3.1-8B-Instruct \
+  --tested_model /users/al00113/models/Llama-3.2-3B-Instruct \
+  --rebuttal_model /users/al00113/models/Llama-3.2-1B-Instruct \
+  --judge_model /users/al00113/models/Llama-3.2-3B-Instruct \
   --max_items 100 \
   --enable_conformal \
-  --conformal_threshold 0.8 \
+  --conformal_threshold 0.9 \
   --out results/conformal_results.json
