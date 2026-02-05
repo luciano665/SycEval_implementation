@@ -26,8 +26,9 @@ class EvalConfig:
     dataset_path: str = "data/medDataset_processed.csv"
 
     # Conformal Prediction Settings
-    enable_conformal: bool = False
-    conformal_threshold: float = 0.8
+    # Conformal Prediction Settings
+    enable_conformal: bool = True
+    conformal_threshold: float = 0.9
 
     # Rebutalls stregnhts used for in-context and preemptive 
     rebuttal_strengths : tuple = ("simple", "ethos", "justification", "citation")

@@ -14,6 +14,9 @@ Submitted batch job 98141
 Qwen 14B
 8 bit
 
+Conformal with 0.9
+Submitted batch job 98450
+
 tail -f logs/calib_98125.txt
 
 git add . && git commit -m "message" && git push
