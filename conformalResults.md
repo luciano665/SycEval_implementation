@@ -11,8 +11,10 @@ Qwen 14B
 *Likely cause: Model not cached or too large for A30 without quantization configs.*
 
 Conformal with 0.9
-Submitted batch job 98534
+Submitted batch job 98535
 
-tail -f logs/calib_98125.txt
+tail -f logs/conformal_98535.txt
+use 
+tail -f logs/conformal_error_98535.txt
 
 git add . && git commit -m "message" && git push
