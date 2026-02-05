@@ -31,7 +31,7 @@ from metrics import classify_sychophancy, two_proportion_z, ci_binomial, summari
 
 from claims import decompose_answer, reconstruct_answer
 from conformal import filter_claims
-from scorers import score_claim_sycophancy
+from scorers import score_claim_sycophancy, judge_claim_support
 from .syco_risk import sycophancy_risk_score
 from .conformal_thresholds import (
     ThresholdFitResult,
@@ -44,14 +44,31 @@ from logger_utils import get_logger
 
 logger = get_logger(__name__)
 
+def purify_from_scored_claims(
+    claims: List[str],
+    scores: List[float],
+    claim_threshold: float,
+) -> Tuple[str, List[str], List[str]]:
+    """
+    Filter already-scored claims and reconstruct a purified answer.
+    Returns (purified_answer, kept_claims, dropped_claims).
+    """
+    kept_claims, dropped_claims = filter_claims(claims, scores, claim_threshold)
+    if kept_claims:
+        purified = reconstruct_answer(kept_claims)
+    else:
+        purified = "(No valid claims found)"
+    return purified, kept_claims, dropped_claims
+
 def purify_answer_with_claims(
     answer: str,
     item: Dict[str, str],
     cfg: EvalConfig,
-) -> Tuple[str, List[str], List[str], List[str]]:
+    claim_threshold: float,
+) -> Tuple[str, List[str], List[str], List[str], List[float]]:
     """
     Decompose -> score -> filter -> reconstruct to reduce sycophantic content.
-    Returns (purified_answer, kept_claims, dropped_claims, all_claims).
+    Returns (purified_answer, kept_claims, dropped_claims, all_claims, scores).
     """
     claims = decompose_answer(
         answer,
@@ -69,12 +86,12 @@ def purify_answer_with_claims(
         )
         for c in claims
     ]
-    kept_claims, dropped_claims = filter_claims(claims, scores, cfg.claim_threshold)
-    if kept_claims:
-        purified = reconstruct_answer(kept_claims)
-    else:
-        purified = "(No valid claims found)"
-    return purified, kept_claims, dropped_claims, claims
+    purified, kept_claims, dropped_claims = purify_from_scored_claims(
+        claims,
+        scores,
+        claim_threshold,
+    )
+    return purified, kept_claims, dropped_claims, claims, scores
 
 # 1) Phase 1: initial answer (baseline unchanged)
 def initial_answer(cfg: EvalConfig, item: Dict[str, str]) -> Tuple[str, str]:
@@ -234,12 +251,16 @@ def calibration_collect(
     cfg: EvalConfig,
     items: List[Dict[str, str]],
     risk_scorer_model: str,
-) -> Tuple[List[float], List[int], List[Hashable], List[Dict[str, Any]]]:
+    claim_alpha: float,
+) -> Tuple[float, List[float], List[int], List[Hashable], List[Dict[str, Any]]]:
 
     """
     Calibration phase (NO rewriting):
     For each rebuttal-step instance:
       - produce draft
+      - decompose into claims and collect claim scores + bad labels
+      - fit tau_claim to control bad-claim rate at claim_alpha
+      - purify drafts using tau_claim
       - judge draft label
       - compute draft sycophancy kind
       - define bad = 1 if regressive else 0
@@ -247,16 +268,21 @@ def calibration_collect(
       - store group key
 
     Returns:
+      tau_claim: calibrated claim threshold
       scores: list of s values
       bad: list of y values (0/1)
       groups: list of group keys for Option A
       records: debug records (useful to inspect calibration)
     """
 
-    scores: List[float] = [] 
+    scores: List[float] = []
     bad: List[int] = []
     groups: List[Hashable] = []
     records: List[Dict[str, Any]] = []
+
+    claim_scores: List[float] = []
+    claim_bad: List[int] = []
+    draft_cache: List[Dict[str, Any]] = []
 
     for i, item in enumerate(tqdm(items, desc="Calibration")):
         q = item['question']
@@ -270,59 +296,105 @@ def calibration_collect(
 
         for where, drafts in [("in-context", in_context), ("preemptive", preemptive)]:
             for strength, rebuttal, draft_answer in drafts:
-                draft_answer, kept_claims, dropped_claims, all_claims = purify_answer_with_claims(
+                claims = decompose_answer(
                     draft_answer,
-                    item,
-                    cfg,
-                )
-                draft_label = judge_local(
-                    cfg.judge_model,
-                    q,
-                    truth,
-                    draft_answer,
+                    cfg.rebuttal_model,
                     temperature=cfg.temperature,
                     backend=cfg.backend,
                 )
-                # Classify draft transition
-                draft_kind = classify_sychophancy(lab0, draft_label)
+                scores_for_claims = [
+                    score_claim_sycophancy(
+                        c,
+                        q,
+                        cfg.judge_model,
+                        temperature=cfg.temperature,
+                        backend=cfg.backend,
+                    )
+                    for c in claims
+                ]
+                for claim, score in zip(claims, scores_for_claims):
+                    supported = judge_claim_support(
+                        claim,
+                        q,
+                        truth,
+                        cfg.judge_model,
+                        temperature=cfg.temperature,
+                        backend=cfg.backend,
+                    )
+                    claim_scores.append(float(score))
+                    claim_bad.append(0 if supported else 1)
 
-                y = 1 if draft_kind == "regressive" else 0
-
-                # Compute numeric sycophancy risk score
-                s = sycophancy_risk_score(
-                    scorer_model=risk_scorer_model,
-                    question=q,
-                    truth=truth,
-                    rebuttal=rebuttal,
-                    initial_answer=ai0,
-                    draft_answer=draft_answer,
-                    backend=cfg.backend,
-                    temperature=cfg.temperature,
-                )
-
-                # Compute group key
-                group_key = make_group_key(where, strength, lab0)
-
-                scores.append(float(s))
-                bad.append(int(y))
-                groups.append(group_key)
-
-                records.append({
-                    "idx": i,  # question index in calibration subset
-                    "where": where,  # in-context/preemptive
-                    "strength": strength,  # rebuttal strength
-                    "first_label": lab0,  # initial correctness label
-                    "draft_label": draft_label,  # draft correctness label
-                    "draft_sycophancy": draft_kind,  # draft sycophancy kind
-                    "bad": int(y),  # bad label (0/1)
-                    "risk_score": float(s),  # risk score
-                    "group_key": str(group_key),  # group key as string for JSON safety
-                    "claims_total": len(all_claims),
-                    "claims_kept": len(kept_claims),
-                    "claims_dropped": len(dropped_claims),
+                draft_cache.append({
+                    "idx": i,
+                    "where": where,
+                    "strength": strength,
+                    "first_label": lab0,
+                    "question": q,
+                    "truth": truth,
+                    "rebuttal": rebuttal,
+                    "initial_answer": ai0,
+                    "draft_answer_raw": draft_answer,
+                    "claims": claims,
+                    "claim_scores": scores_for_claims,
                 })
 
-    return scores, bad, groups, records
+    if claim_scores:
+        tau_claim = float(fit_global_threshold(claim_scores, claim_bad, claim_alpha))
+    else:
+        tau_claim = 0.5
+        logger.warning("No claims found in calibration; defaulting tau_claim to 0.5")
+
+    for cached in draft_cache:
+        purified_answer, kept_claims, dropped_claims = purify_from_scored_claims(
+            cached["claims"],
+            cached["claim_scores"],
+            tau_claim,
+        )
+        draft_label = judge_local(
+            cfg.judge_model,
+            cached["question"],
+            cached["truth"],
+            purified_answer,
+            temperature=cfg.temperature,
+            backend=cfg.backend,
+        )
+        draft_kind = classify_sychophancy(cached["first_label"], draft_label)
+        y = 1 if draft_kind == "regressive" else 0
+
+        s = sycophancy_risk_score(
+            scorer_model=risk_scorer_model,
+            question=cached["question"],
+            truth=cached["truth"],
+            rebuttal=cached["rebuttal"],
+            initial_answer=cached["initial_answer"],
+            draft_answer=purified_answer,
+            backend=cfg.backend,
+            temperature=cfg.temperature,
+        )
+
+        group_key = make_group_key(cached["where"], cached["strength"], cached["first_label"])
+
+        scores.append(float(s))
+        bad.append(int(y))
+        groups.append(group_key)
+
+        records.append({
+            "idx": cached["idx"],
+            "where": cached["where"],
+            "strength": cached["strength"],
+            "first_label": cached["first_label"],
+            "draft_label": draft_label,
+            "draft_sycophancy": draft_kind,
+            "bad": int(y),
+            "risk_score": float(s),
+            "group_key": str(group_key),
+            "claims_total": len(cached["claims"]),
+            "claims_kept": len(kept_claims),
+            "claims_dropped": len(dropped_claims),
+            "tau_claim": float(tau_claim),
+        })
+
+    return tau_claim, scores, bad, groups, records
 
 # 5) Fit thresholds (tau) from calibration data
 def fit_thresholds(
@@ -365,15 +437,18 @@ def test_apply(
     risk_scorer_model: str, 
     fit: ThresholdFitResult,
     enable_rewrite: bool,
+    claim_threshold: float,
 ) -> pd.DataFrame:
     """
     Test phase:
     For each rebuttal-step instance:
       - generate draft
+      - purify draft via claim filtering (using calibrated claim_threshold)
       - compute risk score s
       - choose tau (global or group)
       - if s > tau and enable_rewrite: rewrite -> final answer
       - else final answer = draft
+      - purify final answer via claim filtering
       - judge final answer label
       - compute sycophancy kind from lab0 -> final_label
       - store row
@@ -400,7 +475,8 @@ def test_apply(
                     draft_kept_claims,
                     draft_dropped_claims,
                     draft_all_claims,
-                ) = purify_answer_with_claims(draft_answer, item, cfg)
+                    _draft_scores,
+                ) = purify_answer_with_claims(draft_answer, item, cfg, claim_threshold)
                 draft_label = judge_local(
                     cfg.judge_model,
                     q,
@@ -446,7 +522,8 @@ def test_apply(
                     final_kept_claims,
                     final_dropped_claims,
                     final_all_claims,
-                ) = purify_answer_with_claims(final_answer, item, cfg)
+                    _final_scores,
+                ) = purify_answer_with_claims(final_answer, item, cfg, claim_threshold)
 
                 # judge correctness of final answer
                 final_label = judge_local(
@@ -487,7 +564,11 @@ def test_apply(
     return pd.DataFrame(rows)
 
 # 7) JSON helpers to save and load thresholds
-def threshold_to_json(fit: ThresholdFitResult) -> Dict[str, Any]:
+def threshold_to_json(
+    fit: ThresholdFitResult,
+    tau_claim: Optional[float],
+    claim_alpha: Optional[float],
+) -> Dict[str, Any]:
     """Convert thresholds to a JSON-serializable dict"""
     tau_by_group_out = None
 
@@ -499,10 +580,12 @@ def threshold_to_json(fit: ThresholdFitResult) -> Dict[str, Any]:
         "alpha": float(fit.alpha),
         "tau_global": float(fit.tau_global),
         "tau_by_group": tau_by_group_out,
+        "tau_claim": None if tau_claim is None else float(tau_claim),
+        "claim_alpha": None if claim_alpha is None else float(claim_alpha),
     }
 
 
-def thresholds_from_json(d: Dict[str, Any]) -> ThresholdFitResult:
+def thresholds_from_json(d: Dict[str, Any]) -> Tuple[ThresholdFitResult, Optional[float], Optional[float]]:
     """
     Load thresholds from JSON.
 
@@ -521,7 +604,14 @@ def thresholds_from_json(d: Dict[str, Any]) -> ThresholdFitResult:
     if isinstance(tbg, dict):
         tau_by_group = {k: float(v) for k, v in tbg.items()}
     
-    return ThresholdFitResult(alpha=alpha, tau_global=tau_global, tau_by_group=tau_by_group)
+    tau_claim = d.get("tau_claim", None)
+    claim_alpha = d.get("claim_alpha", None)
+    if tau_claim is not None:
+        tau_claim = float(tau_claim)
+    if claim_alpha is not None:
+        claim_alpha = float(claim_alpha)
+
+    return ThresholdFitResult(alpha=alpha, tau_global=tau_global, tau_by_group=tau_by_group), tau_claim, claim_alpha
     
 # 8) Main: supports separate runs or all-in-one
 def main() -> None:
@@ -540,6 +630,7 @@ def main() -> None:
     # ---- Conformal args ----
     parser.add_argument("--mode", type=str, default="both", choices=["calibrate", "test", "both"], help="Which run mode to execute")  # run mode
     parser.add_argument("--alpha", type=float, default=0.10, help="Target upper bound for regressive rate among accepted drafts")  # alpha
+    parser.add_argument("--claim_alpha", type=float, default=None, help="Target upper bound for bad claims among kept claims")  # claim alpha
     parser.add_argument("--calib_frac", type=float, default=0.5, help="Fraction of items to use for calibration in mode=both")  # calib/test split
     parser.add_argument("--use_group_thresholds", action="store_true", help="Enable Option A conditional thresholds")  # option A
     parser.add_argument("--risk_scorer_model", type=str, default="", help="Model used to compute risk score s; defaults to judge_model")  # scorer model
@@ -564,6 +655,7 @@ def main() -> None:
     # Choose risk scorer model (default judge)
     risk_scorer_model = args.risk_scorer_model.strip() or cfg.judge_model
     cfg.claim_threshold = float(args.claim_threshold)
+    claim_alpha = float(args.claim_alpha) if args.claim_alpha is not None else float(args.alpha)
 
     # Get data from dataset
     all_data = load_data_local(
@@ -574,10 +666,11 @@ def main() -> None:
 
     # Mode: CALIBRATE ONLY
     if args.mode == "calibrate":
-        scores, bad, groups, calib_records = calibration_collect(
+        tau_claim, scores, bad, groups, calib_records = calibration_collect(
             cfg=cfg,
             items=all_data,
             risk_scorer_model=risk_scorer_model,
+            claim_alpha=claim_alpha,
         )
 
         # Fit thresholds from calibration data
@@ -590,7 +683,7 @@ def main() -> None:
         )
 
         with open(args.thresholds_out, "w", encoding="utf-8") as f:
-            json.dump(threshold_to_json(fit), f, indent=2, ensure_ascii=False)
+            json.dump(threshold_to_json(fit, tau_claim, claim_alpha), f, indent=2, ensure_ascii=False)
         
         output_obj = {  # build an output JSON object
             "metadata": {  # metadata block
@@ -603,12 +696,13 @@ def main() -> None:
                     "max_items": len(all_data),  # number of items used
                     "temperature": cfg.temperature,  # temperature
                     "backend": cfg.backend,  # backend
-                    "claim_threshold": cfg.claim_threshold,  # claim filter threshold
+                    "claim_threshold": float(tau_claim),  # claim filter threshold
+                    "claim_alpha": float(claim_alpha),  # claim alpha
                     "alpha": float(args.alpha),  # alpha
                     "use_group_thresholds": bool(args.use_group_thresholds),  # option A
                 },
                 "thresholds_saved_to": args.thresholds_out,  # thresholds file path
-                "thresholds": threshold_to_json(fit),  # thresholds values
+                "thresholds": threshold_to_json(fit, tau_claim, claim_alpha),  # thresholds values
             },
             "calibration_debug_records": calib_records,  # raw calibration records for inspection
         }
@@ -623,8 +717,10 @@ def main() -> None:
     # Mode: TEST ONLY
     if args.mode == "test":
         with open(args.thresholds_in, "r", encoding="utf-8") as f:  
-            fit = thresholds_from_json(json.load(f))  # load thresholds from JSON
+            fit, tau_claim, _claim_alpha_in = thresholds_from_json(json.load(f))  # load thresholds from JSON
 
+        claim_threshold = cfg.claim_threshold if tau_claim is None else float(tau_claim)
+        claim_alpha_used = claim_alpha if _claim_alpha_in is None else float(_claim_alpha_in)
 
         # run test using loaded thresholds
         df = test_apply(
@@ -633,6 +729,7 @@ def main() -> None:
             risk_scorer_model=risk_scorer_model,  # scorer model
             fit=fit,  # loaded thresholds
             enable_rewrite=bool(args.enable_rewrite),  # rewrite on/off
+            claim_threshold=claim_threshold,
         )
 
 
@@ -665,11 +762,12 @@ def main() -> None:
                     "max_items": len(all_data),  # test items used
                     "temperature": cfg.temperature,  # temperature
                     "backend": cfg.backend,  # backend
-                    "claim_threshold": cfg.claim_threshold,  # claim filter threshold
+                    "claim_threshold": float(claim_threshold),  # claim filter threshold
+                    "claim_alpha": float(claim_alpha_used),  # claim alpha
                     "enable_rewrite": bool(args.enable_rewrite),  # rewrite flag
                 },
                 "thresholds_loaded_from": args.thresholds_in,  # thresholds file path
-                "thresholds": threshold_to_json(fit),  # thresholds values
+                "thresholds": threshold_to_json(fit, tau_claim, claim_alpha_used),  # thresholds values
             },
             "statistical_results": {  
                 "overall_rates": all_stats,  # overall stats
@@ -701,10 +799,11 @@ def main() -> None:
     test_items = all_data[split_idx:]  # test slice
     
     # run calibration collection
-    scores, bad, groups, calib_records = calibration_collect(  
+    tau_claim, scores, bad, groups, calib_records = calibration_collect(  
         cfg=cfg,  # config
         items=calib_items,  # calibration items only
         risk_scorer_model=risk_scorer_model,  # scorer model
+        claim_alpha=claim_alpha,
     )
 
     # fit tau from calibration
@@ -717,7 +816,7 @@ def main() -> None:
     )
 
     with open(args.thresholds_out, "w", encoding="utf-8") as f:  
-        json.dump(threshold_to_json(fit), f, indent=2, ensure_ascii=False)  
+        json.dump(threshold_to_json(fit, tau_claim, claim_alpha), f, indent=2, ensure_ascii=False)  
 
     # run test on test subset
     df = test_apply(  
@@ -726,6 +825,7 @@ def main() -> None:
         risk_scorer_model=risk_scorer_model,  # scorer model
         fit=fit,  # thresholds in memory
         enable_rewrite=bool(args.enable_rewrite),  # rewrite toggle
+        claim_threshold=float(tau_claim),
     )
 
 
@@ -759,14 +859,15 @@ def main() -> None:
                 "test_items": len(test_items),  # test size
                 "temperature": cfg.temperature,  # temperature
                 "backend": cfg.backend,  # backend
-                "claim_threshold": cfg.claim_threshold,  # claim filter threshold
+                "claim_threshold": float(tau_claim),  # claim filter threshold
+                "claim_alpha": float(claim_alpha),  # claim alpha
                 "alpha": float(args.alpha),  # alpha
                 "calib_frac": float(args.calib_frac),  # split fraction
                 "use_group_thresholds": bool(args.use_group_thresholds), 
                 "enable_rewrite": bool(args.enable_rewrite),  # rewrite toggle
             },
             "thresholds_saved_to": args.thresholds_out,  # thresholds file path
-            "thresholds": threshold_to_json(fit),  # thresholds values
+            "thresholds": threshold_to_json(fit, tau_claim, claim_alpha),  # thresholds values
         },
         "statistical_results": {  
             "overall_rates": all_stats,  # overall
