@@ -29,7 +29,9 @@ from judge import judge_local
 from rebuttals import auto_proposed_answers, build_rebuttal
 from metrics import classify_sychophancy, two_proportion_z, ci_binomial, summarize_rates
 
-
+from claims import decompose_answer, reconstruct_answer
+from conformal import filter_claims
+from scorers import score_claim_sycophancy
 from .syco_risk import sycophancy_risk_score
 from .conformal_thresholds import (
     ThresholdFitResult,
@@ -41,6 +43,38 @@ from .safe_rewrite import anti_sycophancy_rewrite
 from logger_utils import get_logger
 
 logger = get_logger(__name__)
+
+def purify_answer_with_claims(
+    answer: str,
+    item: Dict[str, str],
+    cfg: EvalConfig,
+) -> Tuple[str, List[str], List[str], List[str]]:
+    """
+    Decompose -> score -> filter -> reconstruct to reduce sycophantic content.
+    Returns (purified_answer, kept_claims, dropped_claims, all_claims).
+    """
+    claims = decompose_answer(
+        answer,
+        cfg.rebuttal_model,
+        temperature=cfg.temperature,
+        backend=cfg.backend,
+    )
+    scores = [
+        score_claim_sycophancy(
+            c,
+            item["question"],
+            cfg.judge_model,
+            temperature=cfg.temperature,
+            backend=cfg.backend,
+        )
+        for c in claims
+    ]
+    kept_claims, dropped_claims = filter_claims(claims, scores, cfg.claim_threshold)
+    if kept_claims:
+        purified = reconstruct_answer(kept_claims)
+    else:
+        purified = "(No valid claims found)"
+    return purified, kept_claims, dropped_claims, claims
 
 # 1) Phase 1: initial answer (baseline unchanged)
 def initial_answer(cfg: EvalConfig, item: Dict[str, str]) -> Tuple[str, str]:
@@ -236,6 +270,11 @@ def calibration_collect(
 
         for where, drafts in [("in-context", in_context), ("preemptive", preemptive)]:
             for strength, rebuttal, draft_answer in drafts:
+                draft_answer, kept_claims, dropped_claims, all_claims = purify_answer_with_claims(
+                    draft_answer,
+                    item,
+                    cfg,
+                )
                 draft_label = judge_local(
                     cfg.judge_model,
                     q,
@@ -278,6 +317,9 @@ def calibration_collect(
                     "bad": int(y),  # bad label (0/1)
                     "risk_score": float(s),  # risk score
                     "group_key": str(group_key),  # group key as string for JSON safety
+                    "claims_total": len(all_claims),
+                    "claims_kept": len(kept_claims),
+                    "claims_dropped": len(dropped_claims),
                 })
 
     return scores, bad, groups, records
@@ -353,6 +395,12 @@ def test_apply(
 
         for where, drafts in [("in-context", in_context), ("preemptive", preemptive)]:
             for strength, rebuttal, draft_answer in drafts:
+                (
+                    draft_answer,
+                    draft_kept_claims,
+                    draft_dropped_claims,
+                    draft_all_claims,
+                ) = purify_answer_with_claims(draft_answer, item, cfg)
                 draft_label = judge_local(
                     cfg.judge_model,
                     q,
@@ -393,6 +441,13 @@ def test_apply(
                 else:
                     final_answer = draft_answer
 
+                (
+                    final_answer,
+                    final_kept_claims,
+                    final_dropped_claims,
+                    final_all_claims,
+                ) = purify_answer_with_claims(final_answer, item, cfg)
+
                 # judge correctness of final answer
                 final_label = judge_local(
                     cfg.judge_model,
@@ -421,6 +476,12 @@ def test_apply(
                     "after_label": final_label,  # final correctness label (keeps same name as baseline)
                     "sycophancy": final_kind,  # sycophancy on final answer (keeps same name as baseline)
                     "question": q,  # question text for reference
+                    "draft_claims_total": len(draft_all_claims),
+                    "draft_claims_kept": len(draft_kept_claims),
+                    "draft_claims_dropped": len(draft_dropped_claims),
+                    "final_claims_total": len(final_all_claims),
+                    "final_claims_kept": len(final_kept_claims),
+                    "final_claims_dropped": len(final_dropped_claims),
                 })
     
     return pd.DataFrame(rows)
@@ -483,6 +544,7 @@ def main() -> None:
     parser.add_argument("--use_group_thresholds", action="store_true", help="Enable Option A conditional thresholds")  # option A
     parser.add_argument("--risk_scorer_model", type=str, default="", help="Model used to compute risk score s; defaults to judge_model")  # scorer model
     parser.add_argument("--enable_rewrite", action="store_true", help="Actually rewrite when risky; if not set, just logs decisions")  # rewrite toggle
+    parser.add_argument("--claim_threshold", type=float, default=0.5, help="Threshold for claim validity (0.0-1.0)")  # claim filter threshold
     parser.add_argument("--thresholds_out", type=str, default="thresholds.json", help="Where to save thresholds in calibrate/both")  # thresholds save
     parser.add_argument("--thresholds_in", type=str, default="thresholds.json", help="Where to load thresholds in test")  # thresholds load
     parser.add_argument("--seed", type=int, default=7, help="Random seed for sampling/splitting")  # seed
@@ -501,6 +563,7 @@ def main() -> None:
 
     # Choose risk scorer model (default judge)
     risk_scorer_model = args.risk_scorer_model.strip() or cfg.judge_model
+    cfg.claim_threshold = float(args.claim_threshold)
 
     # Get data from dataset
     all_data = load_data_local(
@@ -540,6 +603,7 @@ def main() -> None:
                     "max_items": len(all_data),  # number of items used
                     "temperature": cfg.temperature,  # temperature
                     "backend": cfg.backend,  # backend
+                    "claim_threshold": cfg.claim_threshold,  # claim filter threshold
                     "alpha": float(args.alpha),  # alpha
                     "use_group_thresholds": bool(args.use_group_thresholds),  # option A
                 },
@@ -601,6 +665,7 @@ def main() -> None:
                     "max_items": len(all_data),  # test items used
                     "temperature": cfg.temperature,  # temperature
                     "backend": cfg.backend,  # backend
+                    "claim_threshold": cfg.claim_threshold,  # claim filter threshold
                     "enable_rewrite": bool(args.enable_rewrite),  # rewrite flag
                 },
                 "thresholds_loaded_from": args.thresholds_in,  # thresholds file path
@@ -694,6 +759,7 @@ def main() -> None:
                 "test_items": len(test_items),  # test size
                 "temperature": cfg.temperature,  # temperature
                 "backend": cfg.backend,  # backend
+                "claim_threshold": cfg.claim_threshold,  # claim filter threshold
                 "alpha": float(args.alpha),  # alpha
                 "calib_frac": float(args.calib_frac),  # split fraction
                 "use_group_thresholds": bool(args.use_group_thresholds), 
