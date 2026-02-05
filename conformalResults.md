@@ -10,6 +10,10 @@ Qwen 14B
 **STATUS: FAILED (Silent Crash/OOM/Network)**
 *Likely cause: Model not cached or too large for A30 without quantization configs.*
 
+Submitted batch job 98141
+Qwen 14B
+8 bit
+
 tail -f logs/calib_98125.txt
 
 git add . && git commit -m "message" && git push
