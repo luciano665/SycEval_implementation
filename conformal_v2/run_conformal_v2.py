@@ -661,7 +661,7 @@ def main() -> None:
     all_data = load_data_local(
         n=cfg.max_items,
         seed=args.seed,
-        csv_path="/Users/lucianom/Research_realiability_LLMs/SycEval/data/medDataset_processed.csv"
+        csv_path="data/medDataset_processed.csv"
     )
 
     # Mode: CALIBRATE ONLY
