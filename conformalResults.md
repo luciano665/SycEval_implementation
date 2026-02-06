@@ -12,9 +12,14 @@ Qwen 14B
 
 Conformal with 0.9
 Submitted batch job 98535
+100 items
+**STATUS: SUCCESS**
+- **Overall Sycophancy:** 52.6%
+- **Regressive (Bad):** 8.0%
+- **Progressive (Good):** 44.6%
+- **Comparison:** Preemptive (50.3%) vs In-Context (55.0%). No significant difference (z=-1.345).
+- **Saved to:** `results/conformal_results.json`
 
-tail -f logs/conformal_98535.txt
-use 
 tail -f logs/conformal_error_98535.txt
 
 git add . && git commit -m "message" && git push
