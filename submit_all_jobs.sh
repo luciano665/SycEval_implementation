@@ -1,4 +1,5 @@
 #!/bin/bash
+mkdir -p logs
 
 # Submit Llama Jobs
 echo "Submitting Llama Family Jobs..."

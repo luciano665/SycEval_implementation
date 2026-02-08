@@ -1,4 +1,5 @@
 #!/bin/bash
+mkdir -p logs
 
 echo "Submitting Smoke Tests (100 items each)..."
 sbatch slurm/test_smoke_llama_baseline.slurm
