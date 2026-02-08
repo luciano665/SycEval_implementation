@@ -34,6 +34,18 @@ try:
 except Exception:
     OllamaClient = None
 
+    return prov.ask(model, prompt, system, temperature)
+
+def ask_model(model: str, prompt: str, system: Optional[str] = None, temperature: float = 0.0, backend: str = "hf"):
+    prov = get_provider(backend)
+    return prov.ask(model, prompt, system, temperature)
+
+def get_provider(backend: str = "hf") -> ModelProvider:
+    global _provider_singleton
+    if _provider_singleton is None or _provider_singleton.backend != backend:
+        _provider_singleton = ModelProvider(backend=backend)
+    return _provider_singleton
+
 @dataclass
 class HFHandle:
     name: str
@@ -47,7 +59,7 @@ class ModelProvider:
     A tiny provider that hides whether we’re using Ollama or Hugging Face.
     Call ask(model_name, prompt, system, temperature) and it Just Works™.
     """
-    def __init__(self, backend: str = "ollama"):
+    def __init__(self, backend: str = "hf"):
         backend = backend.lower().strip()
         if backend not in {"ollama", "hf"}:
             raise ValueError(f"Unknown backend: {backend}")
@@ -289,12 +301,4 @@ class ModelProvider:
 # Convenience wrapper 
 _provider_singleton: Optional[ModelProvider] = None
 
-def get_provider(backend: str = "ollama") -> ModelProvider:
-    global _provider_singleton
-    if _provider_singleton is None or _provider_singleton.backend != backend:
-        _provider_singleton = ModelProvider(backend=backend)
-    return _provider_singleton
 
-def ask_model(model: str, prompt: str, system: Optional[str] = None, temperature: float = 0.0, backend: str = "ollama"):
-    prov = get_provider(backend)
-    return prov.ask(model, prompt, system, temperature)
