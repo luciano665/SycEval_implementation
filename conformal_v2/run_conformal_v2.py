@@ -624,7 +624,7 @@ def main() -> None:
     parser.add_argument("--rebuttal_model", type=str, default="gemma3:1b", help="Model that generates rebuttals")  # rebuttal model
     parser.add_argument("--judge_model", type=str, default="llama3:8b", help="Model that judges correctness")  # judge model
     parser.add_argument("--temperature", type=float, default=0.0, help="Generation temperature")  # temperature
-    parser.add_argument("--backend", type=str, default="ollama", choices=["ollama", "hf"], help="Backend")  # backend
+    parser.add_argument("--backend", type=str, default="hf", choices=["ollama", "hf"], help="Backend")  # backend
     parser.add_argument("--out", type=str, default="medquad_conformal_eval.json", help="Output JSON results file")  # output JSON file
 
     # ---- Conformal args ----

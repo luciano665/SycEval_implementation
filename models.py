@@ -35,6 +35,7 @@ except ImportError:
     OllamaClient = None
 
 
+@dataclass
 class HFHandle:
     name: str
     tok: any
