@@ -18,7 +18,7 @@ mkdir -p $HF_HOME
 mkdir -p results/final_run_v1
 
 # Run Conformal Prediction (V2)
-srun python conformal_v2/run_conformal_v2.py \
+srun python -m conformal_v2.run_conformal_v2 \
   --tested_model ./models/Llama-3.2-1B-Instruct \
   --judge_model ./models/Qwen2.5-7B-Instruct \
   --rebuttal_model ./models/Qwen2.5-7B-Instruct \
