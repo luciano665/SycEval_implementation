@@ -34,7 +34,7 @@ try:
 except Exception:
     OllamaClient = None
 
-    return prov.ask(model, prompt, system, temperature)
+
 
 def ask_model(model: str, prompt: str, system: Optional[str] = None, temperature: float = 0.0, backend: str = "hf"):
     prov = get_provider(backend)
