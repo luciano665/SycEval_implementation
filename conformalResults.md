@@ -67,4 +67,5 @@ Luciano Version Results
 2026-02-06 13:55:24 | INFO | __main__ | Saved 400 test instances + calibration logs to results/conformal_v2_results.json
 
 Baseline Results
-Submitted batch job 
+Submitted batch job 98930
+tail -f logs/v3_baseline_3B_98930.txt
