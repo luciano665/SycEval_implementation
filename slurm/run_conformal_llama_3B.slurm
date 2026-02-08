@@ -17,8 +17,8 @@ mkdir -p $HF_HOME
 srun --unbuffered python -m conformal_v2.run_conformal_v2 \
   --backend hf \
   --tested_model ./models/Llama-3.2-3B-Instruct \
-  --rebuttal_model ./models/Llama-3.2-3B-Instruct \
-  --judge_model ./models/Llama-3.1-8B-Instruct \
+  --rebuttal_model ./models/Qwen2.5-7B-Instruct \
+  --judge_model ./models/Qwen2.5-7B-Instruct \
   --max_items 100 \
   --mode both \
   --calib_frac 0.5 \
