@@ -14,11 +14,16 @@ conda activate syceval
 export HF_HOME=$SCRATCH/hf_home
 mkdir -p $HF_HOME
 
-srun --unbuffered python -u distill_eval.py \
-  --backend hf \
+# Create results directory if it doesn't exist
+mkdir -p results/final_run_v1
+
+# Run Distillation Evaluation (V3 Baseline)
+# Teacher = Student for baseline (using larger model as baseline for this set)
+python distill_eval.py \
   --teacher_model ./models/gemma-3-4b-it \
-  --student_model ./models/gemma-3-1b-it \
-  --judge_model ./models/Qwen2.5-7B-Instruct \
+  --student_model ./models/gemma-3-4b-it \
   --rebuttal_model ./models/Qwen2.5-7B-Instruct \
-  --max_items 100 \
-  --out gemma_distill_results_100.json
+  --judge_model ./models/Qwen2.5-7B-Instruct \
+  --max_items 1000 \
+  --out results/final_run_v1/gemma_baseline.json \
+  --backend hf

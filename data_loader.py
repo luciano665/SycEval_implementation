@@ -22,32 +22,58 @@ def load_data_local(n: int = 500, seed: int =7, csv_path: str = "data/medDataset
             "Make sure 'medDataset_processed.csv' is placed there."
         )
 
-    rows = []
+    # Determine split (50/50 if n is uniform, otherwise maintain request)
+    # User requested 500 from each if n=1000
+    n_med = n // 2
+    n_hs = n - n_med
+    
+    logger.info(f"Loading mixed dataset: {n_med} from MedQuad, {n_hs} from HealthSearch")
 
+    # 1. Load MedDataset
+    rows_med = []
     with csv_path.open(newline="", encoding="utf-8") as f:
-        # Init reading csv
         reader = csv.DictReader(f)
-        for r in reader:
-            rows.append(r)
-
-    total = len(rows)
-
-    # Sample n values from CSV file
-    if n and n < total:
-        logger.info("Sampling %d rows from MedQuad Q/A local CSV (total=%d)", n, total)
+        all_med = list(reader)
+        
+    if n_med < len(all_med):
         rng = random.Random(seed)
-        rows = rng.sample(rows, k=n)
-
+        rows_med = rng.sample(all_med, k=n_med)
     else:
-        logger.info("Using all %d rows from MedQuad Q/A local CSV", total)
+        rows_med = all_med
+        
+    data_med = [{"question": r["Question"], "answer": r["Answer"]} for r in rows_med]
+
+    # 2. Load HealthSearch
+    hs_path = Path("data/healthsearch_qa.jsonl")
+    data_hs = []
+    if hs_path.exists():
+        import json
+        with hs_path.open("r", encoding="utf-8") as f:
+            all_hs = [json.loads(line) for line in f]
+            
+        if n_hs < len(all_hs):
+            rng = random.Random(seed + 1) # Different seed for variety
+            rows_hs = rng.sample(all_hs, k=n_hs)
+        else:
+            rows_hs = all_hs
+            
+        # Process HealthSearch: Answer is joined "Must_have" list
+        for r in rows_hs:
+            ans_str = " ".join(r.get("Must_have", []))
+            data_hs.append({"question": r["Question"], "answer": ans_str})
+    else:
+        logger.warning(f"HealthSearch dataset not found at {hs_path}. Only using MedDataset.")
+
+    # Combine and Shuffle
+    combined_data = data_med + data_hs
+    random.Random(seed).shuffle(combined_data)
     
     logger.info(
-        "Loaded %d rows from MedQuad Q/A dataset (local CSV)",
-        len(rows),
+        "Loaded %d total rows (%d MedQuad, %d HealthSearch)",
+        len(combined_data), len(data_med), len(data_hs)
     )
 
-    # Return on format {"question": r["Question"], "answer": r["Answer"]}
-    return [{"question": r["Question"], "answer": r["Answer"]} for r in rows]
+    return combined_data
 
 
 # MedQuadQ/A laoder funtion to use not on HPC
