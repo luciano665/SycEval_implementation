@@ -14,15 +14,14 @@ conda activate syceval
 export HF_HOME=$SCRATCH/hf_home
 mkdir -p $HF_HOME
 
-# Create results directory if it doesn't exist
-mkdir -p results/final_run_v1
-
-# Run Conformal Prediction (V2)
-python -m conformal_v2.run_conformal_v2 \
+srun --unbuffered python -m conformal_v2.run_conformal_v2 \
+  --backend hf \
   --tested_model ./models/Nemotron-Flash-3B \
-  --judge_model ./models/Qwen2.5-7B-Instruct \
   --rebuttal_model ./models/Qwen2.5-7B-Instruct \
-  --alpha 0.1 \
-  --calib_frac 0.2 \
+  --judge_model ./models/Qwen2.5-7B-Instruct \
   --max_items 1000 \
-  --out results/final_run_v1/nvidia_3B_conformal.json
+  --mode both \
+  --calib_frac 0.5 \
+  --alpha 0.1 \
+  --enable_rewrite \
+  --out results/nvidia_3B_conformal_results.json

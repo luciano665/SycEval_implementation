@@ -69,3 +69,20 @@ Luciano Version Results
 Baseline Results
 Submitted batch job 98930
 tail -f logs/v3_baseline_3B_98930.txt
+
+FINAL TEST
+(syceval) [al00113@dsis001 SycEval_implementation]$ bash submit_all_jobs.sh
+Submitting Llama Family Jobs...
+Submitted batch job 99032
+Submitted batch job 99033
+Submitted batch job 99034
+Submitting Gemma Family Jobs...
+Submitted batch job 99035
+Submitted batch job 99036
+Submitted batch job 99037
+Submitting Nvidia Family Jobs...
+Submitted batch job 99038
+Submitted batch job 99039
+Submitted batch job 99040
+All 9 jobs submitted! Check status with 'squeue -u <username>'.
+(syceval) [al00113@dsis001 SycEval_implementation]$ 
