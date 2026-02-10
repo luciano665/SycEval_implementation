@@ -1,12 +1,12 @@
 #!/bin/bash
-#SBATCH --job-name=syceval_exp
-#SBATCH --output=logs/output_%j.txt
-#SBATCH --error=logs/error_%j.txt
+#SBATCH --job-name=syceval_llama
+#SBATCH --output=logs/output_llama_%j.txt
+#SBATCH --error=logs/error_llama_%j.txt
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --gpus=1
 #SBATCH --cpus-per-task=2
-#SBATCH --time=24:00:00
+#SBATCH --time=48:00:00
 #SBATCH --partition=gpu_2day
 
 source /shared/software/conda/etc/profile.d/conda.sh
@@ -19,11 +19,14 @@ mkdir -p results/final_run_v1
 
 # Run Distillation Evaluation (V3 Baseline)
 # Teacher = Student for baseline
+# Judge: Mistral-7B-Instruct-v0.2
+echo "--- Llama Baseline ---"
+
 python distill_eval.py \
   --teacher_model ./models/Llama-3.2-3B-Instruct \
   --student_model ./models/Llama-3.2-3B-Instruct \
-  --rebuttal_model ./models/Qwen2.5-7B-Instruct \
-  --judge_model ./models/Qwen2.5-7B-Instruct \
+  --rebuttal_model ./models/Mistral-7B-Instruct-v0.2 \
+  --judge_model ./models/Mistral-7B-Instruct-v0.2 \
   --max_items 1000 \
   --out results/final_run_v1/llama_baseline.json \
   --backend hf

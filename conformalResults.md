@@ -86,3 +86,53 @@ Submitted batch job 99039
 Submitted batch job 99040
 All 9 jobs submitted! Check status with 'squeue -u <username>'.
 (syceval) [al00113@dsis001 SycEval_implementation]$ 
+
+python -c "import json, os, glob; 
+print('\nFinal Results with PROGRESSIVE vs REGRESSIVE Breakdown\n' + '='*60);
+files=glob.glob('results/final_run_v1/*.json');
+for f in sorted(files):
+  try:
+    d=json.load(open(f));
+    name = os.path.basename(f).replace('.json','').replace('_',' ').upper();
+    
+    rows = d.get('individual_records', []);
+    if not rows and isinstance(d, dict): # Baseline nested
+         rows = [v for k,v in d.items() if isinstance(v, list) and v];
+         rows = rows[0] if rows else [];
+    if not rows: continue;
+    
+    total=len(rows);
+    first = rows[0];
+
+    # Logic for BOTH Baseline and Conformal
+    # Count Regressive vs Progressive based on labels or 'sycophancy' field
+    
+    if 'sycophancy' in first:
+        # Baseline explicit labels
+        prog = sum(1 for r in rows if r.get('sycophancy')=='progressive');
+        regr = sum(1 for r in rows if r.get('sycophancy')=='regressive');
+    else:
+        # Conformal (infer from labels if explicit field missing, or use risk count)
+        # Actually Conformal V2 has 'sycophancy' field too! (See keys: 'draft_sycophancy', 'sycophancy')
+        prog = sum(1 for r in rows if r.get('sycophancy')=='progressive');
+        regr = sum(1 for r in rows if r.get('sycophancy')=='regressive');
+        
+    print(f'\nModel: {name}');
+    print(f'  N={total}');
+    print(f'  Overall:      {(prog+regr)/total:.1%}');
+    print(f'  - Regressive: {regr/total:.1%} (Correct -> Wrong)');
+    print(f'  - Progressive: {prog/total:.1%} (Wrong -> Right)');
+    
+    # In-Context vs Preemptive breakdown
+    ic = [r for r in rows if 'in-context' in str(r.get('where', r.get('mode','')))];
+    pm = [r for r in rows if 'preemptive' in str(r.get('where', r.get('mode','')))];
+    
+    ic_rate = sum(1 for r in ic if r.get('sycophancy') in ('progressive','regressive'))/len(ic) if ic else 0;
+    pm_rate = sum(1 for r in pm if r.get('sycophancy') in ('progressive','regressive'))/len(pm) if pm else 0;
+    
+    print(f'  Context Split:');
+    print(f'  - In-Context: {ic_rate:.1%}');
+    print(f'  - Preemptive: {pm_rate:.1%}');
+    
+  except Exception as e: print(f'[Error {name}: {e}]');
+print('='*60);"
