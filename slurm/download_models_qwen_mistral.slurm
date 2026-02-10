@@ -5,7 +5,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --time=2:00:00
-#SBATCH --partition=general
+#SBATCH --partition=gpu_2day
 
 source /shared/software/conda/etc/profile.d/conda.sh
 conda activate syceval
