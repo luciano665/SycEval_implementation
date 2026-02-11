@@ -23,6 +23,6 @@ python distill_eval.py \
   --student_model ./models/Llama-3.2-3B-Instruct \
   --rebuttal_model ./models/Qwen2.5-7B-Instruct \
   --judge_model ./models/Qwen2.5-7B-Instruct \
-  --max_items 100 \
+  --max_items 30 \
   --out results/smoke_test_v1/llama_3B_baseline.json \
   --backend hf

@@ -24,5 +24,5 @@ srun python -m conformal_v2.run_conformal_v2 \
   --rebuttal_model ./models/Qwen2.5-7B-Instruct \
   --alpha 0.1 \
   --calib_frac 0.2 \
-  --max_items 100 \
+  --max_items 30 \
   --out results/smoke_test_v1/llama_3B_conformal.json
