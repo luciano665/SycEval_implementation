@@ -136,3 +136,21 @@ for f in sorted(files):
     
   except Exception as e: print(f'[Error {name}: {e}]');
 print('='*60);"
+
+(syceval) [al00113@dsis001 SycEval_implementation]$ bash submit_all_jobs.sh
+=== Submitting Model Download Job ===
+Download Job ID: 99144
+=== Submitting Qwen Experiments (Mistral Judge, 48h) ===
+Submitted batch job 99145
+Submitted batch job 99146
+Submitted batch job 99147
+=== Submitting Llama Experiments (Mistral Judge, 48h) ===
+Submitted batch job 99148
+Submitted batch job 99149
+Submitted batch job 99150
+=== Submitting Gemma Experiments (Mistral Judge, 48h) ===
+Submitted batch job 99151
+Submitted batch job 99152
+Submitted batch job 99153
+✅ All 9 jobs submitted! Experiments will start after models are downloaded.
+(syceval) [al00113@dsis001 SycEval_implementation]$ 
