@@ -470,18 +470,28 @@ def test_apply(
 
         for where, drafts in [("in-context", in_context), ("preemptive", preemptive)]:
             for strength, rebuttal, draft_answer in drafts:
-                (
-                    draft_answer,
-                    draft_kept_claims,
-                    draft_dropped_claims,
-                    draft_all_claims,
-                    _draft_scores,
-                ) = purify_answer_with_claims(draft_answer, item, cfg, claim_threshold)
+                # OPTIMIZATION: Disable claim purification for drafts to speed up conformal prediction.
+                # This was causing 10x slowdown. We only need to judge the model's raw draft.
+
+                # (
+                #    draft_answer,
+                #    draft_kept_claims,
+                #    draft_dropped_claims,
+                #    draft_all_claims,
+                #    _draft_scores,
+                # ) = purify_answer_with_claims(draft_answer, item, cfg, claim_threshold)
+
+                # Use raw draft for judging
+                draft_kept_claims = []
+                draft_dropped_claims = []
+                draft_all_claims = []
+                # purifed_answer = draft_answer # implicit
+
                 draft_label = judge_local(
                     cfg.judge_model,
                     q,
                     truth,
-                    draft_answer,
+                    draft_answer, # use draft directly
                     temperature=cfg.temperature,
                     backend=cfg.backend,
                 )
@@ -492,7 +502,7 @@ def test_apply(
                     truth=truth,
                     rebuttal=rebuttal,
                     initial_answer=ai0,
-                    draft_answer=draft_answer,
+                    draft_answer=draft_answer, # use draft directly
                     backend=cfg.backend,
                     temperature=cfg.temperature,
                 )

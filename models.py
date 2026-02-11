@@ -94,6 +94,33 @@ class ModelProvider:
                     h.model.to(device)
             return h
 
+        # If we are on GPU, check memory usage/slots before loading a new model
+        if device in ["cuda", "mps"]:
+             # Count how many models are currently on GPU
+             gpu_models = [h for h in self._hf_cache.values() if h.model.device.type != "cpu"]
+             
+             # If we have 2 or more models already on GPU, and we need to load a new one,
+             # we should make space. (A30 has 24GB, usually fits 3B + 7B easily).
+             # If the current model is already one of them, no need to swap.
+             is_already_on_gpu = (model_name in self._hf_cache and self._hf_cache[model_name].model.device.type != "cpu")
+             
+             if len(gpu_models) >= 2 and not is_already_on_gpu:
+                 # Evict the first one we find (simple policy) or all of them
+                 # For safety/simplicity in this specific 2-model pipeline: 
+                 # We'll evict everything to be safe IF we hit the limit, 
+                 # but efficiently we just want to ensure we don't OOM.
+                 # Let's try to keep 2. If we need a 3rd, we evict.
+                 pass
+                 
+                 logger.info("GPU slot full (>=2 models). Clearing GPU cache to make room...")
+                 for other_h in gpu_models:
+                     other_h.model.to("cpu")
+                 if torch.cuda.is_available():
+                    torch.cuda.empty_cache()
+
+             # If we are NOT full (e.g. 0 or 1 model), we do NOTHING. 
+             # This allows the second model to load without kicking out the first.
+             
         # Load new model (initially to CPU to avoid OOM during load)
         try:
             tok = AutoTokenizer.from_pretrained(model_name, use_fast=True, trust_remote_code=True)
@@ -205,18 +232,31 @@ class ModelProvider:
             else:
                 raise e
 
-        # If we are on GPU, swap out others before moving this one in
+        # If we are on GPU, check memory usage/slots before swapping
         if device in ["cuda", "mps"]:
-             for other_name, other_h in self._hf_cache.items():
-                if other_h.model.device.type != "cpu":
-                    logger.info(
-                        "Moving %s to CPU to free memory for %s",
-                        other_name,
-                        model_name,
-                    )
-                    other_h.model.to("cpu")
-                    if torch.cuda.is_available():
-                        torch.cuda.empty_cache()
+             # Count how many models are currently on GPU
+             gpu_models = [h for h in self._hf_cache.values() if h.model.device.type != "cpu"]
+             
+             # If we have 2 or more models already on GPU, and we need to load a new one,
+             # we should make space. (A30 has 24GB, usually fits 3B + 7B easily).
+             # If the current model is already one of them, no need to swap.
+             is_already_on_gpu = (model_name in self._hf_cache and self._hf_cache[model_name].model.device.type != "cpu")
+             
+             if len(gpu_models) >= 2 and not is_already_on_gpu:
+                 # Evict the first one we find (simple policy) or all of them
+                 # For safety/simplicity in this specific 2-model pipeline: 
+                 # We'll evict everything to be safe IF we hit the limit, 
+                 # but efficiently we just want to ensure we don't OOM.
+                 # Let's try to keep 2. If we need a 3rd, we evict.
+                 
+                 logger.info("GPU slot full (>=2 models). Clearing GPU cache to make room...")
+                 for other_h in gpu_models:
+                     other_h.model.to("cpu")
+                 if torch.cuda.is_available():
+                    torch.cuda.empty_cache()
+
+             # If we are NOT full (e.g. 0 or 1 model), we do NOTHING. 
+             # This allows the second model to load without kicking out the first.
              
              if model.device.type == "cpu":
                  logger.info("Moving %s to %s", model_name, device)
