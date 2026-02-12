@@ -175,3 +175,5 @@ Submitted batch job 99412
 (syceval) [al00113@dsis001 SycEval_implementation]$ 
 
 tail -n 20 logs/*llama_3B*
+
+test
