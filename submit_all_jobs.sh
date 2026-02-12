@@ -1,5 +1,5 @@
 #!/bin/bash
-# (HPC Sync Check: Feb 12 - NO DOWNLOAD TEST)
+# (Final Version: Feb 12 - Models Pre-Installed)
 
 # Function to submit jobs (Robust path check)
 submit_job() {
@@ -8,17 +8,17 @@ submit_job() {
     local job_output=""
     local job_id=""
 
-    # Check for file existence in current directory or slurm/ subdirectory
-    if [ -f "./$script_name" ]; then
-        target_script="./$script_name"
-    elif [ -f "slurm/$script_name" ]; then
+    # Check for file existence by trying slurm/ first (since HPC is synced)
+    if [ -f "slurm/$script_name" ]; then
         target_script="slurm/$script_name"
+    elif [ -f "./$script_name" ]; then
+        target_script="./$script_name"
     else
-        echo "❌ Error: Could not find $script_name in . or slurm/"
+        echo "❌ Error: Could not find $script_name in slurm/ or ."
         return 1
     fi
     
-    # Submit job (NO DEPENDENCY)
+    # Submit job (NO DEPENDENCY - Models are already there)
     job_output=$(sbatch "$target_script")
     
     # Extract job ID
@@ -26,7 +26,7 @@ submit_job() {
     echo "Submitted batch job $job_id (path: $target_script)"
 }
 
-echo "=== Submitting Experiment Jobs (Skipping Download - Models Pre-Installed) ==="
+echo "=== Submitting Experiment Jobs (Models Pre-Installed) ==="
 
 # Llama Experiments
 echo "--- Llama ---"
