@@ -155,7 +155,7 @@ Submitted batch job 99153
 ✅ All 9 jobs submitted! Experiments will start after models are downloaded.
 (syceval) [al00113@dsis001 SycEval_implementation]$ 
 
-NEW JOBS
+NEW JOBS QWEN JUDGE
 (syceval) [al00113@dsis001 SycEval_implementation]$ bash submit_all_jobs.sh
 === Submitting Experiment Jobs (Models Pre-Installed) ===
 --- Llama ---
@@ -181,3 +181,5 @@ Submitted batch job 99492 (path: slurm/run_conformal_nvidia_3B.slurm)
              99489  gpu_2day conforma  al00113  R       0:06      1 dscog006
              99491  gpu_2day conforma  al00113  R       0:06      1 dscog017
 (syceval) [al00113@dsis001 SycEval_implementation]$ 
+
+NEW JOBS MISTRAL JUDGE
