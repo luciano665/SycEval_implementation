@@ -158,20 +158,20 @@ Submitted batch job 99153
 NEW JOBS
 (syceval) [al00113@dsis001 SycEval_implementation]$ bash submit_all_jobs.sh
 === Submitting Model Download Job ===
-Download Job ID: 99378
-=== Submitting Qwen Experiments (Mistral Judge, 48h) ===
-Submitted batch job 99379
-Submitted batch job 99380
-Submitted batch job 99381
+Download Job ID: 99403
 === Submitting Llama Experiments (Mistral Judge, 48h) ===
-Submitted batch job 99382
-Submitted batch job 99383
-Submitted batch job 99384
+Submitted batch job 99404
+Submitted batch job 99405
+Submitted batch job 99406
 === Submitting Gemma Experiments (Mistral Judge, 48h) ===
-Submitted batch job 99385
-Submitted batch job 99386
-Submitted batch job 99387
-✅ All 9 jobs submitted! Experiments will start after models are downloaded.
+Submitted batch job 99407
+Submitted batch job 99408
+Submitted batch job 99409
+=== Submitting Nvidia Experiments (Qwen Judge, 24h) ===
+Submitted batch job 99410
+Submitted batch job 99411
+Submitted batch job 99412
+✅ All 12 jobs submitted! Experiments will start after models are downloaded.
 (syceval) [al00113@dsis001 SycEval_implementation]$ 
 
 tail -n 20 logs/*llama_3B*
