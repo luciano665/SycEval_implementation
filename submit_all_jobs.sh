@@ -1,5 +1,5 @@
 #!/bin/bash
-# (HPC Sync Check: Feb 12 - Fixed Paths)
+# (HPC Sync Check: Feb 12 - Fixed Paths - Take 2)
 
 
 # 1. Download Qwen, Mistral Judge, and other models
