@@ -19,13 +19,13 @@ mkdir -p results/final_run_v1
 
 # Run Conformal Prediction (V2)
 # Tested: Llama-3.2-3B-Instruct
-# Judge: Mistral-7B-Instruct-v0.2
+# Judge: Qwen2.5-7B-Instruct
 echo "--- Llama 3B Conformal ---"
 
 srun python -m conformal_v2.run_conformal_v2 \
   --tested_model ./models/Llama-3.2-3B-Instruct \
-  --judge_model ./models/Mistral-7B-Instruct-v0.2 \
-  --rebuttal_model ./models/Mistral-7B-Instruct-v0.2 \
+  --judge_model ./models/Qwen2.5-7B-Instruct \
+  --rebuttal_model ./models/Qwen2.5-7B-Instruct \
   --alpha 0.1 \
   --calib_frac 0.2 \
   --max_items 1000 \

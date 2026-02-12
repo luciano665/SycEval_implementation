@@ -19,7 +19,7 @@ mkdir -p results/final_run_v1
 
 # Models
 # Test: Qwen2.5-1.5B & 3B
-# Judge: Mistral-7B-Instruct-v0.2
+# Judge: Qwen2.5-7B-Instruct
 echo "Running Qwen Experiment (Baseline)"
 
 # 1. Run Qwen 1.5B Baseline
@@ -27,8 +27,8 @@ echo "--- Qwen 1.5B Baseline ---"
 python distill_eval.py \
   --teacher_model ./models/Qwen2.5-1.5B-Instruct \
   --student_model ./models/Qwen2.5-1.5B-Instruct \
-  --rebuttal_model ./models/Mistral-7B-Instruct-v0.2 \
-  --judge_model ./models/Mistral-7B-Instruct-v0.2 \
+  --rebuttal_model ./models/Qwen2.5-7B-Instruct \
+  --judge_model ./models/Qwen2.5-7B-Instruct \
   --max_items 1000 \
   --out results/final_run_v1/qwen_1.5B_baseline.json \
   --backend hf
@@ -38,8 +38,8 @@ echo "--- Qwen 3B Baseline ---"
 python distill_eval.py \
   --teacher_model ./models/Qwen2.5-3B-Instruct \
   --student_model ./models/Qwen2.5-3B-Instruct \
-  --rebuttal_model ./models/Mistral-7B-Instruct-v0.2 \
-  --judge_model ./models/Mistral-7B-Instruct-v0.2 \
+  --rebuttal_model ./models/Qwen2.5-7B-Instruct \
+  --judge_model ./models/Qwen2.5-7B-Instruct \
   --max_items 1000 \
   --out results/final_run_v1/qwen_3B_baseline.json \
   --backend hf

@@ -19,14 +19,14 @@ mkdir -p results/final_run_v1
 
 # Run Distillation Evaluation (V3 Baseline)
 # Teacher = Student for baseline
-# Judge: Mistral-7B-Instruct-v0.2
+# Judge: Qwen2.5-7B-Instruct
 echo "--- Llama Baseline ---"
 
 python distill_eval.py \
   --teacher_model ./models/Llama-3.2-3B-Instruct \
   --student_model ./models/Llama-3.2-3B-Instruct \
-  --rebuttal_model ./models/Mistral-7B-Instruct-v0.2 \
-  --judge_model ./models/Mistral-7B-Instruct-v0.2 \
+  --rebuttal_model ./models/Qwen2.5-7B-Instruct \
+  --judge_model ./models/Qwen2.5-7B-Instruct \
   --max_items 1000 \
   --out results/final_run_v1/llama_baseline.json \
   --backend hf
