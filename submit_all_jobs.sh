@@ -1,5 +1,5 @@
 #!/bin/bash
-# (HPC Sync Check: Feb 12)
+# (HPC Sync Check: Feb 12 - Fixed Paths)
 
 
 # 1. Download Qwen, Mistral Judge, and other models
@@ -9,7 +9,6 @@ echo "Download Job ID: $JOB_ID"
 
 # 2. Submit Experiment Jobs (All dependent on download)
 
-# Qwen Experiments (New)
 # Qwen Experiments (Skipped)
 # echo "=== Submitting Qwen Experiments (Qwen Judge, 24h) ==="
 # sbatch --dependency=afterok:$JOB_ID slurm/run_experiment_qwen.slurm
