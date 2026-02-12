@@ -156,24 +156,20 @@ Submitted batch job 99153
 (syceval) [al00113@dsis001 SycEval_implementation]$ 
 
 NEW JOBS
-(syceval) [al00113@dsis001 SycEval_implementation]$ bash submit_all_jobs.sh
-=== Submitting Model Download Job ===
-Download Job ID: 99403
-=== Submitting Llama Experiments (Mistral Judge, 48h) ===
-Submitted batch job 99404
-Submitted batch job 99405
-Submitted batch job 99406
-=== Submitting Gemma Experiments (Mistral Judge, 48h) ===
-Submitted batch job 99407
-Submitted batch job 99408
-Submitted batch job 99409
-=== Submitting Nvidia Experiments (Qwen Judge, 24h) ===
-Submitted batch job 99410
-Submitted batch job 99411
-Submitted batch job 99412
-✅ All 12 jobs submitted! Experiments will start after models are downloaded.
-(syceval) [al00113@dsis001 SycEval_implementation]$ 
-
-tail -n 20 logs/*llama_3B*
+=== Submitting Experiment Jobs (Skipping Download - Models Pre-Installed) ===
+--- Llama ---
+Submitted batch job 99445 (path: slurm/run_experiment_meta_llama.slurm)
+Submitted batch job 99446 (path: slurm/run_conformal_llama_1B.slurm)
+Submitted batch job 99447 (path: slurm/run_conformal_llama_3B.slurm)
+--- Gemma ---
+Submitted batch job 99448 (path: slurm/run_experiment_gemma.slurm)
+Submitted batch job 99449 (path: slurm/run_conformal_gemma_1B.slurm)
+Submitted batch job 99450 (path: slurm/run_conformal_gemma_4B.slurm)
+--- Nvidia ---
+Submitted batch job 99451 (path: slurm/run_experiment_nvidia.slurm)
+Submitted batch job 99452 (path: slurm/run_conformal_nvidia_1B.slurm)
+Submitted batch job 99453 (path: slurm/run_conformal_nvidia_3B.slurm)
+✅ All 9 jobs submitted! Running immediately.
+[al00113@dsis001 SycEval_implementation]$ 
 
 test
