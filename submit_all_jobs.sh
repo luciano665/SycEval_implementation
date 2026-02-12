@@ -1,36 +1,49 @@
 #!/bin/bash
-# (HPC Sync Check: Feb 12 - Fixed Paths - Take 2)
+# (HPC Sync Check: Feb 12 - NO DOWNLOAD TEST)
 
+# Function to submit jobs (Robust path check)
+submit_job() {
+    local script_name=$1
+    local target_script=""
+    local job_output=""
+    local job_id=""
 
-# 1. Download Qwen, Mistral Judge, and other models
-echo "=== Submitting Model Download Job ==="
-JOB_ID=$(sbatch slurm/download_models_qwen_mistral.slurm | awk '{print $4}')
-echo "Download Job ID: $JOB_ID"
+    # Check for file existence in current directory or slurm/ subdirectory
+    if [ -f "./$script_name" ]; then
+        target_script="./$script_name"
+    elif [ -f "slurm/$script_name" ]; then
+        target_script="slurm/$script_name"
+    else
+        echo "❌ Error: Could not find $script_name in . or slurm/"
+        return 1
+    fi
+    
+    # Submit job (NO DEPENDENCY)
+    job_output=$(sbatch "$target_script")
+    
+    # Extract job ID
+    job_id=$(echo "$job_output" | awk '{print $4}')
+    echo "Submitted batch job $job_id (path: $target_script)"
+}
 
-# 2. Submit Experiment Jobs (All dependent on download)
+echo "=== Submitting Experiment Jobs (Skipping Download - Models Pre-Installed) ==="
 
-# Qwen Experiments (Skipped)
-# echo "=== Submitting Qwen Experiments (Qwen Judge, 24h) ==="
-# sbatch --dependency=afterok:$JOB_ID slurm/run_experiment_qwen.slurm
-# sbatch --dependency=afterok:$JOB_ID slurm/run_conformal_qwen_1.5B.slurm
-# sbatch --dependency=afterok:$JOB_ID slurm/run_conformal_qwen_3B.slurm
+# Llama Experiments
+echo "--- Llama ---"
+submit_job "run_experiment_meta_llama.slurm"
+submit_job "run_conformal_llama_1B.slurm"
+submit_job "run_conformal_llama_3B.slurm"
 
-# Llama Experiments (Rerunning with Mistral Judge for consistency)
-echo "=== Submitting Llama Experiments (Mistral Judge, 48h) ==="
-sbatch --dependency=afterok:$JOB_ID slurm/run_experiment_meta_llama.slurm
-sbatch --dependency=afterok:$JOB_ID slurm/run_conformal_llama_1B.slurm
-sbatch --dependency=afterok:$JOB_ID slurm/run_conformal_llama_3B.slurm
+# Gemma Experiments
+echo "--- Gemma ---"
+submit_job "run_experiment_gemma.slurm"
+submit_job "run_conformal_gemma_1B.slurm"
+submit_job "run_conformal_gemma_4B.slurm"
 
-# Gemma Experiments (Rerunning with Mistral Judge for consistency)
-echo "=== Submitting Gemma Experiments (Mistral Judge, 48h) ==="
-sbatch --dependency=afterok:$JOB_ID slurm/run_experiment_gemma.slurm
-sbatch --dependency=afterok:$JOB_ID slurm/run_conformal_gemma_1B.slurm
-sbatch --dependency=afterok:$JOB_ID slurm/run_conformal_gemma_4B.slurm
+# Nvidia Experiments
+echo "--- Nvidia ---"
+submit_job "run_experiment_nvidia.slurm"
+submit_job "run_conformal_nvidia_1B.slurm"
+submit_job "run_conformal_nvidia_3B.slurm"
 
-# Nvidia Experiments (Local Weights, Qwen Judge)
-echo "=== Submitting Nvidia Experiments (Qwen Judge, 24h) ==="
-sbatch --dependency=afterok:$JOB_ID slurm/run_experiment_nvidia.slurm
-sbatch --dependency=afterok:$JOB_ID slurm/run_conformal_nvidia_1B.slurm
-sbatch --dependency=afterok:$JOB_ID slurm/run_conformal_nvidia_3B.slurm
-
-echo "✅ All 12 jobs submitted! Experiments will start after models are downloaded."
+echo "✅ All 9 jobs submitted! Running immediately."
