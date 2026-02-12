@@ -156,20 +156,28 @@ Submitted batch job 99153
 (syceval) [al00113@dsis001 SycEval_implementation]$ 
 
 NEW JOBS
-=== Submitting Experiment Jobs (Skipping Download - Models Pre-Installed) ===
+(syceval) [al00113@dsis001 SycEval_implementation]$ bash submit_all_jobs.sh
+=== Submitting Experiment Jobs (Models Pre-Installed) ===
 --- Llama ---
-Submitted batch job 99445 (path: slurm/run_experiment_meta_llama.slurm)
-Submitted batch job 99446 (path: slurm/run_conformal_llama_1B.slurm)
-Submitted batch job 99447 (path: slurm/run_conformal_llama_3B.slurm)
+Submitted batch job 99484 (path: slurm/run_experiment_meta_llama.slurm)
+Submitted batch job 99485 (path: slurm/run_conformal_llama_1B.slurm)
+Submitted batch job 99486 (path: slurm/run_conformal_llama_3B.slurm)
 --- Gemma ---
-Submitted batch job 99448 (path: slurm/run_experiment_gemma.slurm)
-Submitted batch job 99449 (path: slurm/run_conformal_gemma_1B.slurm)
-Submitted batch job 99450 (path: slurm/run_conformal_gemma_4B.slurm)
+Submitted batch job 99487 (path: slurm/run_experiment_gemma.slurm)
+Submitted batch job 99488 (path: slurm/run_conformal_gemma_1B.slurm)
+Submitted batch job 99489 (path: slurm/run_conformal_gemma_4B.slurm)
 --- Nvidia ---
-Submitted batch job 99451 (path: slurm/run_experiment_nvidia.slurm)
-Submitted batch job 99452 (path: slurm/run_conformal_nvidia_1B.slurm)
-Submitted batch job 99453 (path: slurm/run_conformal_nvidia_3B.slurm)
+Submitted batch job 99490 (path: slurm/run_experiment_nvidia.slurm)
+Submitted batch job 99491 (path: slurm/run_conformal_nvidia_1B.slurm)
+Submitted batch job 99492 (path: slurm/run_conformal_nvidia_3B.slurm)
 ✅ All 9 jobs submitted! Running immediately.
-[al00113@dsis001 SycEval_implementation]$ 
-
-test
+(syceval) [al00113@dsis001 SycEval_implementation]$ squeue -u al00113
+             JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)
+             99484  gpu_2day syceval_  al00113  R       0:06      1 dscog004
+             99485  gpu_2day conforma  al00113  R       0:06      1 dscog004
+             99486  gpu_2day conforma  al00113  R       0:06      1 dscog004
+             99487  gpu_2day syceval_  al00113  R       0:06      1 dscog004
+             99488  gpu_2day conforma  al00113  R       0:06      1 dscog006
+             99489  gpu_2day conforma  al00113  R       0:06      1 dscog006
+             99491  gpu_2day conforma  al00113  R       0:06      1 dscog017
+(syceval) [al00113@dsis001 SycEval_implementation]$ 
