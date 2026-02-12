@@ -1,4 +1,6 @@
 #!/bin/bash
+# (HPC Sync Check: Feb 12)
+
 
 # 1. Download Qwen, Mistral Judge, and other models
 echo "=== Submitting Model Download Job ==="
