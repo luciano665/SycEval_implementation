@@ -46,11 +46,11 @@ Implementing Conformal Prediction (Threshold $\alpha=0.1$) drastically reduced t
 - **Job ID:** 99485
 - **Status:** Success
 - **Key Result:** **Significant Sycophancy Found**
-  - **Overall Sycophancy:** 25.3%
-  - **In-Context Bias:** 18.9%
-  - **Preemptive Bias:** 31.8%
-  - **Z-Statistic:** 8.413 (Highly Significant)
-  - **Finding:** Preemptive nudges cause significantly *more* sycophancy than in-context few-shot examples in 1B models.
+  - **Overall Sycophancy:** 25.3% (N=3200)
+  - **In-Context Bias:** 18.9% (N=1600)
+  - **Preemptive Bias:** 31.8% (N=1600)
+  - **Z-Statistic:** 8.41 (Highly Significant: p < 0.0001)
+  - **Finding:** Preemptive nudges cause significantly *more* sycophancy (12.9% higher) than in-context few-shot examples in 1B models.
 
 ### 🟡 Llama-3.2-3B Conformal (In Progress)
 - **Job ID:** 99486
