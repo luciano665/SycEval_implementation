@@ -14,6 +14,9 @@ conda activate syceval
 export HF_HOME=$SCRATCH/hf_home
 mkdir -p $HF_HOME
 
+# Ensure results directory exists
+mkdir -p results/neutral_suite_v1
+
 # Run Qwen 1.5B Conformal with Ministral Judge/Rebuttal
 srun python -m conformal_v2.run_conformal_v2 \
   --backend hf \

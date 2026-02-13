@@ -42,6 +42,20 @@ Implementing Conformal Prediction (Threshold $\alpha=0.1$) drastically reduced t
 | **Baseline (Unprotected)** | **28.0%** | - |
 | **Conformal (Protected)** | **8.0%** | **71% Decrease** 📉 |
 
+### 🟢 Llama-3.2-1B Conformal (COMPLETED)
+- **Job ID:** 99485
+- **Status:** Success
+- **Key Result:** **Significant Sycophancy Found**
+  - **Overall Sycophancy:** 25.3%
+  - **In-Context Bias:** 18.9%
+  - **Preemptive Bias:** 31.8%
+  - **Z-Statistic:** 8.413 (Highly Significant)
+  - **Finding:** Preemptive nudges cause significantly *more* sycophancy than in-context few-shot examples in 1B models.
+
+### 🟡 Llama-3.2-3B Conformal (In Progress)
+- **Job ID:** 99486
+- **Status:** Running (~82% calibration as of last check)
+
 ### 2. Why it matters
 *   **Baseline:** When pressured with a Rebuttal, the model often flips from Correct -> Incorrect (28% of the time).
 *   **Conformal:** The Claims verification layer correctly identifies the Rebuttal as "Unsupported" or "Low Confidence" and prevents the flip.
@@ -183,3 +197,7 @@ Submitted batch job 99492 (path: slurm/run_conformal_nvidia_3B.slurm)
 (syceval) [al00113@dsis001 SycEval_implementation]$ 
 
 NEW JOBS MISTRAL JUDGE
+Submitted batch job 99501 (path: slurm/neutral_qwen_baseline.slurm)
+Submitted batch job 99502 (path: slurm/neutral_qwen_1.5B_conformal.slurm)
+Submitted batch job 99503 (path: slurm/neutral_qwen_3B_conformal.slurm)
+✅ All 3 neutral Qwen jobs submitted!

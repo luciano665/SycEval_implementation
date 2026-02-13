@@ -14,6 +14,9 @@ conda activate syceval
 export HF_HOME=$SCRATCH/hf_home
 mkdir -p $HF_HOME
 
+# Ensure results directory exists
+mkdir -p results/neutral_suite_v1
+
 # Run Qwen 3B Baseline with Ministral Judge/Rebuttal
 echo "--- Qwen 3B Neutral Baseline ---"
 python distill_eval.py \
