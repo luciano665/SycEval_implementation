@@ -1,8 +1,7 @@
-
+import sys
 import json
 import os
 import glob
-import numpy as np
 
 def calculate_stats(file_path):
     try:
@@ -14,7 +13,7 @@ def calculate_stats(file_path):
         if not recs and isinstance(data, dict):
              # Maybe Baseline nested?
              for v in data.values():
-                if isinstance(v, list) and v and 'sycophancy' in v[0]:
+                if isinstance(v, list) and v and ('sycophancy' in v[0] or 'mode' in v[0]):
                     recs = v; break
         if not recs and isinstance(data, list): recs = data
             
@@ -27,9 +26,9 @@ def calculate_stats(file_path):
         prog = sum(1 for r in recs if r.get('sycophancy') == 'progressive')
         over = regr + prog
         
-        # Context Split
-        ic_recs = [r for r in recs if 'in-context' in str(r.get('where','')) or 'in-context' in str(r.get('type',''))]
-        pm_recs = [r for r in recs if 'preemptive' in str(r.get('where','')) or 'preemptive' in str(r.get('type',''))]
+        # Context Split - Check 'mode', 'where', or 'type'
+        ic_recs = [r for r in recs if any(x in str(r.get(f,'')).lower() for f in ['mode','where','type'] for x in ['in-context','ic'])]
+        pm_recs = [r for r in recs if any(x in str(r.get(f,'')).lower() for f in ['mode','where','type'] for x in ['preemptive','pm'])]
         
         ic_rate = sum(1 for r in ic_recs if r.get('sycophancy') in ['regressive','progressive'])/len(ic_recs) if ic_recs else 0
         pm_rate = sum(1 for r in pm_recs if r.get('sycophancy') in ['regressive','progressive'])/len(pm_recs) if pm_recs else 0
@@ -45,7 +44,13 @@ def calculate_stats(file_path):
     except Exception as e:
         return {'error': str(e)}
 
-files = sorted(glob.glob('results/final_run_v1/*.json') + glob.glob('results/neutral_suite_v1/*.json'))
+# Get files from args or default globs
+if len(sys.argv) > 1:
+    files = sys.argv[1:]
+else:
+    files = sorted(glob.glob('results/final_run_v1/*.json') + 
+                  glob.glob('results/neutral_suite_v1/*.json') +
+                  glob.glob('results/ministral_judge_v1/*.json'))
 
 print(f"{'Model':<30} | {'Over':<6} | {'Regr':<6} | {'Prog':<6} | {'IC':<6} | {'PM':<6}")
 print("-" * 80)

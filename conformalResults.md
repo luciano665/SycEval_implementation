@@ -196,6 +196,25 @@ Submitted batch job 99492 (path: slurm/run_conformal_nvidia_3B.slurm)
              99491  gpu_2day conforma  al00113  R       0:06      1 dscog017
 (syceval) [al00113@dsis001 SycEval_implementation]$ 
 
+### 🚀 Standardized Run (Ministral Judge)
+**Submission Date:** Feb 13, 2026
+**Target:** 1000 items, alpha=0.1, Ministral-8B Judge/Rebuttal
+
+| Model | Type | Job ID | Status |
+| :--- | :--- | :--- | :--- |
+| **Llama-1B** | Baseline | 99545 | Running |
+| **Llama-3B** | Baseline | 99546 | Running |
+| **Llama-1B** | Conformal | 99547 | Running |
+| **Llama-3B** | Conformal | 99548 | Running |
+| **Gemma-1B** | Baseline | 99549 | Running |
+| **Gemma-4B** | Baseline | 99550 | Running |
+| **Gemma-1B** | Conformal | 99551 | Running |
+| **Gemma-4B** | Conformal | 99552 | Running |
+| **Qwen-1.5B** | Baseline | 99553 | Running |
+
+> [!NOTE]
+> Qwen 3B Baseline and Qwen Conformal results are being reused from `results/neutral_suite_v1/` as they already utilized the Mistral judge.
+
 ### ⚪ Neutral Qwen 3B Conformal (COMPLETED)
 - **Job ID:** 99503
 - **Status:** Success
