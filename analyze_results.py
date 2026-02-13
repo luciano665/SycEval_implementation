@@ -9,57 +9,53 @@ def calculate_stats(file_path):
         with open(file_path, 'r') as f:
             data = json.load(f)
         
-        # Determine format
-        if isinstance(data, dict) and 'statistical_results' in data:
-            # Conformal Format (v2)
-            stats = data['statistical_results']['overall_rates']
-            return {
-                'n': stats['N'],
-                'rate': stats['overall'],
-                'type': 'Conformal'
-            }
-        elif isinstance(data, list):
-            # Baseline Format (List of records)
-            records = data
-            n = len(records)
-            if n == 0: return None
+        # Determine format (Handle nested baselines or flat Conformal)
+        recs = data.get('individual_records', []) if isinstance(data, dict) else []
+        if not recs and isinstance(data, dict):
+             # Maybe Baseline nested?
+             for v in data.values():
+                if isinstance(v, list) and v and 'sycophancy' in v[0]:
+                    recs = v; break
+        if not recs and isinstance(data, list): recs = data
             
-            # Count regressive sycophancy
-            # In baseline, we look for 'sycophancy' == 'regressive'
-            # OR classifiy based on labels if field missing
-            regressive = sum(1 for r in records if r.get('sycophancy') == 'regressive')
-            
-            return {
-                'n': n,
-                'rate': regressive / n,
-                'type': 'Baseline'
-            }
-        elif isinstance(data, dict) and 'individual_records' in data:
-             # Conformal w/o stats saved (rare)
-             records = data['individual_records']
-             n = len(records)
-             regressive = sum(1 for r in records if r.get('sycophancy') == 'regressive')
-             return {'n': n, 'rate': regressive/n, 'type': 'Conformal (Calc)'}
-             
-        return None
+        if not recs: return None
+        
+        n = len(recs)
+        
+        # Calculate Rates
+        regr = sum(1 for r in recs if r.get('sycophancy') == 'regressive')
+        prog = sum(1 for r in recs if r.get('sycophancy') == 'progressive')
+        over = regr + prog
+        
+        # Context Split
+        ic_recs = [r for r in recs if 'in-context' in str(r.get('where','')) or 'in-context' in str(r.get('type',''))]
+        pm_recs = [r for r in recs if 'preemptive' in str(r.get('where','')) or 'preemptive' in str(r.get('type',''))]
+        
+        ic_rate = sum(1 for r in ic_recs if r.get('sycophancy') in ['regressive','progressive'])/len(ic_recs) if ic_recs else 0
+        pm_rate = sum(1 for r in pm_recs if r.get('sycophancy') in ['regressive','progressive'])/len(pm_recs) if pm_recs else 0
+
+        return {
+            'n': n,
+            'over': over/n,
+            'regr': regr/n,
+            'prog': prog/n,
+            'ic': ic_rate,
+            'pm': pm_rate
+        }
     except Exception as e:
         return {'error': str(e)}
 
 files = sorted(glob.glob('results/final_run_v1/*.json') + glob.glob('results/neutral_suite_v1/*.json'))
-results = []
 
-print(f"{'Model':<30} | {'Type':<15} | {'N':<6} | {'Sycophancy %':<12}")
-print("-" * 75)
+print(f"{'Model':<30} | {'Over':<6} | {'Regr':<6} | {'Prog':<6} | {'IC':<6} | {'PM':<6}")
+print("-" * 80)
 
 for file in files:
-    name = os.path.basename(file)
-    if 'thresholds' in name: continue
-    
-    # Extract Model Name
-    model_name = name.replace('_conformal.json', '').replace('_baseline.json', '').replace('_', ' ').title()
+    name = os.path.basename(file).replace('_conformal.json','').replace('_baseline.json','').replace('_',' ').title()
+    if 'Thresholds' in name: continue
     
     stats = calculate_stats(file)
     if stats and 'error' not in stats:
-        print(f"{model_name:<30} | {stats['type']:<15} | {stats['n']:<6} | {stats['rate']:.1%}")
+        print(f"{name:<30} | {stats['over']:<6.1%} | {stats['regr']:<6.1%} | {stats['prog']:<6.1%} | {stats['ic']:<6.1%} | {stats['pm']:<6.1%}")
     elif stats:
-        print(f"{model_name:<30} | ERROR: {stats['error']}")
+        print(f"{name:<30} | ERROR: {stats['error']}")
