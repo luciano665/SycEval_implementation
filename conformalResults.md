@@ -213,36 +213,23 @@ Submitted batch job 99492 (path: slurm/run_conformal_nvidia_3B.slurm)
 
 ### 🏆 FINAL RESULTS (Definitive Stats for Paper)
 
-*Run Date: Feb 12-13, 2026. N=3200 per Model (Total items).*
+### 🏆 FINAL RESULTS (Definitive Stats for Paper)
 
-#### 1. Gemma Family (Baseline: 4B @ 44.6%)
-| Model | Overall | Regressive (Bad) | Progressive (Good) | In-Context (Peer) | Preemptive (Auth) | Result |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Gemma-1B** | **32.1%** | 18.1% | 14.0% | 33.4% | 30.8% | ✅ **Safer** (-12.5%) |
-| **Gemma-4B** | **43.4%** | 30.9% | 12.4% | 46.9% | 39.9% | ❌ **No Change** (~Baseline) |
+*Run Date: Feb 12-13, 2026. N=3200 per Conformal Model (Total items).*
 
-#### 2. Llama Family (Baseline: 3B @ 29.2%)
-| Model | Overall | Regressive (Bad) | Progressive (Good) | In-Context (Peer) | Preemptive (Auth) | Result |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Llama-1B** | **25.3%** | 19.2% | 6.2% | 18.9% | 31.8% | ✅ **Safer** (-3.9%) |
-| **Llama-3B** | **42.9%** | 35.3% | 7.7% | 49.8% | 36.1% | ❌ **Worsened** (+13.7%) |
+#### 📊 Master Comparison (Conformal vs Baseline)
 
-#### 3. Qwen Family (Baseline: 3B @ 30.4%)
-| Model | Overall | Regressive (Bad) | Progressive (Good) | In-Context (Peer) | Preemptive (Auth) | Result |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Qwen-1.5B**| **37.9%** | ~33% | ~5% | 38.0% | 37.8% | ❌ **Worsened** (+7.5%) |
-| **Qwen-3B** | **47.2%** | 43.3% | 3.9% | 49.2% | 45.2% | ❌ **Worsened** (+16.8%) |
+| Family | Model (Conformal) | Baseline Rate (Unprotected) | Conformal Rate (Protected) | Regressive (Bad) | Result | In-Context (Peer) | Preemptive (Auth) |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Gemma** | **1B** | 44.6% (4B) | **32.1%** | 18.1% | ✅ **Safer** (-12.5%) | 33.4% | 30.8% |
+| **Gemma** | **4B** | 44.6% (4B) | **43.4%** | 30.9% | ❌ **No Change** | 46.9% | 39.9% |
+| **Llama** | **1B** | 38.0% (3B) | **25.3%** | 19.2% | ✅ **Safer** (-12.7%) | 18.9% | 31.8% |
+| **Llama** | **3B** | 38.0% (3B) | **42.9%** | 35.3% | ❌ **Worsened** (+4.9%) | 49.8% | 36.1% |
+| **Qwen** | **1.5B** | 36.9% (3B) | **37.9%** | 31.4% | ❌ **Worsened** (+1.0%) | 38.0% | 37.8% |
+| **Qwen** | **3B** | 36.9% (3B) | **47.2%** | 43.3% | ❌ **Worsened** (+10.3%) | 49.2% | 45.2% |
 
 ---
 
 ### 📉 Scientific Conclusion
 1.  **Inverse Scaling:** Conformal prediction *helps* smaller models (Llama-1B, Gemma-1B) but *hurts* larger models (Llama-3B, Qwen-3B, Gemma-4B).
 2.  **Mechanism:** Larger models fall into the **"Confidence Trap."** They are sophisticated enough to hallucinate convincing justifications, which fools the Judge/Calibrator into setting a low threshold. When these "confident hallucinations" are broken down into atomic claims, the hedging is stripped away, exposing raw sycophancy.
-
-### 📉 Scientific Conclusion
-1.  **Inverse Scaling:** Conformal prediction *helps* smaller models (Llama-1B, Gemma-1B) but *hurts* larger models (Llama-3B, Qwen-3B, Gemma-4B).
-2.  **Mechanism:** Larger models fall into the **"Confidence Trap."** They are sophisticated enough to hallucinate convincing justifications, which fools the Judge/Calibrator into setting a low threshold. When these "confident hallucinations" are broken down into atomic claims, the hedging is stripped away, exposing raw sycophancy.
-Submitted batch job 99501 (path: slurm/neutral_qwen_baseline.slurm)
-Submitted batch job 99502 (path: slurm/neutral_qwen_1.5B_conformal.slurm)
-Submitted batch job 99503 (path: slurm/neutral_qwen_3B_conformal.slurm)
-✅ All 3 neutral Qwen jobs submitted!

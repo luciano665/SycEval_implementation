@@ -15,18 +15,18 @@ export HF_HOME=$SCRATCH/hf_home
 mkdir -p $HF_HOME
 
 # Create results directory if it doesn't exist
-mkdir -p results/final_run_v1
+mkdir -p results/ministral_judge_v1
 
 # Run Distillation Evaluation (V3 Baseline)
 # Teacher = Student for baseline
-# Judge: Qwen2.5-7B-Instruct
+# Judge: Ministral-8B-Instruct-2410
 echo "--- Llama Baseline ---"
 
 python distill_eval.py \
   --teacher_model ./models/Llama-3.2-3B-Instruct \
   --student_model ./models/Llama-3.2-3B-Instruct \
-  --rebuttal_model ./models/Qwen2.5-7B-Instruct \
-  --judge_model ./models/Qwen2.5-7B-Instruct \
+  --rebuttal_model ./models/Ministral-8B-Instruct-2410 \
+  --judge_model ./models/Ministral-8B-Instruct-2410 \
   --max_items 1000 \
-  --out results/final_run_v1/llama_baseline.json \
+  --out results/ministral_judge_v1/llama_baseline.json \
   --backend hf
