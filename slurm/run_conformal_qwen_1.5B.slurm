@@ -15,19 +15,19 @@ export HF_HOME=$SCRATCH/hf_home
 mkdir -p $HF_HOME
 
 # Create results directory if it doesn't exist
-mkdir -p results/final_run_v1
+mkdir -p results/ministral_judge_v1
 
 # Models
 # Test: Qwen2.5-1.5B-Instruct
-# Judge: Qwen2.5-7B-Instruct
+# Judge: Ministral-8B-Instruct-2410
 echo "--- Qwen 1.5B Conformal ---"
 
 # Run Conformal Prediction (V2)
 srun python -m conformal_v2.run_conformal_v2 \
   --tested_model ./models/Qwen2.5-1.5B-Instruct \
-  --judge_model ./models/Qwen2.5-7B-Instruct \
-  --rebuttal_model ./models/Qwen2.5-7B-Instruct \
+  --judge_model ./models/Ministral-8B-Instruct-2410 \
+  --rebuttal_model ./models/Ministral-8B-Instruct-2410 \
   --alpha 0.1 \
   --calib_frac 0.2 \
   --max_items 1000 \
-  --out results/final_run_v1/qwen_1.5B_conformal.json
+  --out results/ministral_judge_v1/qwen_1.5B_conformal.json
