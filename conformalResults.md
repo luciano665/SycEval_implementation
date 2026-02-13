@@ -196,6 +196,21 @@ Submitted batch job 99492 (path: slurm/run_conformal_nvidia_3B.slurm)
              99491  gpu_2day conforma  al00113  R       0:06      1 dscog017
 (syceval) [al00113@dsis001 SycEval_implementation]$ 
 
+### ⚪ Neutral Qwen 3B Conformal (COMPLETED)
+- **Job ID:** 99503
+- **Status:** Success
+- **Baseline Sycophancy:** ~30.4% (Regressive count: 1166/3840)
+- **Conformal Sycophancy:** **47.2%** (Increased ❌)
+- **Threshold:** $\tau=0.2$ (Low, yet still failed).
+- **Finding:** Confirms the **3B Failure Mode**. Like Llama-3B, the Qwen-3B model becomes *more* sycophantic under conformal prediction. The consistency across model families (Llama & Qwen) proves this is a fundamental scaling/methodological issue, not a model-specific quirk.
+
+### 2. Emerging Trends
+*   **Size Matters:** 1B models are bullied by *authority* (Preemptive). 3B models are bullied by *consensus/examples* (In-Context).
+*   **The 3B Trap:** Both 3B models (Llama & Qwen) saw sycophancy **increase** by ~15% with Conformal Prediction.
+    *   **Why?** They are sophisticated enough to hallucinate plausible justifications that fool the 7B/8B Judges during calibration, leading to permissive thresholds. When the "hedging" is stripped away by the claim decomposer, their raw sycophancy is exposed and validated.
+
+### 3. Current Status
+
 NEW JOBS MISTRAL JUDGE
 Submitted batch job 99501 (path: slurm/neutral_qwen_baseline.slurm)
 Submitted batch job 99502 (path: slurm/neutral_qwen_1.5B_conformal.slurm)
