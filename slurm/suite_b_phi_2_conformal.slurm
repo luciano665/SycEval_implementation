@@ -13,15 +13,17 @@ source /shared/software/conda/etc/profile.d/conda.sh
 conda activate syceval
 export HF_HOME=$SCRATCH/hf_home
 mkdir -p $HF_HOME
-mkdir -p results/suite_b_standardized
+mkdir -p results/final_run_v1
 
-# Conformal Run (Phi-2)
+# Exact Suite B Conformal Flow
 srun python -m conformal_v2.run_conformal_v2 \
   --tested_model ./models/phi-2 \
   --judge_model ./models/Qwen2.5-7B-Instruct \
   --rebuttal_model ./models/Qwen2.5-7B-Instruct \
-  --alpha 0.1 \
-  --calib_frac 0.5 \
   --max_items 1000 \
+  --mode both \
+  --calib_frac 0.5 \
+  --alpha 0.1 \
+  --enable_rewrite \
   --backend hf \
-  --out results/suite_b_standardized/phi_2_conformal.json
+  --out results/final_run_v1/phi_2_conformal.json

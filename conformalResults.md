@@ -3,20 +3,22 @@
 
 This document serves as the definitive source of results for the "Confidence Trap" exploration. It compares baseline sycophancy against Conformal Prediction (CP) filtering across multiple model families.
 
-🛡️ Suite B (Standardized) — Targeted Gap Fill
+🛡️ Suite B (Targeted Standarization)
 
-Judge: Qwen2.5-7B
-Status: ⏳ Ready for Targeted Submission
-Methodology: Mixed Data (MedQuad+HealthSearch), 50% Calib Fraction.
+**Judge:** Qwen2.5-7B-Instruct (Suite B Standard)
+**Status:** ⏳ Ready for Cluster Execution
+**Methodology:** Mixed Data, 50% Calib, `--enable_rewrite` flow.
 
 | Family | Model Size | Type | Overall Syc. | Regressive | Status |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Llama** | 3.2-1B | Baseline | TBD | TBD | ⏳ Staged |
-| **Gemma** | 3-1B | Baseline | TBD | TBD | ⏳ Staged |
-| **Phi** | 2 (2.7B) | Baseline | TBD | TBD | ⏳ Staged |
-| **Phi** | 2 (2.7B) | Conformal | TBD | TBD | ⏳ Staged |
-| **Phi** | 1.5 (1.3B) | Baseline | TBD | TBD | ⏳ Staged |
-| **Phi** | 1.5 (1.3B) | Conformal | TBD | TBD | ⏳ Staged |
+| **Llama** | 3.2-1B | Baseline | TBD | TBD | ⏳ Staged (`distill_eval`) |
+| **Gemma** | 3-1B | Baseline | TBD | TBD | ⏳ Staged (`distill_eval`) |
+| **Phi** | 2 (2.7B) | Baseline | TBD | TBD | ⏳ Staged (`distill_eval`) |
+| **Phi** | 2 (2.7B) | Conformal | TBD | TBD | ⏳ Staged (`run_conf_v2`) |
+| **Phi** | 1.5 (1.3B) | Baseline | TBD | TBD | ⏳ Staged (`distill_eval`) |
+| **Phi** | 1.5 (1.3B) | Conformal | TBD | TBD | ⏳ Staged (`run_conf_v2`) |
+
+*Note: All results will merge into `results/final_run_v1/` for parity.*
 
 ---
 

@@ -13,14 +13,14 @@ source /shared/software/conda/etc/profile.d/conda.sh
 conda activate syceval
 export HF_HOME=$SCRATCH/hf_home
 mkdir -p $HF_HOME
-mkdir -p results/suite_b_standardized
+mkdir -p results/final_run_v1
 
-# Baseline Run (Llama-1B)
-# Judge: Qwen-7B, Rebuttal: Qwen-7B
-srun python run_eval.py \
-  --tested_model ./models/Llama-3.2-1B-Instruct \
-  --judge_model ./models/Qwen2.5-7B-Instruct \
+# Match Suite B Baseline Flow (distill_eval.py student=teacher)
+python distill_eval.py \
+  --teacher_model ./models/Llama-3.2-1B-Instruct \
+  --student_model ./models/Llama-3.2-1B-Instruct \
   --rebuttal_model ./models/Qwen2.5-7B-Instruct \
+  --judge_model ./models/Qwen2.5-7B-Instruct \
   --max_items 1000 \
   --backend hf \
-  --out results/suite_b_standardized/llama_1b_baseline.json
+  --out results/final_run_v1/llama_1b_baseline.json

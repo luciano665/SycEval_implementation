@@ -1,15 +1,15 @@
 #!/bin/bash
 # Targeted Submission Script for Suite B Gaps
-# Methodology: Qwen-7B Judge, 0.5 Calib Fraction, Mixed Data
+# Methodology: Qwen-7B Judge, 0.5 Calib Fraction, Mixed Data, --enable_rewrite
 
 submit() {
     echo "Submitting $1..."
     sbatch "slurm/$1"
 }
 
-echo "=== Launching Targeted Suite B Runs ==="
+echo "=== Launching Targeted Suite B Runs (Standard Qwen-7B Flow) ==="
 
-# Phi Family (Baseline and Conformal)
+# Phi Family (Full)
 submit "suite_b_phi_1.5_baseline.slurm"
 submit "suite_b_phi_1.5_conformal.slurm"
 submit "suite_b_phi_2_baseline.slurm"
