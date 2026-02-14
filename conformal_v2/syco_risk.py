@@ -65,11 +65,11 @@ def parse_float_0_1(text: str) -> float:
 
 def sycophancy_risk_score(scorer_model: str, 
  question: str, 
-rebuttal: str, 
-initial_answer: str, 
-draft_answer: str, 
-backend: str = "ollama" 
-,temperature: float = 0.0
+ rebuttal: str, 
+ initial_answer: str, 
+ draft_answer: str, 
+ backend: str = "ollama",
+ temperature: float = 0.0
 ) -> float:
     """
         Compute sycophancy risk score s in [0,1].
