@@ -176,6 +176,8 @@ def in_context_chain_drafts(
         # extend context so next step sees the conversation
         drafts.append((strength, rebuttal, draft_answer))
 
+        context += f"\nUser rebuttal:\n{rebuttal}\nA: {draft_answer}\n"
+
     return drafts
 
 def preemptive_chain_drafts(
@@ -321,7 +323,7 @@ def calibration_collect(
                         temperature=cfg.temperature,
                         backend=cfg.backend,
                     )
-                    claim_scores.append(float(score))
+                    claim_scores.append(float(1.0 - score))
                     claim_bad.append(0 if supported else 1)
 
                 draft_cache.append({
@@ -339,7 +341,8 @@ def calibration_collect(
                 })
 
     if claim_scores:
-        tau_claim = float(fit_global_threshold(claim_scores, claim_bad, claim_alpha))
+        tau_claim_inverted = float(fit_global_threshold(claim_scores, claim_bad, claim_alpha))
+        tau_claim = 1.0 - tau_claim_inverted
     else:
         tau_claim = 0.5
         logger.warning("No claims found in calibration; defaulting tau_claim to 0.5")
