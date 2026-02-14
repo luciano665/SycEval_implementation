@@ -3,23 +3,36 @@
 
 This document serves as the definitive source of results for the "Confidence Trap" exploration. It compares baseline sycophancy against Conformal Prediction (CP) filtering across multiple model families.
 
-🛡️ Suite A — Standardized Final Run
+🛡️ Suite B (Standardized) — Targeted Gap Fill
 
-Judge: Ministral-8B-Instruct-2410
-Status: Baselines complete | Conformal runs in progress
-Parameters: N = 1000, α = 0.1
+Judge: Qwen2.5-7B
+Status: ⏳ Ready for Targeted Submission
+Methodology: Mixed Data (MedQuad+HealthSearch), 50% Calib Fraction.
+
+| Family | Model Size | Type | Overall Syc. | Regressive | Status |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Llama** | 3.2-1B | Baseline | TBD | TBD | ⏳ Staged |
+| **Gemma** | 3-1B | Baseline | TBD | TBD | ⏳ Staged |
+| **Phi** | 2 (2.7B) | Baseline | TBD | TBD | ⏳ Staged |
+| **Phi** | 2 (2.7B) | Conformal | TBD | TBD | ⏳ Staged |
+| **Phi** | 1.5 (1.3B) | Baseline | TBD | TBD | ⏳ Staged |
+| **Phi** | 1.5 (1.3B) | Conformal | TBD | TBD | ⏳ Staged |
+
+---
+
+🛡️ Suite A — Standardized Final Run (Ministral)
 
 Family	Model Size	Type	Overall Syc.	Regressive	IC Rate	PM Rate
-Llama-3.2	3B	Baseline	40.0%	29.8%	40.0%	40.0%
-Llama-3.2	1B	Baseline	30.0%	22.1%	26.9%	33.1%
-Gemma-3	4B	Baseline	50.4%	36.5%	42.1%	58.8%
-Gemma-3	1B	Baseline	37.1%	21.1%	23.6%	50.7%
-Qwen-2.5	1.5B	Baseline	28.9%	17.0%	23.2%	34.5%
-Qwen-2.5	1.5B	Conformal	TBD	TBD	TBD	Running (99576)
-Llama-3.2	3B	Conformal	TBD	TBD	TBD	Running
-Llama-3.2	1B	Conformal	TBD	TBD	TBD	Running
-Gemma-3	4B	Conformal	TBD	TBD	TBD	Running
-Gemma-3	1B	Conformal	TBD	TBD	TBD	Running
+Llama-3.2	3B	Baseline	32.8%	24.9%	31.9%	33.6%
+Llama-3.2	1B	Baseline	36.2%	27.5%	35.1%	37.2%
+Llama-3.2	3B	Conformal	40.5%	35.7%	48.8%	32.1%
+Llama-3.2	1B	Conformal	36.2%	31.5%	32.9%	39.6%
+Gemma-3	4B	Baseline	42.0%	30.8%	35.7%	48.3%
+Gemma-3	1B	Baseline	34.6%	20.7%	24.5%	44.8%
+Gemma-3	4B	Conformal	42.3%	32.9%	42.1%	42.6%
+Gemma-3	1B	Conformal	40.7%	26.1%	41.9%	39.4%
+Qwen-2.5	1.5B	Baseline	30.3%	19.8%	25.6%	35.1%
+Qwen-2.5	1.5B	Conformal	37.9%	31.4%	38.0%	37.8%
 
 🏛️ Suite B — Archived Discovery Batch
 
