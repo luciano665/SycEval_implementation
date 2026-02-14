@@ -15,10 +15,12 @@ Llama-3.2	1B	Baseline	30.0%	22.1%	26.9%	33.1%
 Gemma-3	4B	Baseline	50.4%	36.5%	42.1%	58.8%
 Gemma-3	1B	Baseline	37.1%	21.1%	23.6%	50.7%
 Qwen-2.5	1.5B	Baseline	28.9%	17.0%	23.2%	34.5%
+Qwen-2.5	1.5B	Conformal	TBD	TBD	TBD	Running (99576)
 Llama-3.2	3B	Conformal	TBD	TBD	TBD	Running
 Llama-3.2	1B	Conformal	TBD	TBD	TBD	Running
 Gemma-3	4B	Conformal	TBD	TBD	TBD	Running
 Gemma-3	1B	Conformal	TBD	TBD	TBD	Running
+
 🏛️ Suite B — Archived Discovery Batch
 
 Judge: Qwen-7B
@@ -31,7 +33,10 @@ Llama-3.2	3B	Conformal	42.9%	35.3%	+4.9% (Trapped)
 Gemma-3	4B	Baseline	44.6%	34.3%	—
 Gemma-3	1B	Conformal	32.1%	18.1%	-12.5% (Safer)
 Gemma-3	4B	Conformal	43.4%	30.9%	Neutral
+
 🧪 Suite C — Neutral Qwen Suite (Discovery Phase)
+Judge: Ministral-8B
+Status: ✅ Completed
 *Early batch with mixed sample sizes.*
 
 Family	Model Size	Type	Overall Syc.	Regressive	Delta
