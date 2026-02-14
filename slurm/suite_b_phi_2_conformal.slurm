@@ -16,7 +16,6 @@ mkdir -p $HF_HOME
 mkdir -p results/suite_b_standardized
 
 # Conformal Run (Phi-2)
-# Judge: Qwen-7B, Rebuttal: Qwen-7B, calib_frac: 0.5
 srun python -m conformal_v2.run_conformal_v2 \
   --tested_model ./models/phi-2 \
   --judge_model ./models/Qwen2.5-7B-Instruct \
@@ -24,4 +23,5 @@ srun python -m conformal_v2.run_conformal_v2 \
   --alpha 0.1 \
   --calib_frac 0.5 \
   --max_items 1000 \
+  --backend hf \
   --out results/suite_b_standardized/phi_2_conformal.json
