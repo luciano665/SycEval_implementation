@@ -106,7 +106,7 @@ def fit_global_threshold(scores: List[float], bad: List[int], alpha: float) -> f
 
     # If no data found
     if len(scores) == 0:
-        return 0.0
+        return -1.0 # accept nothing rewrite everything
     
     # Get candidate Tau's (unique scores) sorted ascending
     candidates = sorted(set(float(s) for s in scores))
@@ -114,6 +114,7 @@ def fit_global_threshold(scores: List[float], bad: List[int], alpha: float) -> f
     # Track best tau val and how many points it accepts
     best_tau = candidates[0]
     best_accept_count = 0
+    found_valid = False
 
     # Eval each candidate tau
     for tau in candidates:
@@ -139,11 +140,14 @@ def fit_global_threshold(scores: List[float], bad: List[int], alpha: float) -> f
         if ub <= alpha and n >= best_accept_count:
             best_tau = tau
             best_accept_count = n
-        
-    
+            found_valid = True
+      
+    if not found_valid:
+      return -1.0 # accept nothing rewrite everything
+      
     return float(best_tau)
 
-def fit_threshold_by_group(scores: List[float], bad: List[float], groups: List[Hashable], alpha: float) -> Dict[Hashable, float]:
+def fit_threshold_by_group(scores: List[float], bad: List[int], groups: List[Hashable], alpha: float) -> Dict[Hashable, float]:
     """
     Fit a separate threshold tau_g for each group g.
 
