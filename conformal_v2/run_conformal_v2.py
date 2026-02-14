@@ -37,12 +37,29 @@ from .conformal_thresholds import (
     ThresholdFitResult,
     fit_global_threshold,
     fit_threshold_by_group,
-    choose_threshold,
+   # choose_threshold,
 )
 from .safe_rewrite import anti_sycophancy_rewrite
 from logger_utils import get_logger
 
 logger = get_logger(__name__)
+
+def _log_df_group_summary(df: pd.DataFrame, title: str) -> None:
+    if df.empty:
+        logger.info("%s: no rows", title)
+        return
+
+    cols = [c for c in [
+        "where", "strength", "first_label",
+        "n",
+        "claim_keep_rate", "claim_drop_rate",
+        "accept_rate", "rewrite_rate",
+        "regressive_rate", "progressive_rate", "none_rate",
+        "mean_risk", "mean_tau",
+    ] if c in df.columns]
+
+    logger.info("%s\n%s", title, df[cols].to_string(index=False))
+
 
 def purify_from_scored_claims(
     claims: List[str],
@@ -65,6 +82,8 @@ def purify_answer_with_claims(
     item: Dict[str, str],
     cfg: EvalConfig,
     claim_threshold: float,
+    rebuttal: Optional[str] = None,
+    initial_answer: Optional[str] = None,
 ) -> Tuple[str, List[str], List[str], List[str], List[float]]:
     """
     Decompose -> score -> filter -> reconstruct to reduce sycophantic content.
@@ -81,6 +100,8 @@ def purify_answer_with_claims(
             c,
             item["question"],
             cfg.judge_model,
+            rebuttal=rebuttal,
+            initial_answer=initial_answer,
             temperature=cfg.temperature,
             backend=cfg.backend,
         )
@@ -175,6 +196,8 @@ def in_context_chain_drafts(
 
         # extend context so next step sees the conversation
         drafts.append((strength, rebuttal, draft_answer))
+
+        context += f"\nUser rebuttal:\n{rebuttal}\nA: {draft_answer}\n"
 
     return drafts
 
@@ -280,8 +303,10 @@ def calibration_collect(
     groups: List[Hashable] = []
     records: List[Dict[str, Any]] = []
 
+    # For tau calibration
     claim_scores: List[float] = []
     claim_bad: List[int] = []
+
     draft_cache: List[Dict[str, Any]] = []
 
     for i, item in enumerate(tqdm(items, desc="Calibration")):
@@ -307,11 +332,14 @@ def calibration_collect(
                         c,
                         q,
                         cfg.judge_model,
+                        rebuttal=rebuttal,
+                        initial_answer=ai0,
                         temperature=cfg.temperature,
                         backend=cfg.backend,
                     )
                     for c in claims
                 ]
+                # claim-level calibration labels
                 for claim, score in zip(claims, scores_for_claims):
                     supported = judge_claim_support(
                         claim,
@@ -321,7 +349,7 @@ def calibration_collect(
                         temperature=cfg.temperature,
                         backend=cfg.backend,
                     )
-                    claim_scores.append(float(score))
+                    claim_scores.append(float(1.0 - score))
                     claim_bad.append(0 if supported else 1)
 
                 draft_cache.append({
@@ -339,7 +367,8 @@ def calibration_collect(
                 })
 
     if claim_scores:
-        tau_claim = float(fit_global_threshold(claim_scores, claim_bad, claim_alpha))
+        tau_claim_inverted = float(fit_global_threshold(claim_scores, claim_bad, claim_alpha))
+        tau_claim = 1.0 - tau_claim_inverted
     else:
         tau_claim = 0.5
         logger.warning("No claims found in calibration; defaulting tau_claim to 0.5")
@@ -364,7 +393,6 @@ def calibration_collect(
         s = sycophancy_risk_score(
             scorer_model=risk_scorer_model,
             question=cached["question"],
-            truth=cached["truth"],
             rebuttal=cached["rebuttal"],
             initial_answer=cached["initial_answer"],
             draft_answer=purified_answer,
@@ -377,6 +405,9 @@ def calibration_collect(
         scores.append(float(s))
         bad.append(int(y))
         groups.append(group_key)
+
+        keep_rate = (len(kept_claims) / max(1, len(cached["claims"])))
+        drop_rate = (len(dropped_claims) / max(1, len(cached["claims"])))
 
         records.append({
             "idx": cached["idx"],
@@ -391,8 +422,27 @@ def calibration_collect(
             "claims_total": len(cached["claims"]),
             "claims_kept": len(kept_claims),
             "claims_dropped": len(dropped_claims),
+            "claim_keep_rate": float(keep_rate),
+            "claim_drop_rate": float(drop_rate),
             "tau_claim": float(tau_claim),
         })
+    # Log claim filtering behavior on calibration cache
+    if records:
+        df_rec = pd.DataFrame(records)
+        grp = (
+            df_rec.groupby(["where", "strength", "first_label"], dropna=False)
+            .agg(
+                n=("idx", "count"),
+                claim_keep_rate=("claim_keep_rate", "mean"),
+                claim_drop_rate=("claim_drop_rate", "mean"),
+                mean_risk=("risk_score", "mean"),
+                regressive_rate=("bad", "mean"),
+            )
+            .reset_index()
+            .sort_values(["where", "strength", "first_label"])
+        )
+        logger.info("Calibration tau_claim=%.4f (claim_alpha=%.3f)", float(tau_claim), float(claim_alpha))
+        _log_df_group_summary(grp, "Calibration per-condition claim behavior")
 
     return tau_claim, scores, bad, groups, records
 
@@ -476,7 +526,8 @@ def test_apply(
                     draft_dropped_claims,
                     draft_all_claims,
                     _draft_scores,
-                ) = purify_answer_with_claims(draft_answer, item, cfg, claim_threshold)
+                ) = purify_answer_with_claims(draft_answer, item, cfg, claim_threshold, rebuttal=rebuttal, initial_answer=ai0)
+
                 draft_label = judge_local(
                     cfg.judge_model,
                     q,
@@ -489,7 +540,6 @@ def test_apply(
                 s = sycophancy_risk_score(
                     scorer_model=risk_scorer_model,
                     question=q,
-                    truth=truth,
                     rebuttal=rebuttal,
                     initial_answer=ai0,
                     draft_answer=draft_answer,
@@ -499,13 +549,13 @@ def test_apply(
 
                 group_key = make_group_key(where, strength, lab0)
                 # choose tau for this instance (group or global)
-                tau = choose_threshold(fit, group_key)
+                tau =float(fit.tau_global)
 
                 # decide whether to rewrite
                 rewrite_triggered = bool(enable_rewrite and (float(s) > float(tau)))
 
                 if rewrite_triggered:
-                    final_answer = anti_sycophancy_rewrite(
+                    final_raw = anti_sycophancy_rewrite(
                         tested_model=cfg.tested_model,
                         question=q,
                         rebuttal=rebuttal,
@@ -515,22 +565,22 @@ def test_apply(
                         temperature=cfg.temperature
                     )
                 else:
-                    final_answer = draft_answer
+                    final_raw = draft_answer
 
                 (
-                    final_answer,
+                    final_purified,
                     final_kept_claims,
                     final_dropped_claims,
                     final_all_claims,
                     _final_scores,
-                ) = purify_answer_with_claims(final_answer, item, cfg, claim_threshold)
+                ) = purify_answer_with_claims(final_raw, item, cfg, claim_threshold, rebuttal=rebuttal, initial_answer=ai0)
 
                 # judge correctness of final answer
                 final_label = judge_local(
                     cfg.judge_model,
                     q,
                     truth,
-                    final_answer,
+                    final_purified,
                     temperature=cfg.temperature,
                     backend=cfg.backend,
                 )
@@ -543,19 +593,25 @@ def test_apply(
                     "where": where,  # in-context/preemptive
                     "strength": strength,  # rebuttal strength
                     "first_label": lab0,  # initial label
+
                     "draft_answer": draft_answer,  # draft answer text
                     "draft_label": draft_label,  # draft correctness label
                     "draft_sycophancy": classify_sychophancy(lab0, draft_label),  # sycophancy on draft
+
                     "risk_score": float(s),  # numeric risk score
                     "tau": float(tau),  # threshold used
                     "rewrite_triggered": rewrite_triggered,  # whether rewrite happened
-                    "final_answer": final_answer,  # final answer text
+
+                    "final_answer": final_purified,  # final answer text
                     "after_label": final_label,  # final correctness label (keeps same name as baseline)
                     "sycophancy": final_kind,  # sycophancy on final answer (keeps same name as baseline)
+
                     "question": q,  # question text for reference
+
                     "draft_claims_total": len(draft_all_claims),
                     "draft_claims_kept": len(draft_kept_claims),
                     "draft_claims_dropped": len(draft_dropped_claims),
+
                     "final_claims_total": len(final_all_claims),
                     "final_claims_kept": len(final_kept_claims),
                     "final_claims_dropped": len(final_dropped_claims),
@@ -679,7 +735,7 @@ def main() -> None:
             bad=bad,
             groups=groups,
             alpha=float(args.alpha),
-            use_group_thresholds=bool(args.use_group_thresholds),
+            use_group_thresholds=False,
         )
 
         with open(args.thresholds_out, "w", encoding="utf-8") as f:
@@ -811,8 +867,8 @@ def main() -> None:
         scores=scores,  # risk scores
         bad=bad,  # bad labels
         groups=groups,  # group keys
-        alpha=float(args.alpha),  # alpha
-        use_group_thresholds=bool(args.use_group_thresholds),  
+        alpha=float(args.alpha),  # alpha 
+        use_group_thresholds=False,
     )
 
     with open(args.thresholds_out, "w", encoding="utf-8") as f:  
