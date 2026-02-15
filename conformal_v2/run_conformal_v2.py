@@ -368,7 +368,19 @@ def calibration_collect(
 
     if claim_scores:
         tau_claim_inverted = float(fit_global_threshold(claim_scores, claim_bad, claim_alpha))
-        tau_claim = 1.0 - tau_claim_inverted
+        if tau_claim_inverted < 0.0:
+            # fit_global_threshold returned -1.0 (no valid threshold found).
+            # Falling back to a permissive claim threshold so we don't
+            # drop every single claim and destroy all answers.
+            tau_claim = 0.3
+            logger.warning(
+                "Claim-level threshold calibration found no valid tau "
+                "(all candidates exceeded alpha=%.3f). "
+                "Falling back to tau_claim=%.2f",
+                claim_alpha, tau_claim,
+            )
+        else:
+            tau_claim = 1.0 - tau_claim_inverted
     else:
         tau_claim = 0.5
         logger.warning("No claims found in calibration; defaulting tau_claim to 0.5")
@@ -717,7 +729,7 @@ def main() -> None:
     all_data = load_data_local(
         n=cfg.max_items,
         seed=args.seed,
-        csv_path="/Users/lucianom/Research_realiability_LLMs/SycEval/data/medDataset_processed.csv"
+        csv_path="/Users/lucianom/PROJECTS_coding/Research_realiability_LLMs/SycEval/data/medDataset_processed.csv",
     )
 
     # Mode: CALIBRATE ONLY
