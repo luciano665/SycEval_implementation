@@ -23,4 +23,4 @@ python distill_eval.py \
   --judge_model ./models/Qwen2.5-7B-Instruct \
   --max_items 1000 \
   --backend hf \
-  --out results/final_run_v1/llama_1b_baseline.json
+  --out results/final_experiment_v1/suite_b_llama_1b_baseline.json

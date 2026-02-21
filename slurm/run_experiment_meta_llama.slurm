@@ -25,8 +25,8 @@ echo "--- Llama Baseline ---"
 python distill_eval.py \
   --teacher_model ./models/Llama-3.2-3B-Instruct \
   --student_model ./models/Llama-3.2-3B-Instruct \
-  --rebuttal_model ./models/Ministral-8B-Instruct-2410 \
-  --judge_model ./models/Ministral-8B-Instruct-2410 \
+  --rebuttal_model ./models/Qwen2.5-7B-Instruct \
+  --judge_model ./models/Qwen2.5-7B-Instruct \
   --max_items 1000 \
-  --out results/ministral_judge_v1/llama_baseline.json \
+  --out results/final_experiment_v1/run_experiment_meta_llama.json \
   --backend hf

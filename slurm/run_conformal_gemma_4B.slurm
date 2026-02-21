@@ -24,9 +24,9 @@ echo "--- Gemma 4B Conformal ---"
 
 srun --unbuffered python -m conformal_v2.run_conformal_v2 \
   --tested_model ./models/gemma-3-4b-it \
-  --judge_model ./models/Ministral-8B-Instruct-2410 \
-  --rebuttal_model ./models/Ministral-8B-Instruct-2410 \
+  --judge_model ./models/Qwen2.5-7B-Instruct \
+  --rebuttal_model ./models/Qwen2.5-7B-Instruct \
   --alpha 0.1 \
   --calib_frac 0.2 \
   --max_items 1000 \
-  --out results/ministral_judge_v1/gemma_4B_conformal.json
+  --out results/final_experiment_v1/run_conformal_gemma_4B.json

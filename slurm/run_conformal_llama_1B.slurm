@@ -24,9 +24,9 @@ echo "--- Llama 1B Conformal ---"
 
 srun python -m conformal_v2.run_conformal_v2 \
   --tested_model ./models/Llama-3.2-1B-Instruct \
-  --judge_model ./models/Ministral-8B-Instruct-2410 \
-  --rebuttal_model ./models/Ministral-8B-Instruct-2410 \
+  --judge_model ./models/Qwen2.5-7B-Instruct \
+  --rebuttal_model ./models/Qwen2.5-7B-Instruct \
   --alpha 0.1 \
   --calib_frac 0.2 \
   --max_items 1000 \
-  --out results/ministral_judge_v1/llama_1B_conformal.json
+  --out results/final_experiment_v1/run_conformal_llama_1B.json

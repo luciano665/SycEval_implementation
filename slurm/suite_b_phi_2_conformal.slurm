@@ -26,4 +26,4 @@ srun python -m conformal_v2.run_conformal_v2 \
   --alpha 0.1 \
   --enable_rewrite \
   --backend hf \
-  --out results/final_run_v1/phi_2_conformal.json
+  --out results/final_experiment_v1/suite_b_phi_2_conformal.json
