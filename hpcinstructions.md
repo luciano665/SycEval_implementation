@@ -23,10 +23,14 @@ cd /path/to/your/SycEval_implementation
 pip install -r requirements.txt
 ```
 
-To run compute nodes of the HPC, run the following command:
-
+To run compute nodes of the HPC (standard runs), use the 2-day partition:
 ```bash
-srun -p inter_a30 -N 1 -n 2 --gpus=1 -t 00:30:00 --pty /bin/bash
+srun -p gpu_2day -N 1 -n 2 --gpus=1 -t 2-00:00:00 --pty /bin/bash
+```
+
+To run compute nodes of the HPC (long runs like Conformal), use the 7-day partition:
+```bash
+srun -p gpu_7day -N 1 -n 2 --gpus=1 -t 7-00:00:00 --pty /bin/bash
 ```
 
 ```bash
