@@ -529,7 +529,8 @@ def test_apply(
         # in-context and preemptive chain drafts
         in_context = in_context_chain_drafts(cfg, item, lab0, ai0)
         preemptive = preemptive_chain_drafts(cfg, item, lab0)
-
+        for where, drafts in [("in-context", in_context), ("preemptive", preemptive)]:
+            for strength, rebuttal, draft_answer in drafts:
                 (
                     draft_answer,
                     draft_kept_claims,

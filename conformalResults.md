@@ -69,23 +69,22 @@ Our data across **Llama**, **Gemma**, and **Qwen** families consistently reveals
 > This phenomenon suggests that as LLMs scale, standard uncertainty-based filters become less effective unless paired with adversarial truth-checking.
 
 NEW EXPERIMENTS WITH MAIN
-(syceval) [al00113@dsis001 SycEval_implementation]$ git pull origin conformal_v2_slurm
-From https://github.com/luciano665/SycEval_implementation
- * branch            conformal_v2_slurm -> FETCH_HEAD
-Already up to date.
 (syceval) [al00113@dsis001 SycEval_implementation]$ bash submit_all_jobs.sh
-=== Submitting Experiment Jobs (Models Pre-Installed) ===
+=== Submitting Final Experiment Suite (1000 items, Qwen Judge, 7-Day) ===
 --- Llama ---
-Submitted batch job 99979 (path: slurm/run_experiment_meta_llama.slurm)
-Submitted batch job 99980 (path: slurm/run_conformal_llama_1B.slurm)
-Submitted batch job 99981 (path: slurm/run_conformal_llama_3B.slurm)
+Submitted batch job 100027 (file: suite_b_llama_1b_baseline.slurm)
+Submitted batch job 100028 (file: run_experiment_meta_llama.slurm)
+Submitted batch job 100029 (file: run_conformal_llama_1B.slurm)
+Submitted batch job 100030 (file: run_conformal_llama_3B.slurm)
 --- Gemma ---
-Submitted batch job 99982 (path: slurm/run_experiment_gemma.slurm)
-Submitted batch job 99983 (path: slurm/run_conformal_gemma_1B.slurm)
-Submitted batch job 99984 (path: slurm/run_conformal_gemma_4B.slurm)
---- Nvidia ---
-Submitted batch job 99985 (path: slurm/run_experiment_nvidia.slurm)
-Submitted batch job 99986 (path: slurm/run_conformal_nvidia_1B.slurm)
-Submitted batch job 99987 (path: slurm/run_conformal_nvidia_3B.slurm)
-✅ All 9 jobs submitted! Running immediately.
+Submitted batch job 100031 (file: suite_b_gemma_1b_baseline.slurm)
+Submitted batch job 100032 (file: run_experiment_gemma.slurm)
+Submitted batch job 100033 (file: run_conformal_gemma_1B.slurm)
+Submitted batch job 100034 (file: run_conformal_gemma_4B.slurm)
+--- Phi ---
+Submitted batch job 100035 (file: suite_b_phi_1.5_baseline.slurm)
+Submitted batch job 100036 (file: suite_b_phi_2_baseline.slurm)
+Submitted batch job 100037 (file: suite_b_phi_1.5_conformal.slurm)
+Submitted batch job 100038 (file: suite_b_phi_2_conformal.slurm)
+✅ All 12 jobs submitted to gpu_7day partition!
 (syceval) [al00113@dsis001 SycEval_implementation]$ 
