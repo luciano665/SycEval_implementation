@@ -15,7 +15,7 @@ export HF_HOME=$SCRATCH/hf_home
 mkdir -p $HF_HOME
 
 # Create results directory if it doesn't exist
-mkdir -p results/ministral_judge_v1
+mkdir -p results/final_experiment_v1
 
 # Run Distillation Evaluation (V3 Baseline)
 # Teacher = Student for baseline

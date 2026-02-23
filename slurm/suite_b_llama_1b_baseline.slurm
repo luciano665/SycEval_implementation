@@ -13,7 +13,7 @@ source /shared/software/conda/etc/profile.d/conda.sh
 conda activate syceval
 export HF_HOME=$SCRATCH/hf_home
 mkdir -p $HF_HOME
-mkdir -p results/final_run_v1
+mkdir -p results/final_experiment_v1
 
 # Match Suite B Baseline Flow (distill_eval.py student=teacher)
 python distill_eval.py \

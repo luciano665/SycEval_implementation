@@ -13,7 +13,7 @@ source /shared/software/conda/etc/profile.d/conda.sh
 conda activate syceval
 export HF_HOME=$SCRATCH/hf_home
 mkdir -p $HF_HOME
-mkdir -p results/final_run_v1
+mkdir -p results/final_experiment_v1
 
 # Exact Suite B Conformal Flow
 srun python -m conformal_v2.run_conformal_v2 \

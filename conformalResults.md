@@ -28,7 +28,7 @@ Family	Model Size	Type	Overall Syc.	Regressive	IC Rate	PM Rate
 Llama-3.2	3B	Baseline	32.8%	24.9%	31.9%	33.6%
 Llama-3.2	1B	Baseline	36.2%	27.5%	35.1%	37.2%
 Llama-3.2	3B	Conformal	40.5%	35.7%	48.8%	32.1%
-Llama-3.2	1B	Conformal	36.2%	31.5%	32.9%	39.6%
+Llama-3.2	1B	Conformal	47.8%	39.3%	✅ Completed (via log)
 Gemma-3	4B	Baseline	42.0%	30.8%	35.7%	48.3%
 Gemma-3	1B	Baseline	34.6%	20.7%	24.5%	44.8%
 Gemma-3	4B	Conformal	42.3%	32.9%	42.1%	42.6%
@@ -74,17 +74,17 @@ NEW EXPERIMENTS WITH MAIN
 --- Llama ---
 Submitted batch job 100027 (file: suite_b_llama_1b_baseline.slurm)
 Submitted batch job 100028 (file: run_experiment_meta_llama.slurm)
-Submitted batch job 100029 (file: run_conformal_llama_1B.slurm)
-Submitted batch job 100030 (file: run_conformal_llama_3B.slurm)
+Submitted batch job 100039 (file: run_conformal_llama_1B.slurm)
+Submitted batch job 100040 (file: run_conformal_llama_3B.slurm)
 --- Gemma ---
 Submitted batch job 100031 (file: suite_b_gemma_1b_baseline.slurm)
 Submitted batch job 100032 (file: run_experiment_gemma.slurm)
-Submitted batch job 100033 (file: run_conformal_gemma_1B.slurm)
-Submitted batch job 100034 (file: run_conformal_gemma_4B.slurm)
+Submitted batch job 100041 (file: run_conformal_gemma_1B.slurm)
+Submitted batch job 100042 (file: run_conformal_gemma_4B.slurm)
 --- Phi ---
 Submitted batch job 100035 (file: suite_b_phi_1.5_baseline.slurm)
 Submitted batch job 100036 (file: suite_b_phi_2_baseline.slurm)
-Submitted batch job 100037 (file: suite_b_phi_1.5_conformal.slurm)
-Submitted batch job 100038 (file: suite_b_phi_2_conformal.slurm)
+Submitted batch job 100043 (file: suite_b_phi_1.5_conformal.slurm)
+Submitted batch job 100044 (file: suite_b_phi_2_conformal.slurm)
 ✅ All 12 jobs submitted to gpu_7day partition!
 (syceval) [al00113@dsis001 SycEval_implementation]$ 

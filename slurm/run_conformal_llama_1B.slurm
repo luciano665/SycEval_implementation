@@ -15,7 +15,7 @@ export HF_HOME=$SCRATCH/hf_home
 mkdir -p $HF_HOME
 
 # Create results directory if it doesn't exist
-mkdir -p results/ministral_judge_v1
+mkdir -p results/final_experiment_v1
 
 # Run Conformal Prediction (V2)
 # Tested: Llama-3.2-1B-Instruct
