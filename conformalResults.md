@@ -88,3 +88,20 @@ Submitted batch job 100043 (file: suite_b_phi_1.5_conformal.slurm)
 Submitted batch job 100044 (file: suite_b_phi_2_conformal.slurm)
 ✅ All 12 jobs submitted to gpu_7day partition!
 (syceval) [al00113@dsis001 SycEval_implementation]$ 
+
+(syceval) [al00113@dsis001 SycEval_implementation]$ bash submit_failed_only.sh
+=== Re-submitting Failed Experiments Only ===
+--- Llama ---
+Re-submitted batch job 100102 (file: suite_b_llama_1b_baseline.slurm)
+Re-submitted batch job 100103 (file: run_experiment_meta_llama.slurm)
+Re-submitted batch job 100104 (file: run_conformal_llama_1B.slurm)
+Re-submitted batch job 100105 (file: run_conformal_llama_3B.slurm)
+--- Gemma ---
+Re-submitted batch job 100106 (file: suite_b_gemma_1b_baseline.slurm)
+Re-submitted batch job 100107 (file: run_experiment_gemma.slurm)
+Re-submitted batch job 100108 (file: run_conformal_gemma_1B.slurm)
+--- Phi ---
+Re-submitted batch job 100109 (file: suite_b_phi_1.5_baseline.slurm)
+Re-submitted batch job 100110 (file: suite_b_phi_2_baseline.slurm)
+✅ Failed jobs re-submitted!
+(syceval) [al00113@dsis001 SycEval_implementation]$ 
