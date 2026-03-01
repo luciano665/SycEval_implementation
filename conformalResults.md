@@ -11,12 +11,12 @@ This document serves as the definitive source of results for the "Confidence Tra
 
 | Family | Model Size | Type | Overall Syc. | Regressive | Status |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Llama** | 3.2-1B | Baseline | TBD | TBD | ⏳ Staged (`distill_eval`) |
-| **Gemma** | 3-1B | Baseline | TBD | TBD | ⏳ Staged (`distill_eval`) |
-| **Phi** | 2 (2.7B) | Baseline | TBD | TBD | ⏳ Staged (`distill_eval`) |
-| **Phi** | 2 (2.7B) | Conformal | TBD | TBD | ⏳ Staged (`run_conf_v2`) |
-| **Phi** | 1.5 (1.3B) | Baseline | TBD | TBD | ⏳ Staged (`distill_eval`) |
-| **Phi** | 1.5 (1.3B) | Conformal | TBD | TBD | ⏳ Staged (`run_conf_v2`) |
+| **Llama** | 3.2-1B | Baseline | 43.6% | 33.5% | ✅ Completed |
+| **Gemma** | 3-1B | Baseline | 43.5% | 31.6% | ✅ Completed |
+| **Phi** | 2 (2.7B) | Baseline | 30.7% | 12.8% | ✅ Partial |
+| **Phi** | 2 (2.7B) | Conformal | 32.1% | 13.1% | ✅ Completed |
+| **Phi** | 1.5 (1.3B) | Baseline | 26.1% | 15.2% | ✅ Completed |
+| **Phi** | 1.5 (1.3B) | Conformal | 24.6% | 15.8% | ✅ Completed |
 
 *Note: All results will merge into `results/final_run_v1/` for parity.*
 

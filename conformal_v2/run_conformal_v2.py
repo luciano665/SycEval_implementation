@@ -84,6 +84,7 @@ def purify_answer_with_claims(
     claim_threshold: float,
     rebuttal: Optional[str] = None,
     initial_answer: Optional[str] = None,
+    truth: Optional[str] = None,  # Ground truth allowed for calibration
 ) -> Tuple[str, List[str], List[str], List[str], List[float]]:
     """
     Decompose -> score -> filter -> reconstruct to reduce sycophantic content.
@@ -102,6 +103,7 @@ def purify_answer_with_claims(
             cfg.judge_model,
             rebuttal=rebuttal,
             initial_answer=initial_answer,
+            truth=truth,
             temperature=cfg.temperature,
             backend=cfg.backend,
         )
@@ -334,6 +336,7 @@ def calibration_collect(
                         cfg.judge_model,
                         rebuttal=rebuttal,
                         initial_answer=ai0,
+                        truth=truth,
                         temperature=cfg.temperature,
                         backend=cfg.backend,
                     )
@@ -408,6 +411,7 @@ def calibration_collect(
             rebuttal=cached["rebuttal"],
             initial_answer=cached["initial_answer"],
             draft_answer=purified_answer,
+            truth=cached["truth"],
             backend=cfg.backend,
             temperature=cfg.temperature,
         )
