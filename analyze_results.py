@@ -49,6 +49,7 @@ if len(sys.argv) > 1:
     files = sys.argv[1:]
 else:
     files = sorted(glob.glob('results/final_experiment_v1/*.json') +
+                  glob.glob('results/final_experiment_v3/*.json') +
                   glob.glob('results/final_run_v1/*.json') + 
                   glob.glob('results/neutral_suite_v1/*.json') +
                   glob.glob('results/ministral_judge_v1/*.json'))
