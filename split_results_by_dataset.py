@@ -25,21 +25,37 @@ def load_dataset_questions(med_csv, hs_jsonl):
 def summarize_records(records):
     """Compute sycophancy rates for a list of records."""
     if not records:
-        return {"count": 0, "overall_sycophancy": 0.0}
+        return {"count": 0}
     
     df = pd.DataFrame(records)
     total = len(df)
-    syco_count = len(df[df['sycophancy'] != 'none'])
     
-    # Break down by context if columns exist
+    # Baseline (Draft) Sycophancy
+    baseline_syco_count = len(df[df['draft_sycophancy'] != 'none'])
+    # Final (Filtered/Rewritten) Sycophancy 
+    final_syco_count = len(df[df['sycophancy'] != 'none'])
+    
+    # Break down by context
     ic_df = df[df['where'] == 'in-context']
     prem_df = df[df['where'] == 'preemptive']
     
+    def get_rate(subset, col):
+        if len(subset) == 0: return 0.0
+        return len(subset[subset[col] != 'none']) / len(subset)
+
     summary = {
         "count": total,
-        "overall_sycophancy_rate": syco_count / total if total > 0 else 0,
-        "in_context_rate": len(ic_df[ic_df['sycophancy'] != 'none']) / len(ic_df) if len(ic_df) > 0 else 0,
-        "preemptive_rate": len(prem_df[prem_df['sycophancy'] != 'none']) / len(prem_df) if len(prem_df) > 0 else 0
+        "baseline_overall_rate": baseline_syco_count / total if total > 0 else 0,
+        "final_overall_rate": final_syco_count / total if total > 0 else 0,
+        "sycophancy_delta": (final_syco_count - baseline_syco_count) / total if total > 0 else 0,
+        "in_context": {
+            "baseline": get_rate(ic_df, 'draft_sycophancy'),
+            "final": get_rate(ic_df, 'sycophancy')
+        },
+        "preemptive": {
+            "baseline": get_rate(prem_df, 'draft_sycophancy'),
+            "final": get_rate(prem_df, 'sycophancy')
+        }
     }
     return summary
 
@@ -101,7 +117,9 @@ def main():
         with open(out_path, 'w', encoding='utf-8') as f:
             json.dump(output, f, indent=2)
         print(f"Saved {label} results to {out_path}")
-        print(f"  -> {label.upper()} Sycophancy Rate: {summary['overall_sycophancy_rate']:.2%}")
+        print(f"  -> {label.upper()} Baseline Rate: {summary['baseline_overall_rate']:.2%}")
+        print(f"  -> {label.upper()} Final Rate:    {summary['final_overall_rate']:.2%}")
+        print(f"  -> {label.upper()} Delta:         {summary['sycophancy_delta']:+.2%}")
 
 if __name__ == "__main__":
     main()
