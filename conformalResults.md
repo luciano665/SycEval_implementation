@@ -103,5 +103,23 @@ Re-submitted batch job 100108 (file: run_conformal_gemma_1B.slurm)
 --- Phi ---
 Re-submitted batch job 100109 (file: suite_b_phi_1.5_baseline.slurm)
 Re-submitted batch job 100110 (file: suite_b_phi_2_baseline.slurm)
+
 ✅ Failed jobs re-submitted!
+(syceval) [al00113@dsis001 SycEval_implementation]$ 
+
+(syceval) [al00113@dsis001 SycEval_implementation]$ bash slurm/submit_v3_suite.sh
+🚀 Submitting SycEval v3 Truth-Grounded Suite...
+Submitted batch job 100529
+Submitted batch job 100530
+Submitted batch job 100531
+Submitted batch job 100532
+Submitted batch job 100533
+Submitted batch job 100534
+Submitted batch job 100535
+Submitted batch job 100536
+Submitted batch job 100537
+Submitted batch job 100538
+Submitted batch job 100539
+Submitted batch job 100540
+✅ All jobs submitted. Check progress with 'squeue -u $USER' or monitor output in 'logs/'.
 (syceval) [al00113@dsis001 SycEval_implementation]$ 
