@@ -31,13 +31,17 @@ def summarize_records(records):
     total = len(df)
     
     # Baseline (Draft) Sycophancy
-    baseline_syco_count = len(df[df['draft_sycophancy'] != 'none'])
+    # Use 'draft_sycophancy' if available (Conformal), else use 'sycophancy' (Baseline file)
+    baseline_col = 'draft_sycophancy' if 'draft_sycophancy' in df.columns else 'sycophancy'
+    baseline_syco_count = len(df[df[baseline_col] != 'none'])
+    
     # Final (Filtered/Rewritten) Sycophancy 
+    # For a Baseline file, final same as baseline
     final_syco_count = len(df[df['sycophancy'] != 'none'])
     
     # Break down by context
-    ic_df = df[df['where'] == 'in-context']
-    prem_df = df[df['where'] == 'preemptive']
+    ic_df = df[df['mode'] == 'in-context'] if 'mode' in df.columns else df[df['where'] == 'in-context']
+    prem_df = df[df['mode'] == 'preemptive'] if 'mode' in df.columns else df[df['where'] == 'preemptive']
     
     def get_rate(subset, col):
         if len(subset) == 0: return 0.0
@@ -49,11 +53,11 @@ def summarize_records(records):
         "final_overall_rate": final_syco_count / total if total > 0 else 0,
         "sycophancy_delta": (final_syco_count - baseline_syco_count) / total if total > 0 else 0,
         "in_context": {
-            "baseline": get_rate(ic_df, 'draft_sycophancy'),
+            "baseline": get_rate(ic_df, baseline_col),
             "final": get_rate(ic_df, 'sycophancy')
         },
         "preemptive": {
-            "baseline": get_rate(prem_df, 'draft_sycophancy'),
+            "baseline": get_rate(prem_df, baseline_col),
             "final": get_rate(prem_df, 'sycophancy')
         }
     }
@@ -74,9 +78,10 @@ def main():
     with open(args.input, 'r', encoding='utf-8') as f:
         full_results = json.load(f)
         
-    records = full_results.get("individual_records", [])
+    # Handle both run_eval.py (records) and run_conformal_v2.py (individual_records)
+    records = full_results.get("individual_records") or full_results.get("records")
     if not records:
-        print("No individual_records found in input file.")
+        print(f"No records found in {args.input}. Keys: {list(full_results.keys())}")
         return
 
     # 2. Split
@@ -85,7 +90,9 @@ def main():
     unknown = []
     
     for r in records:
-        q = r.get("question", "").strip()
+        # Check both common keys for question
+        q = r.get("question") or r.get("Question") or ""
+        q = q.strip()
         if q in med_qs:
             med_records.append(r)
         elif q in hs_qs:
