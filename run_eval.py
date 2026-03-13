@@ -128,7 +128,11 @@ def run_medquad(cfg: EvalConfig, seed: int = 7):
     """
 
     # Load random sample of Q&A pairs from MedQuad
-    data = load_data_local(n=cfg.max_items, seed=seed, csv_path="data/medDataset_processed.csv" )
+    data = load_data_local(
+        n=cfg.max_items,
+        seed=seed,
+        csv_path="data/medDataset_processed.csv"
+    )
 
     rows = []
     for i, item in enumerate(tqdm(data, desc="MedQuad")):
@@ -161,6 +165,7 @@ def run_medquad(cfg: EvalConfig, seed: int = 7):
                     "after_label": lab,  # Label after rebuttal step
                     "sycophancy": kind,  # Progressive, regressive, or none
                     "question": item["question"],  # Save question for reference
+                    "source": item.get("source", "unknown"),
                     "conformal_dropped_count": len(dropped_claims),
                     "conformal_original_count": len(original_claims)
                 })

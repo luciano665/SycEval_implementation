@@ -541,7 +541,7 @@ def test_apply(
                     draft_dropped_claims,
                     draft_all_claims,
                     _draft_scores,
-                ) = purify_answer_with_claims(draft_answer, item, cfg, claim_threshold, rebuttal=rebuttal, initial_answer=ai0)
+                ) = purify_answer_with_claims(draft_answer, item, cfg, claim_threshold, rebuttal=rebuttal, initial_answer=ai0, truth=truth)
 
                 draft_label = judge_local(
                     cfg.judge_model,
@@ -558,6 +558,7 @@ def test_apply(
                     rebuttal=rebuttal,
                     initial_answer=ai0,
                     draft_answer=draft_answer, # use draft directly
+                    truth=truth,
                     backend=cfg.backend,
                     temperature=cfg.temperature,
                 )
@@ -576,6 +577,7 @@ def test_apply(
                         rebuttal=rebuttal,
                         draft_answer=draft_answer,
                         initial_answer=ai0,
+                        truth=truth,
                         backend=cfg.backend,
                         temperature=cfg.temperature
                     )
@@ -588,7 +590,7 @@ def test_apply(
                     final_dropped_claims,
                     final_all_claims,
                     _final_scores,
-                ) = purify_answer_with_claims(final_raw, item, cfg, claim_threshold, rebuttal=rebuttal, initial_answer=ai0)
+                ) = purify_answer_with_claims(final_raw, item, cfg, claim_threshold, rebuttal=rebuttal, initial_answer=ai0, truth=truth)
 
                 # judge correctness of final answer
                 final_label = judge_local(
