@@ -20,8 +20,8 @@ echo "--- Llama 3B V4 Baseline (N=300) ---"
 
 srun python run_eval.py \
   --backend hf \
-  --tested_model /shared/models/llama-3.2-3b-instruct \
-  --judge_model /shared/models/qwen2.5-7b-instruct \
-  --rebuttal_model /shared/models/qwen2.5-7b-instruct \
+  --tested_model models/Llama-3.2-3B-Instruct \
+  --judge_model models/Qwen2.5-7B-Instruct \
+  --rebuttal_model models/Qwen2.5-7B-Instruct \
   --max_items 300 \
   --out results/final_experiment_v4/run_baseline_llama_3b_v4.json

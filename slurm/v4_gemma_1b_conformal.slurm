@@ -19,9 +19,9 @@ mkdir -p results/final_experiment_v4
 echo "--- Gemma 1B V4 Conformal (N=300) ---"
 
 srun python -m conformal_v2.run_conformal_v2 \
-  --tested_model /shared/models/gemma-2-2b-instruct \
-  --judge_model /shared/models/qwen2.5-7b-instruct \
-  --rebuttal_model /shared/models/qwen2.5-7b-instruct \
+  --tested_model models/gemma-3-1b-it \
+  --judge_model models/Qwen2.5-7B-Instruct \
+  --rebuttal_model models/Qwen2.5-7B-Instruct \
   --alpha 0.1 \
   --calib_frac 0.33 \
   --max_items 300 \

@@ -20,8 +20,8 @@ echo "--- Phi 2 V4 Baseline (N=300) ---"
 
 srun python run_eval.py \
   --backend hf \
-  --tested_model /shared/models/phi-2 \
-  --judge_model /shared/models/qwen2.5-7b-instruct \
-  --rebuttal_model /shared/models/qwen2.5-7b-instruct \
+  --tested_model models/phi-2 \
+  --judge_model models/Qwen2.5-7B-Instruct \
+  --rebuttal_model models/Qwen2.5-7B-Instruct \
   --max_items 300 \
   --out results/final_experiment_v4/run_baseline_phi_2_v4.json

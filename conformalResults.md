@@ -121,5 +121,5 @@ Submitted batch job 100537
 Submitted batch job 100538
 Submitted batch job 100539
 Submitted batch job 100540
-✅ All jobs submitted. Check progress with 'squeue -u $USER' or monitor output in 'logs/'.
-(syceval) [al00113@dsis001 SycEval_implementation]$ 
+
+NEWEST JOBS

@@ -20,8 +20,8 @@ echo "--- Gemma 4B V4 Baseline (N=300) ---"
 
 srun python run_eval.py \
   --backend hf \
-  --tested_model /shared/models/gemma-2-2b-instruct \
-  --judge_model /shared/models/qwen2.5-7b-instruct \
-  --rebuttal_model /shared/models/qwen2.5-7b-instruct \
+  --tested_model models/gemma-3-4b-it \
+  --judge_model models/Qwen2.5-7B-Instruct \
+  --rebuttal_model models/Qwen2.5-7B-Instruct \
   --max_items 300 \
   --out results/final_experiment_v4/run_baseline_gemma_4b_v4.json
