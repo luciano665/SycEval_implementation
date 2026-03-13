@@ -25,6 +25,6 @@ srun python -m conformal_v2.run_conformal_v2 \
   --alpha 0.1 \
   --calib_frac 0.33 \
   --max_items 300 \
-  --medquad_only \
   --enable_rewrite \
+  --thresholds_out results/final_experiment_v4/thresholds_phi_2_v4.json \
   --out results/final_experiment_v4/run_conformal_phi_2_v4.json

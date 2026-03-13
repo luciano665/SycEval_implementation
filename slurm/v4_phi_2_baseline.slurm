@@ -24,5 +24,4 @@ srun python run_eval.py \
   --judge_model /shared/models/qwen2.5-7b-instruct \
   --rebuttal_model /shared/models/qwen2.5-7b-instruct \
   --max_items 300 \
-  --medquad_only \
   --out results/final_experiment_v4/run_baseline_phi_2_v4.json
