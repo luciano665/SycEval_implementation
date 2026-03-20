@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH --job-name=v4_phi_1.5_baseline
-#SBATCH --output=logs/output_v4_phi_1.5_baseline_%j.txt
-#SBATCH --error=logs/error_v4_phi_1.5_baseline_%j.txt
+#SBATCH --job-name=v5_phi_2_baseline
+#SBATCH --output=logs/output_v5_phi_2_baseline_%j.txt
+#SBATCH --error=logs/error_v5_phi_2_baseline_%j.txt
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --gpus=1
@@ -14,14 +14,14 @@ conda activate syceval
 export HF_HOME=$SCRATCH/hf_home
 mkdir -p $HF_HOME
 
-mkdir -p results/final_experiment_v4
+mkdir -p results/final_experiment_v5
 
-echo "--- Phi 1.5 V4 Baseline (N=300) ---"
+echo "--- Phi 2 V5 Baseline (N=300, MedQuad Only) ---"
 
 srun python run_eval.py \
   --backend hf \
-  --tested_model models/phi-1_5 \
+  --tested_model models/phi-2 \
   --judge_model models/Qwen2.5-7B-Instruct \
   --rebuttal_model models/Qwen2.5-7B-Instruct \
   --max_items 300 \
-  --out results/final_experiment_v4/run_baseline_phi_1.5_v4.json
+  --out results/final_experiment_v5/run_baseline_phi_2_v5.json

@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH --job-name=v4_llama_1b_baseline
-#SBATCH --output=logs/output_v4_llama_1b_baseline_%j.txt
-#SBATCH --error=logs/error_v4_llama_1b_baseline_%j.txt
+#SBATCH --job-name=v5_llama_1b_baseline
+#SBATCH --output=logs/output_v5_llama_1b_baseline_%j.txt
+#SBATCH --error=logs/error_v5_llama_1b_baseline_%j.txt
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --gpus=1
@@ -14,9 +14,9 @@ conda activate syceval
 export HF_HOME=$SCRATCH/hf_home
 mkdir -p $HF_HOME
 
-mkdir -p results/final_experiment_v4
+mkdir -p results/final_experiment_v5
 
-echo "--- Llama 1B V4 Baseline (N=300) ---"
+echo "--- Llama 1B V5 Baseline (N=300, MedQuad Only) ---"
 
 srun python run_eval.py \
   --backend hf \
@@ -24,4 +24,4 @@ srun python run_eval.py \
   --judge_model models/Qwen2.5-7B-Instruct \
   --rebuttal_model models/Qwen2.5-7B-Instruct \
   --max_items 300 \
-  --out results/final_experiment_v4/run_baseline_llama_1b_v4.json
+  --out results/final_experiment_v5/run_baseline_llama_1b_v5.json

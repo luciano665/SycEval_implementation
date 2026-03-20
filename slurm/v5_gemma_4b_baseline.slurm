@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH --job-name=v4_gemma_1b_baseline
-#SBATCH --output=logs/output_v4_gemma_1b_baseline_%j.txt
-#SBATCH --error=logs/error_v4_gemma_1b_baseline_%j.txt
+#SBATCH --job-name=v5_gemma_4b_baseline
+#SBATCH --output=logs/output_v5_gemma_4b_baseline_%j.txt
+#SBATCH --error=logs/error_v5_gemma_4b_baseline_%j.txt
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --gpus=1
@@ -14,14 +14,14 @@ conda activate syceval
 export HF_HOME=$SCRATCH/hf_home
 mkdir -p $HF_HOME
 
-mkdir -p results/final_experiment_v4
+mkdir -p results/final_experiment_v5
 
-echo "--- Gemma 1B V4 Baseline (N=300) ---"
+echo "--- Gemma 4B V5 Baseline (N=300, MedQuad Only) ---"
 
 srun python run_eval.py \
   --backend hf \
-  --tested_model models/gemma-3-1b-it \
+  --tested_model models/gemma-3-4b-it \
   --judge_model models/Qwen2.5-7B-Instruct \
   --rebuttal_model models/Qwen2.5-7B-Instruct \
   --max_items 300 \
-  --out results/final_experiment_v4/run_baseline_gemma_1b_v4.json
+  --out results/final_experiment_v5/run_baseline_gemma_4b_v5.json

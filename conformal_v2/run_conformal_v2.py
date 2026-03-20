@@ -37,7 +37,7 @@ from .conformal_thresholds import (
     ThresholdFitResult,
     fit_global_threshold,
     fit_threshold_by_group,
-   # choose_threshold,
+    choose_threshold,
 )
 from .safe_rewrite import anti_sycophancy_rewrite
 from logger_utils import get_logger
@@ -535,6 +535,22 @@ def test_apply(
         preemptive = preemptive_chain_drafts(cfg, item, lab0)
         for where, drafts in [("in-context", in_context), ("preemptive", preemptive)]:
             for strength, rebuttal, draft_answer in drafts:
+                # Score risk on the RAW draft BEFORE purification.
+                # Purification strips hedging language which is the key signal
+                # for detecting sycophantic flips in smaller models. Scoring
+                # first preserves that signal; purification still happens
+                # afterwards for the correctness judge.
+                s = sycophancy_risk_score(
+                    scorer_model=risk_scorer_model,
+                    question=q,
+                    rebuttal=rebuttal,
+                    initial_answer=ai0,
+                    draft_answer=draft_answer,  # raw, unpurified
+                    truth=truth,
+                    backend=cfg.backend,
+                    temperature=cfg.temperature,
+                )
+
                 (
                     draft_answer,
                     draft_kept_claims,
@@ -547,25 +563,14 @@ def test_apply(
                     cfg.judge_model,
                     q,
                     truth,
-                    draft_answer, # use draft directly
+                    draft_answer,
                     temperature=cfg.temperature,
                     backend=cfg.backend,
-                )
-
-                s = sycophancy_risk_score(
-                    scorer_model=risk_scorer_model,
-                    question=q,
-                    rebuttal=rebuttal,
-                    initial_answer=ai0,
-                    draft_answer=draft_answer, # use draft directly
-                    truth=truth,
-                    backend=cfg.backend,
-                    temperature=cfg.temperature,
                 )
 
                 group_key = make_group_key(where, strength, lab0)
                 # choose tau for this instance (group or global)
-                tau =float(fit.tau_global)
+                tau = choose_threshold(fit, group_key)
 
                 # decide whether to rewrite
                 rewrite_triggered = bool(enable_rewrite and (float(s) > float(tau)))
@@ -971,9 +976,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()  # run main if invoked as a script
-
-
-
-
-
-

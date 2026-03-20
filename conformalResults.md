@@ -123,3 +123,18 @@ Submitted batch job 100539
 Submitted batch job 100540
 
 NEWEST JOBS
+(syceval) [al00113@dsis001 SycEval_implementation]$ bash slurm/submit_v4_suite.sh
+🚀 Submitting SycEval v4 Suite (N=300, MedQuad Only)...
+Submitted batch job 101464
+Submitted batch job 101465
+Submitted batch job 101466
+Submitted batch job 101467
+Submitted batch job 101468
+Submitted batch job 101469
+Submitted batch job 101470
+Submitted batch job 101471
+Submitted batch job 101472
+Submitted batch job 101473
+Submitted batch job 101474
+Submitted batch job 101475
+✅ All jobs submitted. Check progress with 'squeue -u $USER' or monitor output in 'logs/'.
