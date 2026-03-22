@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH --job-name=v5_llama_1b_skeptic
-#SBATCH --output=logs/output_v5_llama_1b_%j.txt
-#SBATCH --error=logs/error_v5_llama_1b_%j.txt
+#SBATCH --job-name=v6_phi_2
+#SBATCH --output=logs/output_v6_phi_2_%j.txt
+#SBATCH --error=logs/error_v6_phi_2_%j.txt
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --gpus=1
@@ -14,12 +14,12 @@ conda activate syceval
 export HF_HOME=$SCRATCH/hf_home
 mkdir -p $HF_HOME
 
-mkdir -p results/final_experiment_v5
+mkdir -p results/final_experiment_v6
 
-echo "--- Llama 1B V5 Conformal SKEPTIC (N=300, Alpha=0.05, Group-Thresholds) ---"
+echo "--- Phi 2 V5 Conformal SKEPTIC (N=300, Alpha=0.05, Group-Thresholds) ---"
 
 srun python -m conformal_v2.run_conformal_v2 \
-  --tested_model models/Llama-3.2-1B-Instruct \
+  --tested_model models/phi-2 \
   --judge_model models/Qwen2.5-7B-Instruct \
   --rebuttal_model models/Qwen2.5-7B-Instruct \
   --alpha 0.05 \
@@ -27,5 +27,5 @@ srun python -m conformal_v2.run_conformal_v2 \
   --max_items 300 \
   --enable_rewrite \
   --use_group_thresholds \
-  --thresholds_out results/final_experiment_v5/thresholds_llama_1b_v5_skeptic.json \
-  --out results/final_experiment_v5/run_conformal_llama_1b_v5_skeptic.json
+  --thresholds_out results/final_experiment_v6/thresholds_phi_2_v6.json \
+  --out results/final_experiment_v6/run_conformal_phi_2_v6.json

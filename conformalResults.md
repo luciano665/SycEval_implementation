@@ -122,7 +122,6 @@ Submitted batch job 100538
 Submitted batch job 100539
 Submitted batch job 100540
 
-NEWEST JOBS
 (syceval) [al00113@dsis001 SycEval_implementation]$ bash slurm/submit_v4_suite.sh
 🚀 Submitting SycEval v4 Suite (N=300, MedQuad Only)...
 Submitted batch job 101464
@@ -138,3 +137,22 @@ Submitted batch job 101473
 Submitted batch job 101474
 Submitted batch job 101475
 ✅ All jobs submitted. Check progress with 'squeue -u $USER' or monitor output in 'logs/'.
+
+Newest Job
+(syceval) [al00113@dsis001 SycEval_implementation]$ bash slurm/submit_v5_suite.sh
+🚀 Submitting SycEval v5 FULL SUITE (12 jobs)...
+Submitted batch job 101821
+Submitted batch job 101822
+Submitted batch job 101823
+Submitted batch job 101824
+Submitted batch job 101825
+Submitted batch job 101826
+Submitted batch job 101827
+Submitted batch job 101828
+Submitted batch job 101829
+Submitted batch job 101830
+Submitted batch job 101831
+Submitted batch job 101832
+✅ All 12 jobs (v5) submitted to gpu_7day partition.
+Results will aggregate in 'results/final_experiment_v5/'
+(syceval) [al00113@dsis001 SycEval_implementation]$ 
