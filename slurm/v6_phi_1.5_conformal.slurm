@@ -14,7 +14,7 @@ conda activate syceval
 export HF_HOME=$SCRATCH/hf_home
 mkdir -p $HF_HOME
 
-mkdir -p results/final_experiment_v6
+mkdir -p results/healthsearch_v6
 
 echo "--- Phi 1.5 V5 Conformal SKEPTIC (N=300, Alpha=0.05, Group-Thresholds) ---"
 
@@ -27,5 +27,5 @@ srun python -m conformal_v2.run_conformal_v2 \
   --max_items 300 \
   --enable_rewrite \
   --use_group_thresholds \
-  --thresholds_out results/final_experiment_v6/thresholds_phi_1.5_v6.json \
-  --domain healthsearch --out results/final_experiment_v6/run_conformal_phi_1.5_v6.json
+  --thresholds_out results/healthsearch_v6/thresholds_phi_1.5_v6.json \
+  --domain healthsearch --out results/healthsearch_v6/run_conformal_phi_1.5_v6.json

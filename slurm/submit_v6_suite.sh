@@ -21,5 +21,5 @@ sbatch slurm/v6_gemma_4b_conformal.slurm
 sbatch slurm/v6_phi_1.5_conformal.slurm
 sbatch slurm/v6_phi_2_conformal.slurm
 
-echo "✅ All 12 jobs (v6) submitted to gpu_7day partition."
-echo "Results will aggregate in 'results/final_experiment_v6/'"
+echo "✅ All 12 jobs (v6-healthsearch) submitted to gpu_7day partition."
+echo "Results will aggregate in 'results/healthsearch_v6/'"

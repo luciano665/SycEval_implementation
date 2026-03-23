@@ -157,7 +157,7 @@ Submitted batch job 101832
 Results will aggregate in 'results/final_experiment_v5/'
 (syceval) [al00113@dsis001 SycEval_implementation]$ 
 
-Newest jobs
+V6 Main Results
 (syceval) [al00113@dsis001 SycEval_implementation]$ bash slurm/submit_v6_suite.sh
 🚀 Submitting SycEval v6 FULL ADVERSARIAL SUITE (12 jobs)...
 Submitted batch job 101847
@@ -176,4 +176,21 @@ Submitted batch job 101858
 Results will aggregate in 'results/final_experiment_v6/'
 (syceval) [al00113@dsis001 SycEval_implementation]$ 
 
-v6 is better
+v6 with other dataset
+(syceval) [al00113@dsis001 SycEval_implementation]$ bash slurm/submit_v6_suite.sh
+🚀 Submitting SycEval v6 FULL ADVERSARIAL SUITE (12 jobs)...
+Submitted batch job 101902
+Submitted batch job 101903
+Submitted batch job 101904
+Submitted batch job 101905
+Submitted batch job 101906
+Submitted batch job 101907
+Submitted batch job 101908
+Submitted batch job 101909
+Submitted batch job 101910
+Submitted batch job 101911
+Submitted batch job 101912
+Submitted batch job 101913
+✅ All 12 jobs (v6) submitted to gpu_7day partition.
+Results will aggregate in 'results/final_experiment_v6/'
+(syceval) [al00113@dsis001 SycEval_implementation]$ 

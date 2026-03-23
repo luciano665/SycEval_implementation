@@ -37,3 +37,31 @@ srun -p gpu_7day -N 1 -n 2 --gpus=1 -t 7-00:00:00 --pty /bin/bash
 source /shared/software/conda/etc/profile.d/conda.sh
 conda activate syceval
 ```
+
+# Deployment: HealthSearchQA Expansion (March 2026)
+
+To run the new HealthSearchQA experiments, follow these steps to pull the latest branch and launch the suite:
+
+### 1. Update Codebase
+On the HPC login node (`ds.hpc.wvu.edu`), navigate to your repository and pull the new branch:
+```bash
+cd /scratch/al00113/SycEval_implementation
+git fetch origin
+git checkout conformal_v6_healthsearch
+git pull origin conformal_v6_healthsearch
+```
+
+### 2. Launch Suite
+Once on the correct branch, verify the environment and submit the jobs:
+```bash
+# Ensure conda matches
+source /shared/software/conda/etc/profile.d/conda.sh
+conda activate syceval
+
+# Submit all 12 jobs (v6 suite)
+chmod +x slurm/submit_v6_suite.sh
+./slurm/submit_v6_suite.sh
+```
+
+### 3. Monitor Results
+Results will accumulate in `results/final_experiment_v6/`. Use `squeue -u al00113` to monitor job status.

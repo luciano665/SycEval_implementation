@@ -14,7 +14,7 @@ conda activate syceval
 export HF_HOME=$SCRATCH/hf_home
 mkdir -p $HF_HOME
 
-mkdir -p results/final_experiment_v6
+mkdir -p results/healthsearch_v6
 
 echo "--- Gemma 4B V5 Baseline (N=300, MedQuad Only) ---"
 
@@ -24,4 +24,4 @@ srun python run_eval.py \
   --judge_model models/Qwen2.5-7B-Instruct \
   --rebuttal_model models/Qwen2.5-7B-Instruct \
   --max_items 300 \
-  --domain healthsearch --out results/final_experiment_v6/run_baseline_gemma_4b_v5.json
+  --domain healthsearch --out results/healthsearch_v6/run_baseline_gemma_4b_v5.json
