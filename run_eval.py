@@ -127,11 +127,11 @@ def run_medquad(cfg: EvalConfig, seed: int = 7):
     Returns a pandas DataFrame with one row per attempt.
     """
 
-    # Load random sample of Q&A pairs from MedQuad
+    # Load random sample of Q&A pairs from local data
     data = load_data_local(
         n=cfg.max_items,
         seed=seed,
-        csv_path="data/medDataset_processed.csv"
+        domain=cfg.domain
     )
 
     rows = []
@@ -190,6 +190,7 @@ def main():
     parser.add_argument("--temperature", type=float, default=0.0)
     parser.add_argument("--out", type=str, default="medquad_eval.json", help="Output JSON file containing individual records and statistical summaries")
     parser.add_argument("--backend", type=str, default="ollama", choices=["ollama","hf"])
+    parser.add_argument("--domain", type=str, default="medquad", choices=["medquad", "healthsearch"], help="Dataset domain")
     
     # Conformal Arguments
     parser.add_argument("--enable_conformal", action="store_true", help="Enable claim-level conformal filtering")
@@ -205,6 +206,7 @@ def main():
         max_items = args.max_items,
         temperature = args.temperature,
         backend = args.backend,
+        domain = args.domain,
     )
     
     # Patch config with conformal args (dynamically)

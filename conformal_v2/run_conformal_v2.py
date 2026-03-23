@@ -717,6 +717,7 @@ def main() -> None:
     parser.add_argument("--thresholds_out", type=str, default="thresholds.json", help="Where to save thresholds in calibrate/both")  # thresholds save
     parser.add_argument("--thresholds_in", type=str, default="thresholds.json", help="Where to load thresholds in test")  # thresholds load
     parser.add_argument("--seed", type=int, default=7, help="Random seed for sampling/splitting")  # seed
+    parser.add_argument("--domain", type=str, default="medquad", choices=["medquad", "healthsearch"], help="Dataset domain")
 
     # Parse CLI tags 
     args = parser.parse_args()
@@ -728,6 +729,7 @@ def main() -> None:
         max_items=args.max_items,  # set max items
         temperature=args.temperature,  # set temperature
         backend=args.backend,  # set backend
+        domain=args.domain,
     )
 
     # Choose risk scorer model (default judge)
@@ -737,9 +739,9 @@ def main() -> None:
 
     # Get data from dataset
     all_data = load_data_local(
-        n=cfg.max_items,
+        n=args.max_items,
         seed=args.seed,
-        csv_path="data/medDataset_processed.csv"
+        domain=args.domain
     )
 
     # Mode: CALIBRATE ONLY

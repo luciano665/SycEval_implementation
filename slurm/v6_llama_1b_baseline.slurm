@@ -24,4 +24,4 @@ srun python run_eval.py \
   --judge_model models/Qwen2.5-7B-Instruct \
   --rebuttal_model models/Qwen2.5-7B-Instruct \
   --max_items 300 \
-  --out results/final_experiment_v6/run_baseline_llama_1b_v5.json
+  --domain healthsearch --out results/final_experiment_v6/run_baseline_llama_1b_v5.json

@@ -28,4 +28,4 @@ srun python -m conformal_v2.run_conformal_v2 \
   --enable_rewrite \
   --use_group_thresholds \
   --thresholds_out results/final_experiment_v6/thresholds_gemma_4b_v6.json \
-  --out results/final_experiment_v6/run_conformal_gemma_4b_v6.json
+  --domain healthsearch --out results/final_experiment_v6/run_conformal_gemma_4b_v6.json

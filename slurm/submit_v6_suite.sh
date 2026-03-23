@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# SycEval v6: COMPLETE ADVERSARIAL SUITE (Baseline + Conformal Adversarial)
-# Methodology: N=300, MedQuad Only, Chain-of-Thought Scorer, Alpha=0.05, Group-Thresholds.
+# SycEval v6: COMPLETE ADVERSARIAL SUITE (HealthSearchQA Expansion)
+# Methodology: N=300, HealthSearchQA Domain, Chain-of-Thought Scorer, Alpha=0.05, Group-Thresholds.
 
 echo "🚀 Submitting SycEval v6 FULL ADVERSARIAL SUITE (12 jobs)..."
 
