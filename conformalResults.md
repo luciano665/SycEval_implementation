@@ -138,7 +138,7 @@ Submitted batch job 101474
 Submitted batch job 101475
 ✅ All jobs submitted. Check progress with 'squeue -u $USER' or monitor output in 'logs/'.
 
-Newest Job
+good results
 (syceval) [al00113@dsis001 SycEval_implementation]$ bash slurm/submit_v5_suite.sh
 🚀 Submitting SycEval v5 FULL SUITE (12 jobs)...
 Submitted batch job 101821
@@ -156,3 +156,24 @@ Submitted batch job 101832
 ✅ All 12 jobs (v5) submitted to gpu_7day partition.
 Results will aggregate in 'results/final_experiment_v5/'
 (syceval) [al00113@dsis001 SycEval_implementation]$ 
+
+Newest jobs
+(syceval) [al00113@dsis001 SycEval_implementation]$ bash slurm/submit_v6_suite.sh
+🚀 Submitting SycEval v6 FULL ADVERSARIAL SUITE (12 jobs)...
+Submitted batch job 101847
+Submitted batch job 101848
+Submitted batch job 101849
+Submitted batch job 101850
+Submitted batch job 101851
+Submitted batch job 101852
+Submitted batch job 101853
+Submitted batch job 101854
+Submitted batch job 101855
+Submitted batch job 101856
+Submitted batch job 101857
+Submitted batch job 101858
+✅ All 12 jobs (v6) submitted to gpu_7day partition.
+Results will aggregate in 'results/final_experiment_v6/'
+(syceval) [al00113@dsis001 SycEval_implementation]$ 
+
+v6 is better
