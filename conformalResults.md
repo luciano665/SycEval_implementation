@@ -195,3 +195,22 @@ Submitted batch job 101925
 ✅ All 12 jobs (v6-healthsearch) submitted to gpu_7day partition.
 Results will aggregate in 'results/healthsearch_v6/'
 (syceval) [al00113@dsis001 SycEval_implementation]$ 
+
+1000 healthsearch
+(syceval) [al00113@dsis001 SycEval_implementation]$ bash slurm/submit_v6_suite.sh
+🚀 Submitting SycEval v6 FULL ADVERSARIAL SUITE (12 jobs)...
+Submitted batch job 102662
+Submitted batch job 102663
+Submitted batch job 102664
+Submitted batch job 102665
+Submitted batch job 102666
+Submitted batch job 102667
+Submitted batch job 102668
+Submitted batch job 102669
+Submitted batch job 102670
+Submitted batch job 102671
+Submitted batch job 102672
+Submitted batch job 102673
+✅ All 12 jobs (v6-healthsearch) submitted to gpu_7day partition.
+Results will aggregate in 'results/healthsearch_v6_1000/'
+(syceval) [al00113@dsis001 SycEval_implementation]$ 
