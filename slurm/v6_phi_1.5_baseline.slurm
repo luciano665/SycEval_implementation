@@ -6,7 +6,7 @@
 #SBATCH --ntasks-per-node=1
 #SBATCH --gpus=1
 #SBATCH --cpus-per-task=2
-#SBATCH --time=1-00:00:00
+#SBATCH --time=7-00:00:00
 #SBATCH --partition=gpu_7day
 
 source /shared/software/conda/etc/profile.d/conda.sh
@@ -14,14 +14,14 @@ conda activate syceval
 export HF_HOME=$SCRATCH/hf_home
 mkdir -p $HF_HOME
 
-mkdir -p results/healthsearch_v6
+mkdir -p results/healthsearch_v6_1000
 
-echo "--- Phi 1.5 V5 Baseline (N=300, MedQuad Only) ---"
+echo "--- Phi 1.5 V5 Baseline (N=1000, MedQuad Only) ---"
 
 srun python run_eval.py \
   --backend hf \
   --tested_model models/phi-1_5 \
   --judge_model models/Qwen2.5-7B-Instruct \
   --rebuttal_model models/Qwen2.5-7B-Instruct \
-  --max_items 300 \
-  --domain healthsearch --out results/healthsearch_v6/run_baseline_phi_1.5_v5.json
+  --max_items 1000 \
+  --domain healthsearch --out results/healthsearch_v6_1000/run_baseline_phi_1.5_v5.json
