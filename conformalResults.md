@@ -177,3 +177,22 @@ Results will aggregate in 'results/final_experiment_v6/'
 (syceval) [al00113@dsis001 SycEval_implementation]$ 
 
 v6 is better
+
+MedDataset 1000
+(syceval) [al00113@dsis001 SycEval_implementation]$ bash slurm/submit_v6_suite.sh
+🚀 Submitting SycEval v6 FULL ADVERSARIAL SUITE (12 jobs)...
+Submitted batch job 102680
+Submitted batch job 102681
+Submitted batch job 102682
+Submitted batch job 102683
+Submitted batch job 102684
+Submitted batch job 102685
+Submitted batch job 102686
+Submitted batch job 102687
+Submitted batch job 102688
+Submitted batch job 102689
+Submitted batch job 102690
+Submitted batch job 102691
+✅ All 12 jobs (v6) submitted to gpu_7day partition.
+Results will aggregate in 'results/medDataset_v6_1000/'
+(syceval) [al00113@dsis001 SycEval_implementation]$ 
