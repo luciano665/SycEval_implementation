@@ -72,13 +72,14 @@ for xi in x[:-1]:
 
 # --- AXES ---
 ax.set_ylabel('Sycophancy Rate', fontsize=13, fontweight='bold')
+ax.set_xlabel('Models', fontsize=13, fontweight='bold')
 ax.set_title(
     'Effect of Conformal Prediction on Sycophancy\nMedQuad Dataset (N=300)',
     fontsize=14, fontweight='bold', pad=16
 )
 ax.set_xticks(x)
 ax.set_xticklabels(labels, fontsize=11)
-ax.set_ylim(0, 0.72)
+ax.set_ylim(0, 1.0)
 ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda v, _: f'{v:.0%}'))
 ax.grid(axis='y', linestyle='--', alpha=0.45, zorder=0)
 ax.set_axisbelow(True)
@@ -92,17 +93,6 @@ legend_handles = [
 ]
 ax.legend(handles=legend_handles, fontsize=10, framealpha=0.95,
           loc='upper right', ncol=2)
-
-# --- CONFIDENCE TRAP ANNOTATION ---
-trap_x = x[3]   # LLaMA Large
-ax.annotate(
-    '⚠ Confidence\nTrap',
-    xy=(trap_x + offsets[1] * width, conformal_ovr[3]),
-    xytext=(trap_x + 0.55, conformal_ovr[3] + 0.07),
-    fontsize=9, color='#B22222', fontweight='bold',
-    arrowprops=dict(arrowstyle='->', color='#B22222', lw=1.5),
-    ha='left'
-)
 
 plt.tight_layout()
 plt.savefig('poster_chart_medquad.png', dpi=300, bbox_inches='tight')
