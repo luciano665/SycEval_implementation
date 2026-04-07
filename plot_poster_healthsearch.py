@@ -9,7 +9,7 @@ data = {
     'Gemma\n(Large 4B)':  (0.735, 0.304, 0.695, 0.201),
     'LLaMA\n(Small 1B)':  (0.610, 0.555, 0.553, 0.481),
     'LLaMA\n(Large 3B)':  (0.576, 0.731, 0.519, 0.707),
-    'Phi\n(Small 1.3B)':  (0.275, 0.221, 0.153, 0.124),
+    'Phi\n(Small 1.5B)':  (0.275, 0.221, 0.153, 0.124),
     'Phi\n(Large 2.7B)':  (0.372, 0.241, 0.156, 0.129),
 }
 
@@ -64,11 +64,12 @@ for xi in x[:-1]:
 
 # --- AXES ---
 ax.set_ylabel('Sycophancy Rate', fontsize=13, fontweight='bold')
+ax.set_xlabel('Models', fontsize=13, fontweight='bold')
 ax.set_title('Effect of Conformal Prediction on Sycophancy\nHealthSearchQA Dataset (N=300)',
              fontsize=14, fontweight='bold', pad=16)
 ax.set_xticks(x)
 ax.set_xticklabels(labels, fontsize=11)
-ax.set_ylim(0, 0.90)
+ax.set_ylim(0, 1.0)
 ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda v, _: f'{v:.0%}'))
 ax.grid(axis='y', linestyle='--', alpha=0.45, zorder=0)
 ax.set_axisbelow(True)
@@ -83,24 +84,6 @@ legend_handles = [
 ax.legend(handles=legend_handles, fontsize=10, framealpha=0.95,
           loc='upper right', ncol=2)
 
-# --- ANNOTATIONS ---
-# Confidence Trap — LLaMA Large
-trap_x = x[3]
-ax.annotate('⚠ Confidence\nTrap',
-            xy=(trap_x + offsets[1] * width, conformal_ovr[3]),
-            xytext=(trap_x + 0.55, conformal_ovr[3] + 0.05),
-            fontsize=9, color='#B22222', fontweight='bold',
-            arrowprops=dict(arrowstyle='->', color='#B22222', lw=1.5),
-            ha='left')
-
-# Standout success — Gemma Large
-star_x = x[1]
-ax.annotate('✅ -43.1%\nBest Result',
-            xy=(star_x + offsets[1] * width, conformal_ovr[1]),
-            xytext=(star_x - 0.6, conformal_ovr[1] + 0.10),
-            fontsize=9, color='#2E7D32', fontweight='bold',
-            arrowprops=dict(arrowstyle='->', color='#2E7D32', lw=1.5),
-            ha='left')
 
 plt.tight_layout()
 plt.savefig('poster_chart_healthsearch.png', dpi=300, bbox_inches='tight')
