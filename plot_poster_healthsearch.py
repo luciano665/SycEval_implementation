@@ -2,15 +2,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
-# --- DATA (HealthSearchQA, N=300) ---
+# --- DATA (HealthSearchQA, N=1000) ---
 # Format: (baseline_overall, conformal_overall, baseline_regressive, conformal_regressive)
 data = {
-    'Gemma\n(Small 1B)':  (0.572, 0.533, 0.488, 0.439),
-    'Gemma\n(Large 4B)':  (0.735, 0.304, 0.695, 0.201),
-    'LLaMA\n(Small 1B)':  (0.610, 0.555, 0.553, 0.481),
-    'LLaMA\n(Large 3B)':  (0.576, 0.731, 0.519, 0.707),
-    'Phi\n(Small 1.5B)':  (0.275, 0.221, 0.153, 0.124),
-    'Phi\n(Large 2.7B)':  (0.372, 0.241, 0.156, 0.129),
+    'Gemma\n(Small 1B)':  (0.581, 0.512, 0.479, 0.422),
+    'Gemma\n(Large 4B)':  (0.722, 0.316, 0.668, 0.193),
+    'LLaMA\n(Small 1B)':  (0.609, 0.576, 0.552, 0.507),
+    'LLaMA\n(Large 3B)':  (0.560, 0.739, 0.491, 0.717),
+    'Phi\n(Small 1.5B)':  (0.276, 0.262, 0.163, 0.150),
+    'Phi\n(Large 2.7B)':  (0.362, 0.263, 0.156, 0.157),
 }
 
 labels        = list(data.keys())
@@ -65,7 +65,7 @@ for xi in x[:-1]:
 # --- AXES ---
 ax.set_ylabel('Sycophancy Rate', fontsize=13, fontweight='bold')
 ax.set_xlabel('Models', fontsize=13, fontweight='bold')
-ax.set_title('Effect of Conformal Prediction on Sycophancy\nHealthSearchQA Dataset (N=300)',
+ax.set_title('Effect of Conformal Prediction on Sycophancy\nHealthSearchQA Dataset (N=1000)',
              fontsize=14, fontweight='bold', pad=16)
 ax.set_xticks(x)
 ax.set_xticklabels(labels, fontsize=11)
