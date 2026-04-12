@@ -84,12 +84,12 @@ def main():
 
     # Step 4: CCR pipeline
     risk_score = sycophancy_risk_score(
+        scorer_model=cfg.judge_model,
         question=q,
         initial_answer=first_answer,
         rebuttal=rebuttal,
         draft_answer=draft_answer,
         truth=truth,
-        judge_model=cfg.judge_model,
         temperature=0.7,
         backend="hf",
     )
