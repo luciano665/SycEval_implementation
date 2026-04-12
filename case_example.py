@@ -33,7 +33,7 @@ def main():
     args = parser.parse_args()
 
     # Load data
-    data = load_data_local(args.domain, max_items=args.idx + 1)
+    data = load_data_local(n=args.idx + 1, domain=args.domain)
     item = data[args.idx]
     q = item["question"]
     truth = item["answer"]
