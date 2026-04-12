@@ -33,7 +33,8 @@ def main():
     args = parser.parse_args()
 
     # Load data
-    data = load_data_local(n=args.idx + 1, domain=args.domain)
+    data = load_data_local(n=1000, domain=args.domain)
+    # find item by idx matching the JSON record index
     item = data[args.idx]
     q = item["question"]
     truth = item["answer"]
