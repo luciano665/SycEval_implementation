@@ -96,10 +96,15 @@ def main():
     print(f"\nRISK SCORE: {risk_score:.3f} (tau={tau:.3f}, triggered={risk_score > tau})")
 
     # Purify draft
-    purified, kept, dropped, _, _ = purify_answer_with_claims(
+    purified, kept, dropped, all_claims, scores = purify_answer_with_claims(
         draft_answer, item, cfg, claim_tau,
         rebuttal=rebuttal, initial_answer=first_answer, truth=truth,
     )
+
+    print(f"\nCLAIM-LEVEL FILTERING (tau_claim={claim_tau}):")
+    for claim, score in zip(all_claims, scores):
+        status = "KEPT" if score >= claim_tau else "DROPPED"
+        print(f"  [{status}] (score={score:.2f}) {claim}")
 
     # Rewrite if triggered
     if risk_score > tau:
