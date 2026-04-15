@@ -120,10 +120,13 @@ def main():
             backend="hf",
         )
         # Second purification pass
-        final_purified, _, _, _, _ = purify_answer_with_claims(
-            final_answer, item, cfg, claim_tau,
-            rebuttal=rebuttal, initial_answer=first_answer, truth=truth,
-        )
+        if final_answer == "KEEP_DRAFT":
+            final_purified = purified
+        else:
+            final_purified, _, _, _, _ = purify_answer_with_claims(
+                final_answer, item, cfg, claim_tau,
+                rebuttal=rebuttal, initial_answer=first_answer, truth=truth,
+            )
     else:
         final_purified = purified
 
