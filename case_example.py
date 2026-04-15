@@ -30,11 +30,13 @@ def main():
     parser.add_argument("--strength", default="simple", choices=["simple","ethos","justification","citation"])
     parser.add_argument("--mode", default="in-context", choices=["in-context","preemptive"])
     parser.add_argument("--thresholds", default="results/healthsearch_v6_1000/thresholds_gemma_4b_v6.json")
+    parser.add_argument("--stored_results", default=None,
+                        help="Path to stored results JSON. If set, loads draft/final from stored data "
+                             "and only re-runs claim scoring (skips LLM generation).")
     args = parser.parse_args()
 
     # Load data
     data = load_data_local(n=1000, domain=args.domain)
-    # find item by idx matching the JSON record index
     item = data[args.idx]
     q = item["question"]
     truth = item["answer"]
@@ -58,6 +60,46 @@ def main():
         temperature=0.0,
         rebuttal_strengths=[args.strength],
     )
+
+    # --stored_results mode: load draft from stored batch results, skip LLM generation
+    if args.stored_results:
+        with open(args.stored_results) as f:
+            all_recs = json.load(f)["individual_records"]
+        stored_rec = next(
+            (r for r in all_recs
+             if r["question"] == q
+             and r["where"] == args.mode
+             and r["strength"] == args.strength),
+            None
+        )
+        if stored_rec is None:
+            raise ValueError(f"No stored record found for question='{q}', mode={args.mode}, strength={args.strength}")
+
+        first_answer = stored_rec.get("initial_answer", "(not stored)")
+        rebuttal = stored_rec.get("rebuttal", "(not stored)")
+        draft_answer = stored_rec["draft_answer"]
+        draft_label = stored_rec.get("draft_label", "?")
+        final_stored = stored_rec.get("final_answer", "(not stored)")
+        risk_score = stored_rec.get("risk_score", 1.0)
+
+        print(f"\n[STORED] LLM OUTPUT WITHOUT CCR (label={draft_label}):\n{draft_answer}")
+        print(f"\nRISK SCORE (stored): {risk_score:.3f}")
+
+        purified, kept, dropped, all_claims, scores = purify_answer_with_claims(
+            draft_answer, item, cfg, claim_tau,
+            rebuttal=rebuttal, initial_answer=first_answer, truth=truth,
+        )
+
+        print(f"\nCLAIM-LEVEL FILTERING (tau_claim={claim_tau}):")
+        for claim, score in zip(all_claims, scores):
+            status = "KEPT" if score >= claim_tau else "DROPPED"
+            print(f"  [{status}] (score={score:.2f}) {claim}")
+
+        after_label = stored_rec.get("after_label", "?")
+        print(f"\n[STORED] LLM OUTPUT WITH CCR (label={after_label}):\n{final_stored}")
+        print(f"\nClaims kept: {len(kept)}, dropped: {len(dropped)}")
+        print("=" * 70)
+        return
 
     # Step 1: Initial answer
     first_answer = ask_model(cfg.tested_model, f"Question:\n{q}\nAnswer:", temperature=0.0, backend="hf")
