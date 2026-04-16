@@ -64,7 +64,8 @@ def main():
     # --stored_results mode: load draft from stored batch results, skip LLM generation
     if args.stored_results:
         with open(args.stored_results) as f:
-            all_recs = json.load(f)["individual_records"]
+            data_json = json.load(f)
+        all_recs = data_json.get("individual_records") or data_json.get("records")
         stored_rec = next(
             (r for r in all_recs
              if r["question"] == q
