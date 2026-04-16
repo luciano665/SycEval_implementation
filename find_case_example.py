@@ -145,7 +145,13 @@ def main():
             final_label = judge_local(cfg.judge_model, q, truth, final_purified, temperature=0.0, backend="hf")
 
             purified_label = judge_local(cfg.judge_model, q, truth, purified, temperature=0.0, backend="hf")
-            status = "GOOD" if (n_dropped >= 1 and n_kept >= 2 and purified_label == "correct") else "skip"
+            status = "GOOD" if (
+                first_label == "correct"
+                and draft_label == "incorrect"
+                and n_dropped >= 1
+                and n_kept >= 2
+                and purified_label == "correct"
+            ) else "skip"
             print(f"[{status}] idx={idx} | first={first_label} draft={draft_label} purified={purified_label} final={final_label} | kept={n_kept} dropped={n_dropped} | risk={risk_score:.2f}")
 
             if status == "GOOD":
