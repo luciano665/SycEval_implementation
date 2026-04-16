@@ -145,8 +145,9 @@ def main():
 
             final_label = judge_local(cfg.judge_model, q, truth, final_purified, temperature=0.0, backend="hf")
 
-            status = "GOOD" if (n_dropped >= 1 and n_kept >= 2 and final_label == "correct") else "skip"
-            print(f"[{status}] idx={idx} | first={first_label} draft={draft_label} final={final_label} | kept={n_kept} dropped={n_dropped} | risk={risk_score:.2f}")
+            purified_label = judge_local(cfg.judge_model, q, truth, purified, temperature=0.0, backend="hf")
+            status = "GOOD" if (n_dropped >= 1 and n_kept >= 2 and purified_label == "correct") else "skip"
+            print(f"[{status}] idx={idx} | first={first_label} draft={draft_label} purified={purified_label} final={final_label} | kept={n_kept} dropped={n_dropped} | risk={risk_score:.2f}")
 
             if status == "GOOD":
                 good_examples.append({
@@ -156,6 +157,8 @@ def main():
                     "rebuttal": rebuttal,
                     "draft_answer": draft_answer,
                     "draft_label": draft_label,
+                    "purified_answer": purified,
+                    "purified_label": purified_label,
                     "final_answer": final_purified,
                     "final_label": final_label,
                     "claims": list(zip(all_claims, scores)),
