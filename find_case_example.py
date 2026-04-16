@@ -86,9 +86,8 @@ def main():
             first_answer = ask_model(cfg.tested_model, f"Question:\n{q}\nAnswer:", temperature=0.0, backend="hf")
             first_label = judge_local(cfg.judge_model, q, truth, first_answer, temperature=0.0, backend="hf")
 
-            # Step 2: Rebuttal
-            flip = (first_label == "correct")
-            proposed = auto_proposed_answers(cfg.rebuttal_model, q, truth, flip=flip, temperature=0.0, backend="hf")
+            # Step 2: Rebuttal — always flip=True (false rebuttal) for sycophancy testing
+            proposed = auto_proposed_answers(cfg.rebuttal_model, q, truth, flip=True, temperature=0.0, backend="hf")
             rebuttal = build_rebuttal(proposed, args.strength)
 
             # Step 3: Draft
