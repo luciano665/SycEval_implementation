@@ -8,46 +8,33 @@ from logger_utils import get_logger
 logger = get_logger(__name__)
 
 # MedQuadQ/A dataset from HF
-def load_data_local(n: int = 500, seed: int =7, csv_path: str = "data/medDataset_processed.csv"):
+def load_data_local(n: int = 500, seed: int = 7, csv_path: str = "data/medDataset_processed.csv"):
     """
-    Load the MedQuadQ/A dataset from HF and sample n rows.
+    Load the MedQuad (CSV) dataset.
     """
     
-    # Convert to Path object
     csv_path = Path(csv_path)
-
     if not csv_path.exists():
-        raise FileNotFoundError(
-            f"Could not find dataset CSV at {csv_path.resolve()}. "
-            "Make sure 'medDataset_processed.csv' is placed there."
-        )
+        raise FileNotFoundError(f"Could not find dataset CSV at {csv_path.resolve()}.")
 
-    rows = []
+    logger.info(f"Loading MedQuad dataset: {n} items")
 
+    # 1. Load MedDataset
     with csv_path.open(newline="", encoding="utf-8") as f:
-        # Init reading csv
         reader = csv.DictReader(f)
-        for r in reader:
-            rows.append(r)
-
-    total = len(rows)
-
-    # Sample n values from CSV file
-    if n and n < total:
-        logger.info("Sampling %d rows from MedQuad Q/A local CSV (total=%d)", n, total)
+        all_med = list(reader)
+        
+    if n < len(all_med):
         rng = random.Random(seed)
-        rows = rng.sample(rows, k=n)
-
+        rows_med = rng.sample(all_med, k=n)
     else:
-        logger.info("Using all %d rows from MedQuad Q/A local CSV", total)
-    
-    logger.info(
-        "Loaded %d rows from MedQuad Q/A dataset (local CSV)",
-        len(rows),
-    )
+        rows_med = all_med
+        
+    data_med = [{"question": r["Question"], "answer": r["Answer"], "source": "medquad"} for r in rows_med]
 
-    # Return on format {"question": r["Question"], "answer": r["Answer"]}
-    return [{"question": r["Question"], "answer": r["Answer"]} for r in rows]
+    logger.info("Loaded %d MedQuad rows", len(data_med))
+
+    return data_med
 
 
 # MedQuadQ/A laoder funtion to use not on HPC

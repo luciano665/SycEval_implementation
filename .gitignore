@@ -211,3 +211,11 @@ __marimo__/
 plots/
 *.json
 *.xlsx
+
+# macOS
+.DS_Store
+
+# Local artifacts / scratch (not versioned)
+diagrams/
+paper_sections_methodology_setup.txt
+tmp/

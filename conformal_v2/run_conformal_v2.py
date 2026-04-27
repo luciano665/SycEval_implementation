@@ -37,7 +37,7 @@ from .conformal_thresholds import (
     ThresholdFitResult,
     fit_global_threshold,
     fit_threshold_by_group,
-   # choose_threshold,
+    choose_threshold,
 )
 from .safe_rewrite import anti_sycophancy_rewrite
 from logger_utils import get_logger
@@ -84,6 +84,7 @@ def purify_answer_with_claims(
     claim_threshold: float,
     rebuttal: Optional[str] = None,
     initial_answer: Optional[str] = None,
+    truth: Optional[str] = None,  # Ground truth allowed for calibration
 ) -> Tuple[str, List[str], List[str], List[str], List[float]]:
     """
     Decompose -> score -> filter -> reconstruct to reduce sycophantic content.
@@ -102,6 +103,7 @@ def purify_answer_with_claims(
             cfg.judge_model,
             rebuttal=rebuttal,
             initial_answer=initial_answer,
+            truth=truth,
             temperature=cfg.temperature,
             backend=cfg.backend,
         )
@@ -334,6 +336,7 @@ def calibration_collect(
                         cfg.judge_model,
                         rebuttal=rebuttal,
                         initial_answer=ai0,
+                        truth=truth,
                         temperature=cfg.temperature,
                         backend=cfg.backend,
                     )
@@ -408,6 +411,7 @@ def calibration_collect(
             rebuttal=cached["rebuttal"],
             initial_answer=cached["initial_answer"],
             draft_answer=purified_answer,
+            truth=cached["truth"],
             backend=cfg.backend,
             temperature=cfg.temperature,
         )
@@ -529,16 +533,31 @@ def test_apply(
         # in-context and preemptive chain drafts
         in_context = in_context_chain_drafts(cfg, item, lab0, ai0)
         preemptive = preemptive_chain_drafts(cfg, item, lab0)
-
         for where, drafts in [("in-context", in_context), ("preemptive", preemptive)]:
             for strength, rebuttal, draft_answer in drafts:
+                # Score risk on the RAW draft BEFORE purification.
+                # Purification strips hedging language which is the key signal
+                # for detecting sycophantic flips in smaller models. Scoring
+                # first preserves that signal; purification still happens
+                # afterwards for the correctness judge.
+                s = sycophancy_risk_score(
+                    scorer_model=risk_scorer_model,
+                    question=q,
+                    rebuttal=rebuttal,
+                    initial_answer=ai0,
+                    draft_answer=draft_answer,  # raw, unpurified
+                    truth=truth,
+                    backend=cfg.backend,
+                    temperature=cfg.temperature,
+                )
+
                 (
                     draft_answer,
                     draft_kept_claims,
                     draft_dropped_claims,
                     draft_all_claims,
                     _draft_scores,
-                ) = purify_answer_with_claims(draft_answer, item, cfg, claim_threshold, rebuttal=rebuttal, initial_answer=ai0)
+                ) = purify_answer_with_claims(draft_answer, item, cfg, claim_threshold, rebuttal=rebuttal, initial_answer=ai0, truth=truth)
 
                 draft_label = judge_local(
                     cfg.judge_model,
@@ -549,19 +568,9 @@ def test_apply(
                     backend=cfg.backend,
                 )
 
-                s = sycophancy_risk_score(
-                    scorer_model=risk_scorer_model,
-                    question=q,
-                    rebuttal=rebuttal,
-                    initial_answer=ai0,
-                    draft_answer=draft_answer,
-                    backend=cfg.backend,
-                    temperature=cfg.temperature,
-                )
-
                 group_key = make_group_key(where, strength, lab0)
                 # choose tau for this instance (group or global)
-                tau =float(fit.tau_global)
+                tau = choose_threshold(fit, group_key)
 
                 # decide whether to rewrite
                 rewrite_triggered = bool(enable_rewrite and (float(s) > float(tau)))
@@ -573,6 +582,7 @@ def test_apply(
                         rebuttal=rebuttal,
                         draft_answer=draft_answer,
                         initial_answer=ai0,
+                        truth=truth,
                         backend=cfg.backend,
                         temperature=cfg.temperature
                     )
@@ -585,7 +595,7 @@ def test_apply(
                     final_dropped_claims,
                     final_all_claims,
                     _final_scores,
-                ) = purify_answer_with_claims(final_raw, item, cfg, claim_threshold, rebuttal=rebuttal, initial_answer=ai0)
+                ) = purify_answer_with_claims(final_raw, item, cfg, claim_threshold, rebuttal=rebuttal, initial_answer=ai0, truth=truth)
 
                 # judge correctness of final answer
                 final_label = judge_local(
@@ -692,7 +702,7 @@ def main() -> None:
     parser.add_argument("--rebuttal_model", type=str, default="gemma3:1b", help="Model that generates rebuttals")  # rebuttal model
     parser.add_argument("--judge_model", type=str, default="llama3:8b", help="Model that judges correctness")  # judge model
     parser.add_argument("--temperature", type=float, default=0.0, help="Generation temperature")  # temperature
-    parser.add_argument("--backend", type=str, default="ollama", choices=["ollama", "hf"], help="Backend")  # backend
+    parser.add_argument("--backend", type=str, default="hf", choices=["ollama", "hf"], help="Backend")  # backend
     parser.add_argument("--out", type=str, default="medquad_conformal_eval.json", help="Output JSON results file")  # output JSON file
 
     # ---- Conformal args ----
@@ -729,7 +739,7 @@ def main() -> None:
     all_data = load_data_local(
         n=cfg.max_items,
         seed=args.seed,
-        csv_path="/Users/lucianom/PROJECTS_coding/Research_realiability_LLMs/SycEval/data/medDataset_processed.csv",
+        csv_path="data/medDataset_processed.csv"
     )
 
     # Mode: CALIBRATE ONLY
@@ -966,9 +976,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()  # run main if invoked as a script
-
-
-
-
-
-
