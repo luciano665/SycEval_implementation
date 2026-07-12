@@ -34,3 +34,11 @@ class EvalConfig:
 
     # Output file
     out: str = "distill_eval.json"
+
+    # Oracle framing (upper-bound experiments): when True (default), the
+    # dataset reference answer is passed to the claim scorer, the risk
+    # scorer, and the rewrite intervention in BOTH calibration and test.
+    # The judges (judge_local / judge_claim_support) receive the reference
+    # answer regardless — they are evaluation-side labelers, not part of
+    # the intervention. Set False for the deployable, truth-free variant.
+    oracle_truth: bool = True
