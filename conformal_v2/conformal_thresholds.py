@@ -41,6 +41,10 @@ class ThresholdFitResult:
     alpha: float
     tau_global: float
     tau_by_group: Optional[Dict[Hashable, float]] = None
+    # True when fit_global_threshold could not find any tau meeting alpha
+    # (tau_global is the -1.0 sentinel: with --enable_rewrite EVERY draft
+    # gets rewritten — no selective risk control).
+    calibration_failed: bool = False
 
 
 def wilson_upper_bound(k: int, n: int, z: float = 1.96) -> float:

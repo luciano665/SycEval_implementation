@@ -287,7 +287,7 @@ def calibration_collect(
     items: List[Dict[str, str]],
     risk_scorer_model: str,
     claim_alpha: float,
-) -> Tuple[float, List[float], List[int], List[Hashable], List[Dict[str, Any]]]:
+) -> Tuple[float, bool, List[float], List[int], List[Hashable], List[Dict[str, Any]]]:
 
     """
     Calibration phase (NO rewriting):
@@ -304,6 +304,8 @@ def calibration_collect(
 
     Returns:
       tau_claim: calibrated claim threshold
+      tau_claim_fallback: True if calibration failed and tau_claim is the
+        arbitrary fallback constant (NOT conformally calibrated)
       scores: list of s values
       bad: list of y values (0/1)
       groups: list of group keys for Option A
@@ -379,24 +381,24 @@ def calibration_collect(
                     "claim_scores": scores_for_claims,
                 })
 
+    tau_claim_fallback = False
     if claim_scores:
         tau_claim_inverted = float(fit_global_threshold(claim_scores, claim_bad, claim_alpha))
         if tau_claim_inverted < 0.0:
-            # fit_global_threshold returned -1.0 (no valid threshold found).
-            # Falling back to a permissive claim threshold so we don't
-            # drop every single claim and destroy all answers.
             tau_claim = 0.3
-            logger.warning(
-                "Claim-level threshold calibration found no valid tau "
-                "(all candidates exceeded alpha=%.3f). "
-                "Falling back to tau_claim=%.2f",
+            tau_claim_fallback = True
+            logger.error(
+                "CLAIM CALIBRATION FAILED: no threshold meets claim_alpha=%.3f; "
+                "falling back to the arbitrary constant tau_claim=%.2f. "
+                "Claim filtering in this run is NOT conformally calibrated.",
                 claim_alpha, tau_claim,
             )
         else:
             tau_claim = 1.0 - tau_claim_inverted
     else:
         tau_claim = 0.5
-        logger.warning("No claims found in calibration; defaulting tau_claim to 0.5")
+        tau_claim_fallback = True
+        logger.error("No claims found in calibration; defaulting tau_claim to 0.5 (NOT calibrated)")
 
     for cached in draft_cache:
         purified_answer, kept_claims, dropped_claims = purify_from_scored_claims(
@@ -470,7 +472,7 @@ def calibration_collect(
         logger.info("Calibration tau_claim=%.4f (claim_alpha=%.3f)", float(tau_claim), float(claim_alpha))
         _log_df_group_summary(grp, "Calibration per-condition claim behavior")
 
-    return tau_claim, scores, bad, groups, records
+    return tau_claim, tau_claim_fallback, scores, bad, groups, records
 
 # 5) Fit thresholds (tau) from calibration data
 def fit_thresholds(
@@ -492,6 +494,17 @@ def fit_thresholds(
 
     tau_global = fit_global_threshold(scores, bad, alpha)
 
+    calibration_failed = bool(float(tau_global) < 0.0)
+    if calibration_failed:
+        logger.error(
+            "RISK CALIBRATION FAILED: no threshold satisfies alpha=%.3f "
+            "(Wilson upper bound on the regressive rate exceeded alpha for "
+            "every candidate tau). tau_global=-1.0 -> with --enable_rewrite "
+            "EVERY test draft will be rewritten; the run degenerates to an "
+            "always-rewrite policy with no selective risk control.",
+            float(alpha),
+        )
+
     # default: no group thresholds
     tau_by_group: Optional[Dict[Hashable, float]] = None
     if use_group_thresholds:
@@ -502,9 +515,10 @@ def fit_thresholds(
         alpha=alpha,
         tau_global=float(tau_global),
         tau_by_group=tau_by_group,
+        calibration_failed=calibration_failed,
     )
 
-    return fit 
+    return fit
 
 # 6) Test: apply thresholds + optional rewrite
 def test_apply(
@@ -651,11 +665,26 @@ def test_apply(
     
     return pd.DataFrame(rows)
 
+def rewrite_rate_summary(df: pd.DataFrame) -> Dict[str, float]:
+    """Fraction of rebuttal-step instances where the conformal rule triggered a rewrite."""
+    if df.empty or "rewrite_triggered" not in df.columns:
+        return {"overall": 0.0, "in_context": 0.0, "preemptive": 0.0}
+    def _rate(sub: pd.DataFrame) -> float:
+        return float(sub["rewrite_triggered"].mean()) if len(sub) else 0.0
+    return {
+        "overall": _rate(df),
+        "in_context": _rate(df[df["where"] == "in-context"]),
+        "preemptive": _rate(df[df["where"] == "preemptive"]),
+    }
+
+
 # 7) JSON helpers to save and load thresholds
 def threshold_to_json(
     fit: ThresholdFitResult,
     tau_claim: Optional[float],
     claim_alpha: Optional[float],
+    tau_claim_fallback: Optional[bool] = None,
+    oracle_truth: Optional[bool] = None,
 ) -> Dict[str, Any]:
     """Convert thresholds to a JSON-serializable dict"""
     tau_by_group_out = None
@@ -663,17 +692,22 @@ def threshold_to_json(
     # if conditional thresholds exist
     if fit.tau_by_group is not None:
         tau_by_group_out = {str(k): float(v) for k, v in fit.tau_by_group.items()}
-    
+
     return {
         "alpha": float(fit.alpha),
         "tau_global": float(fit.tau_global),
         "tau_by_group": tau_by_group_out,
         "tau_claim": None if tau_claim is None else float(tau_claim),
         "claim_alpha": None if claim_alpha is None else float(claim_alpha),
+        "calibration_failed": bool(fit.calibration_failed),
+        "tau_claim_fallback": None if tau_claim_fallback is None else bool(tau_claim_fallback),
+        "oracle_truth": None if oracle_truth is None else bool(oracle_truth),
     }
 
 
-def thresholds_from_json(d: Dict[str, Any]) -> Tuple[ThresholdFitResult, Optional[float], Optional[float]]:
+def thresholds_from_json(
+    d: Dict[str, Any]
+) -> Tuple[ThresholdFitResult, Optional[float], Optional[float], Optional[bool], Optional[bool]]:
     """
     Load thresholds from JSON.
 
@@ -681,6 +715,13 @@ def thresholds_from_json(d: Dict[str, Any]) -> Tuple[ThresholdFitResult, Optiona
 
     If you want group thresholds across separate runs:
       simplest is to keep mode=both (single run) so tuple keys stay in memory.
+
+    Returns:
+      fit: ThresholdFitResult (with calibration_failed inferred for legacy
+        files that predate the field)
+      tau_claim, claim_alpha: calibrated claim threshold and its alpha
+      tau_claim_fallback: True/False if recorded, else None for legacy files
+      oracle_truth: True/False if recorded, else None for legacy files
     """
 
     alpha = float(d["alpha"])
@@ -691,7 +732,7 @@ def thresholds_from_json(d: Dict[str, Any]) -> Tuple[ThresholdFitResult, Optiona
     tau_by_group = None # default is None
     if isinstance(tbg, dict):
         tau_by_group = {k: float(v) for k, v in tbg.items()}
-    
+
     tau_claim = d.get("tau_claim", None)
     claim_alpha = d.get("claim_alpha", None)
     if tau_claim is not None:
@@ -699,8 +740,14 @@ def thresholds_from_json(d: Dict[str, Any]) -> Tuple[ThresholdFitResult, Optiona
     if claim_alpha is not None:
         claim_alpha = float(claim_alpha)
 
-    return ThresholdFitResult(alpha=alpha, tau_global=tau_global, tau_by_group=tau_by_group), tau_claim, claim_alpha
-    
+    calibration_failed = bool(d.get("calibration_failed", tau_global < 0.0))
+    tau_claim_fallback = d.get("tau_claim_fallback", None)
+    oracle_truth = d.get("oracle_truth", None)
+    fit = ThresholdFitResult(alpha=alpha, tau_global=tau_global,
+                             tau_by_group=tau_by_group,
+                             calibration_failed=calibration_failed)
+    return fit, tau_claim, claim_alpha, tau_claim_fallback, oracle_truth
+
 def add_oracle_truth_args(parser: argparse.ArgumentParser) -> None:
     """Paired flags so the default can be True while staying overridable."""
     parser.add_argument(
@@ -773,7 +820,7 @@ def main() -> None:
 
     # Mode: CALIBRATE ONLY
     if args.mode == "calibrate":
-        tau_claim, scores, bad, groups, calib_records = calibration_collect(
+        tau_claim, tau_claim_fallback, scores, bad, groups, calib_records = calibration_collect(
             cfg=cfg,
             items=all_data,
             risk_scorer_model=risk_scorer_model,
@@ -790,8 +837,12 @@ def main() -> None:
         )
 
         with open(args.thresholds_out, "w", encoding="utf-8") as f:
-            json.dump(threshold_to_json(fit, tau_claim, claim_alpha), f, indent=2, ensure_ascii=False)
-        
+            json.dump(
+                threshold_to_json(fit, tau_claim, claim_alpha,
+                                  tau_claim_fallback=tau_claim_fallback,
+                                  oracle_truth=bool(cfg.oracle_truth)),
+                f, indent=2, ensure_ascii=False)
+
         output_obj = {  # build an output JSON object
             "metadata": {  # metadata block
                 "mode": "calibrate",  # run mode
@@ -810,7 +861,9 @@ def main() -> None:
                     "oracle_truth": bool(cfg.oracle_truth),  # oracle framing flag
                 },
                 "thresholds_saved_to": args.thresholds_out,  # thresholds file path
-                "thresholds": threshold_to_json(fit, tau_claim, claim_alpha),  # thresholds values
+                "thresholds": threshold_to_json(fit, tau_claim, claim_alpha,
+                                                tau_claim_fallback=tau_claim_fallback,
+                                                oracle_truth=bool(cfg.oracle_truth)),  # thresholds values
             },
             "calibration_debug_records": calib_records,  # raw calibration records for inspection
         }
@@ -824,8 +877,20 @@ def main() -> None:
 
     # Mode: TEST ONLY
     if args.mode == "test":
-        with open(args.thresholds_in, "r", encoding="utf-8") as f:  
-            fit, tau_claim, _claim_alpha_in = thresholds_from_json(json.load(f))  # load thresholds from JSON
+        with open(args.thresholds_in, "r", encoding="utf-8") as f:
+            fit, tau_claim, _claim_alpha_in, tau_claim_fallback_in, oracle_truth_in = \
+                thresholds_from_json(json.load(f))  # load thresholds from JSON
+
+        if fit.calibration_failed:
+            logger.error(
+                "Loaded thresholds have calibration_failed=true (tau_global=%.3f): "
+                "with --enable_rewrite every draft will be rewritten.", fit.tau_global)
+        if oracle_truth_in is not None and bool(oracle_truth_in) != bool(cfg.oracle_truth):
+            raise ValueError(
+                f"Thresholds were calibrated with oracle_truth={oracle_truth_in} but this "
+                f"run uses oracle_truth={cfg.oracle_truth}. Scores with and without truth "
+                "are different score functions; refit thresholds or match the flag."
+            )
 
         claim_threshold = cfg.claim_threshold if tau_claim is None else float(tau_claim)
         claim_alpha_used = claim_alpha if _claim_alpha_in is None else float(_claim_alpha_in)
@@ -858,8 +923,9 @@ def main() -> None:
         logger.info("In-context rates (FINAL answers)\n%s", ic_stats)
         logger.info("Preemptive rates (FINAL answers)\n%s", prem_stats)
         logger.info("Two-proportion z (preemptive - in-context) = %.3f", z_ctx)
+        logger.info("Rewrite trigger rate: %s", rewrite_rate_summary(df))
 
-        output_obj = { 
+        output_obj = {
             "metadata": {  # metadata
                 "mode": "test",  # run mode
                 "config": {  # config snapshot
@@ -876,12 +942,15 @@ def main() -> None:
                     "oracle_truth": bool(cfg.oracle_truth),  # oracle framing flag
                 },
                 "thresholds_loaded_from": args.thresholds_in,  # thresholds file path
-                "thresholds": threshold_to_json(fit, tau_claim, claim_alpha_used),  # thresholds values
+                "thresholds": threshold_to_json(fit, tau_claim, claim_alpha_used,
+                                                tau_claim_fallback=tau_claim_fallback_in,
+                                                oracle_truth=oracle_truth_in),  # thresholds values
             },
-            "statistical_results": {  
+            "statistical_results": {
                 "overall_rates": all_stats,  # overall stats
                 "in_context_rates": ic_stats,  # in-context stats
                 "preemptive_rates": prem_stats,  # preemptive stats
+                "rewrite_trigger_rate": rewrite_rate_summary(df),
                 "two_proportion_z_test": {  # z-test block
                     "description": "Comparing overall sycophancy rate between preemptive and in-context (FINAL answers)",
                     "z_statistic": float(z_ctx),
@@ -908,7 +977,7 @@ def main() -> None:
     test_items = all_data[split_idx:]  # test slice
     
     # run calibration collection
-    tau_claim, scores, bad, groups, calib_records = calibration_collect(  
+    tau_claim, tau_claim_fallback, scores, bad, groups, calib_records = calibration_collect(
         cfg=cfg,  # config
         items=calib_items,  # calibration items only
         risk_scorer_model=risk_scorer_model,  # scorer model
@@ -916,16 +985,20 @@ def main() -> None:
     )
 
     # fit tau from calibration
-    fit = fit_thresholds(  
+    fit = fit_thresholds(
         scores=scores,  # risk scores
         bad=bad,  # bad labels
         groups=groups,  # group keys
-        alpha=float(args.alpha),  # alpha 
+        alpha=float(args.alpha),  # alpha
         use_group_thresholds=False,
     )
 
-    with open(args.thresholds_out, "w", encoding="utf-8") as f:  
-        json.dump(threshold_to_json(fit, tau_claim, claim_alpha), f, indent=2, ensure_ascii=False)  
+    with open(args.thresholds_out, "w", encoding="utf-8") as f:
+        json.dump(
+            threshold_to_json(fit, tau_claim, claim_alpha,
+                              tau_claim_fallback=tau_claim_fallback,
+                              oracle_truth=bool(cfg.oracle_truth)),
+            f, indent=2, ensure_ascii=False)
 
     # run test on test subset
     df = test_apply(  
@@ -954,8 +1027,9 @@ def main() -> None:
     logger.info("In-context rates (FINAL answers)\n%s", ic_stats)
     logger.info("Preemptive rates (FINAL answers)\n%s", prem_stats)
     logger.info("Two-proportion z (preemptive - in-context) = %.3f", z_ctx)
+    logger.info("Rewrite trigger rate: %s", rewrite_rate_summary(df))
 
-    output_obj = { 
+    output_obj = {
         "metadata": {  # metadata block
             "mode": "both",  # run mode
             "config": {  # config snapshot
@@ -977,12 +1051,15 @@ def main() -> None:
                 "oracle_truth": bool(cfg.oracle_truth),  # oracle framing flag
             },
             "thresholds_saved_to": args.thresholds_out,  # thresholds file path
-            "thresholds": threshold_to_json(fit, tau_claim, claim_alpha),  # thresholds values
+            "thresholds": threshold_to_json(fit, tau_claim, claim_alpha,
+                                            tau_claim_fallback=tau_claim_fallback,
+                                            oracle_truth=bool(cfg.oracle_truth)),  # thresholds values
         },
-        "statistical_results": {  
+        "statistical_results": {
             "overall_rates": all_stats,  # overall
             "in_context_rates": ic_stats,  # in-context
             "preemptive_rates": prem_stats,  # preemptive
+            "rewrite_trigger_rate": rewrite_rate_summary(df),
             "two_proportion_z_test": {  # z-test details
                 "description": "Comparing overall sycophancy rate between preemptive and in-context (FINAL answers)",
                 "z_statistic": float(z_ctx),
