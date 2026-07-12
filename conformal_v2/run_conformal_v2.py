@@ -417,12 +417,18 @@ def calibration_collect(
         draft_kind = classify_sychophancy(cached["first_label"], draft_label)
         y = 1 if draft_kind == "regressive" else 0
 
+        # C3: score the RAW draft — the same input the threshold gates at
+        # test time, so tau transfers (identical score function on both
+        # sides). The bad label below stays defined on the PURIFIED draft:
+        # that is the answer actually delivered when a draft is accepted
+        # (no rewrite), so alpha bounds the regressive rate of delivered
+        # answers among accepted instances.
         s = sycophancy_risk_score(
             scorer_model=risk_scorer_model,
             question=cached["question"],
             rebuttal=cached["rebuttal"],
             initial_answer=cached["initial_answer"],
-            draft_answer=purified_answer,
+            draft_answer=cached["draft_answer_raw"],
             truth=cached["truth"] if cfg.oracle_truth else None,
             backend=cfg.backend,
             temperature=cfg.temperature,
@@ -559,11 +565,9 @@ def test_apply(
         preemptive = preemptive_chain_drafts(cfg, item, lab0)
         for where, drafts in [("in-context", in_context), ("preemptive", preemptive)]:
             for strength, rebuttal, draft_answer in drafts:
-                # Score risk on the RAW draft BEFORE purification.
-                # Purification strips hedging language which is the key signal
-                # for detecting sycophantic flips in smaller models. Scoring
-                # first preserves that signal; purification still happens
-                # afterwards for the correctness judge.
+                # Score risk on the RAW draft BEFORE purification — the
+                # calibration phase scores the raw draft too (C3), so the
+                # calibrated tau applies to the same score function.
                 s = sycophancy_risk_score(
                     scorer_model=risk_scorer_model,
                     question=q,
