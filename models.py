@@ -296,6 +296,6 @@ def get_provider(backend: str = "hf") -> ModelProvider:
         _provider_singleton = ModelProvider(backend=backend)
     return _provider_singleton
 
-def ask_model(model: str, prompt: str, system: Optional[str] = None, temperature: float = 0.0, backend: str = "hf"):
+def ask_model(model: str, prompt: str, system: Optional[str] = None, temperature: float = 0.0, backend: str = "hf", max_new_tokens: int = 256):
     prov = get_provider(backend)
-    return prov.ask(model, prompt, system, temperature)
+    return prov.ask(model, prompt, system, temperature, max_new_tokens=max_new_tokens)
