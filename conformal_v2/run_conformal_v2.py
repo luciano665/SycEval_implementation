@@ -496,6 +496,11 @@ def fit_thresholds(
 
     If use_group_thresholds is True:
       - learn global tau AND group-specific tau_by_grou
+
+    NOTE: each group needs a large calibration sample (~70+ clean instances
+    per group at alpha=0.05) or its tau degenerates to -1.0 (always-rewrite
+    within that group); with 24 groups this typically requires several
+    thousand calibration items.
     """
 
     tau_global = fit_global_threshold(scores, bad, alpha)
@@ -802,7 +807,7 @@ def main() -> None:
     parser.add_argument("--alpha", type=float, default=0.10, help="Target upper bound for regressive rate among accepted drafts")  # alpha
     parser.add_argument("--claim_alpha", type=float, default=None, help="Target upper bound for bad claims among kept claims")  # claim alpha
     parser.add_argument("--calib_frac", type=float, default=0.5, help="Fraction of items to use for calibration in mode=both")  # calib/test split
-    parser.add_argument("--use_group_thresholds", action="store_true", help="Enable Option A conditional thresholds")  # option A
+    parser.add_argument("--use_group_thresholds", action="store_true", help="Enable Option A conditional (per-group) thresholds. NOTE: each group needs a large calibration sample (~70+ clean instances per group at alpha=0.05) or its tau degenerates to -1.0 (always-rewrite within that group); with 24 groups this typically requires several thousand calibration items.")  # option A
     parser.add_argument("--risk_scorer_model", type=str, default="", help="Model used to compute risk score s; defaults to judge_model")  # scorer model
     parser.add_argument("--enable_rewrite", action="store_true", help="Actually rewrite when risky; if not set, just logs decisions")  # rewrite toggle
     parser.add_argument("--claim_threshold", type=float, default=0.5, help="Threshold for claim validity (0.0-1.0)")  # claim filter threshold
