@@ -18,7 +18,7 @@ Oracle framing (--oracle_truth / --no_oracle_truth):
   calibration and test. Results therefore measure an ORACLE-ASSISTED
   upper bound, not a deployable truth-free system. Pass --no_oracle_truth
   for the truth-free variant. The flag is recorded in output metadata and
-  (from a later task) in the thresholds file; thresholds fitted under one
+  in the thresholds file; thresholds fitted under one
   setting must not be applied under the other. judge_local and
   judge_claim_support always receive truth: they are evaluation-side.
 
@@ -515,6 +515,14 @@ def fit_thresholds(
     tau_by_group: Optional[Dict[Hashable, float]] = None
     if use_group_thresholds:
         tau_by_group = fit_threshold_by_group(scores, bad, groups, alpha)
+        for g, tau_g in tau_by_group.items():
+            if float(tau_g) < 0.0:
+                logger.error(
+                    "GROUP CALIBRATION FAILED for group %s: no threshold meets "
+                    "alpha=%.3f; instances in this group will ALWAYS be rewritten "
+                    "(tau=-1.0 is kept rather than falling back to tau_global).",
+                    g, float(alpha),
+                )
 
     # package results into the dataclass
     fit = ThresholdFitResult(
@@ -693,9 +701,12 @@ def threshold_to_json(
     """Convert thresholds to a JSON-serializable dict"""
     tau_by_group_out = None
 
-    # if conditional thresholds exist
+    # Conditional (per-group) thresholds: serialize reversibly as a list of
+    # records — tuple keys cannot survive a JSON dict round-trip.
     if fit.tau_by_group is not None:
-        tau_by_group_out = {str(k): float(v) for k, v in fit.tau_by_group.items()}
+        tau_by_group_out = [
+            {"group": list(k), "tau": float(v)} for k, v in fit.tau_by_group.items()
+        ]
 
     return {
         "alpha": float(fit.alpha),
@@ -715,10 +726,11 @@ def thresholds_from_json(
     """
     Load thresholds from JSON.
 
-    tau_by_group keys will be strings, not tuples.
-
-    If you want group thresholds across separate runs:
-      simplest is to keep mode=both (single run) so tuple keys stay in memory.
+    Group thresholds round-trip via a list-of-records format
+    (tau_by_group: [{"group": [...], "tau": ...}, ...]); loading rebuilds
+    the tuple-keyed dict. Legacy files that stored tau_by_group as a
+    stringified-tuple dict cannot be mapped back to tuple keys, so they are
+    ignored (tau_by_group=None) with a WARNING logged.
 
     Returns:
       fit: ThresholdFitResult (with calibration_failed inferred for legacy
@@ -733,9 +745,13 @@ def thresholds_from_json(
 
     # load tau by group if it exists
     tbg = d.get("tau_by_group", None)
-    tau_by_group = None # default is None
-    if isinstance(tbg, dict):
-        tau_by_group = {k: float(v) for k, v in tbg.items()}
+    tau_by_group = None  # default is None
+    if isinstance(tbg, list):
+        tau_by_group = {tuple(rec["group"]): float(rec["tau"]) for rec in tbg}
+    elif isinstance(tbg, dict):
+        logger.warning(
+            "Legacy stringified tau_by_group cannot be mapped back to group keys; "
+            "ignoring it (tau_global will be used for all groups).")
 
     tau_claim = d.get("tau_claim", None)
     claim_alpha = d.get("claim_alpha", None)
@@ -837,7 +853,7 @@ def main() -> None:
             bad=bad,
             groups=groups,
             alpha=float(args.alpha),
-            use_group_thresholds=False,
+            use_group_thresholds=bool(args.use_group_thresholds),
         )
 
         with open(args.thresholds_out, "w", encoding="utf-8") as f:
@@ -994,7 +1010,7 @@ def main() -> None:
         bad=bad,  # bad labels
         groups=groups,  # group keys
         alpha=float(args.alpha),  # alpha
-        use_group_thresholds=False,
+        use_group_thresholds=bool(args.use_group_thresholds),
     )
 
     with open(args.thresholds_out, "w", encoding="utf-8") as f:
