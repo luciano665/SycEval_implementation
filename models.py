@@ -296,6 +296,21 @@ def get_provider(backend: str = "hf") -> ModelProvider:
         _provider_singleton = ModelProvider(backend=backend)
     return _provider_singleton
 
+
+def set_global_seed(seed: int) -> None:
+    """Best-effort determinism for sampled generation paths.
+
+    Seeds python's random and torch (CPU + all CUDA devices) when torch is
+    available. Greedy decoding (temperature 0) is unaffected; this matters
+    whenever any component samples (do_sample=True).
+    """
+    import random as _random
+    _random.seed(seed)
+    if torch is not None:
+        torch.manual_seed(seed)
+        if torch.cuda.is_available():
+            torch.cuda.manual_seed_all(seed)
+
 def ask_model(model: str, prompt: str, system: Optional[str] = None, temperature: float = 0.0, backend: str = "hf", max_new_tokens: int = 256):
     # max_new_tokens applies to the HF backend; the ollama branch ignores it.
     prov = get_provider(backend)

@@ -34,7 +34,7 @@ from tqdm import tqdm
 
 from config import EvalConfig
 from data_loader import load_data_local
-from models import ask_model
+from models import ask_model, set_global_seed
 from judge import judge_local
 from rebuttals import auto_proposed_answers, build_rebuttal
 from metrics import classify_sychophancy, two_proportion_z, ci_binomial, summarize_rates
@@ -820,6 +820,10 @@ def main() -> None:
     # Parse CLI tags
     args = parser.parse_args()
 
+    # Seed all RNGs up front so sampled generation (if any component uses
+    # temperature > 0) is reproducible for a given --seed.
+    set_global_seed(int(args.seed))
+
     cfg = EvalConfig(
         tested_model=args.tested_model,  # set tested model
         rebuttal_model=args.rebuttal_model,  # set rebuttal model
@@ -878,6 +882,8 @@ def main() -> None:
                     "risk_scorer_model": risk_scorer_model,  # scorer model
                     "max_items": len(all_data),  # number of items used
                     "temperature": cfg.temperature,  # temperature
+                    "seed": int(args.seed),  # RNG seed (data sampling + torch)
+                    "risk_scorer_temperature": float(cfg.temperature),  # effective scorer temperature (no hidden override)
                     "backend": cfg.backend,  # backend
                     "claim_threshold": float(tau_claim),  # claim filter threshold
                     "claim_alpha": float(claim_alpha),  # claim alpha
@@ -960,6 +966,8 @@ def main() -> None:
                     "risk_scorer_model": risk_scorer_model,  # scorer model
                     "max_items": len(all_data),  # test items used
                     "temperature": cfg.temperature,  # temperature
+                    "seed": int(args.seed),  # RNG seed (data sampling + torch)
+                    "risk_scorer_temperature": float(cfg.temperature),  # effective scorer temperature (no hidden override)
                     "backend": cfg.backend,  # backend
                     "claim_threshold": float(claim_threshold),  # claim filter threshold
                     "claim_alpha": float(claim_alpha_used),  # claim alpha
@@ -1066,6 +1074,8 @@ def main() -> None:
                 "calibration_items": len(calib_items),  # calibration size
                 "test_items": len(test_items),  # test size
                 "temperature": cfg.temperature,  # temperature
+                "seed": int(args.seed),  # RNG seed (data sampling + torch)
+                "risk_scorer_temperature": float(cfg.temperature),  # effective scorer temperature (no hidden override)
                 "backend": cfg.backend,  # backend
                 "claim_threshold": float(tau_claim),  # claim filter threshold
                 "claim_alpha": float(claim_alpha),  # claim alpha

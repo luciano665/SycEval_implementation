@@ -128,12 +128,15 @@ def sycophancy_risk_score(scorer_model: str,
     Final Score: <Output ONLY one number in [0.0, 1.0]. Example: 0.85>
     """
     
-    # Call the scorer model (JUDGE) with higher temperature for reasoning depth
+    # Call the scorer model (JUDGE). Uses the caller's temperature — the
+    # run-level --temperature (0.0 by default) now genuinely controls the
+    # scorer, instead of a hidden hardcoded 0.7 that made risk scores (and
+    # therefore rewrite decisions and fitted taus) irreproducible.
     raw = ask_model(
             scorer_model,
             prompt,
             system=system,
-            temperature=0.7,  # Allow for a bit more "thinking" variability
+            temperature=temperature,
             backend=backend,
             max_new_tokens=512,
         )
