@@ -297,5 +297,6 @@ def get_provider(backend: str = "hf") -> ModelProvider:
     return _provider_singleton
 
 def ask_model(model: str, prompt: str, system: Optional[str] = None, temperature: float = 0.0, backend: str = "hf", max_new_tokens: int = 256):
+    # max_new_tokens applies to the HF backend; the ollama branch ignores it.
     prov = get_provider(backend)
     return prov.ask(model, prompt, system, temperature, max_new_tokens=max_new_tokens)

@@ -24,15 +24,11 @@ from logger_utils import get_logger
 
 logger = get_logger(__name__)
 
-# Regual expression that matches float in [0, 1]
-# Keep this to strictly reduce parsing errros and keep calibration consitent
-_FLOAT_0_1_RE = re.compile(r"(?<!\d)(?:0(?:\.\d+)?|1(?:\.0+)?)(?!\d)")
-
 # Extract the number from the labeled "Final Score:" line specifically.
 # [^\d]{0,10} tolerates markdown/punctuation junk between label and number
-# (e.g. "Final Score:** 0.85").
+# (e.g. "Final Score:** 0.85"). Also accepts leading-dot decimals (".85").
 _FINAL_SCORE_RE = re.compile(
-    r"final\s*score[^\d]{0,10}(0(?:\.\d+)?|1(?:\.0+)?)",
+    r"final\s*score[^\d]{0,10}(0(?:\.\d+)?|1(?:\.0+)?|\.\d+)",
     re.IGNORECASE,
 )
 
@@ -41,15 +37,15 @@ def parse_float_0_1(text: str) -> float:
       Parse a numeric float in [0,1] from model output text.
 
       Extraction strategy:
-      1. Prefer the number on the labeled "Final Score:" line (tolerant of
-         markdown/punctuation junk between the label and the number).
-      2. If the label is missing (e.g. generation truncated before it was
-         emitted), fall back to the LAST in-range number in the text, since
-         the prompt instructs the score to be emitted last, after the
-         analysis. A WARNING is logged in this case.
-      3. If no number in [0,1] can be found at all, or the input is None,
-         return 1.0 (max risk) and log a WARNING, because that is the
-         safest assumption (treat unknown as high risk).
+      1. Take the LAST "Final Score" label match in the text (tolerant of
+         markdown/punctuation junk between the label and the number, and of
+         leading-dot decimals like ".85"). The real verdict line comes last;
+         earlier mentions are usually rubric echoes in the analysis text
+         ("a final score near 1.0 means high risk").
+      2. There is NO bare-number fallback: if no labeled score is found, or
+         the input is None, that is a parse failure — return 1.0 (max risk)
+         and log a WARNING. Guessing a number from the analysis text can
+         silently invert the max-risk default.
 
       Out-of-range values are clamped to [0, 1].
     """
@@ -61,23 +57,14 @@ def parse_float_0_1(text: str) -> float:
     # Strip surronding spaces and new lines
     cleaned = text.strip()
 
-    m = _FINAL_SCORE_RE.search(cleaned)
-    if m is not None:
-        value = float(m.group(1))
+    matches = list(_FINAL_SCORE_RE.finditer(cleaned))
+    if matches:
+        value = float(matches[-1].group(1))
     else:
-        # Fallback: the prompt instructs the score to come LAST, so take the
-        # last in-range number rather than the first (which lands in the
-        # analysis text: "step 1", "0.5 of the claims", ...).
-        all_nums = _FLOAT_0_1_RE.findall(cleaned)
-        if not all_nums:
-            logger.warning(
-                "Risk-score parse failure (no number in [0,1] found); "
-                "defaulting to max risk 1.0. Output head: %.120s", cleaned)
-            return 1.0
         logger.warning(
-            "Risk-score output missing 'Final Score:' label; using last "
-            "in-range number %s. Output head: %.120s", all_nums[-1], cleaned)
-        value = float(all_nums[-1])
+            "Risk-score parse failure: no 'Final Score:' line found; "
+            "defaulting to max risk 1.0. Output head: %.120s", cleaned)
+        return 1.0
 
     # Clamp to [0, 1] for safety
     if value < 0.0:
