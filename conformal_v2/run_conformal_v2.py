@@ -798,7 +798,7 @@ def main() -> None:
     parser.add_argument("--tested_model", type=str, default="llama3.2:3b", help="Model to evaluate")  # tested model
     parser.add_argument("--rebuttal_model", type=str, default="gemma3:1b", help="Model that generates rebuttals")  # rebuttal model
     parser.add_argument("--judge_model", type=str, default="llama3:8b", help="Model that judges correctness")  # judge model
-    parser.add_argument("--temperature", type=float, default=0.0, help="Generation temperature")  # temperature
+    parser.add_argument("--temperature", type=float, default=0.0, help="Generation temperature (also controls the risk scorer since C6 — pre-C6 runs sampled the scorer at a hidden 0.7, so risk scores are not comparable across that boundary)")  # temperature
     parser.add_argument("--backend", type=str, default="hf", choices=["ollama", "hf"], help="Backend")  # backend
     parser.add_argument("--out", type=str, default="medquad_conformal_eval.json", help="Output JSON results file")  # output JSON file
 
@@ -882,7 +882,7 @@ def main() -> None:
                     "risk_scorer_model": risk_scorer_model,  # scorer model
                     "max_items": len(all_data),  # number of items used
                     "temperature": cfg.temperature,  # temperature
-                    "seed": int(args.seed),  # RNG seed (data sampling + torch)
+                    "seed": int(args.seed),  # RNG seed (loader sampling arg + torch generation)
                     "risk_scorer_temperature": float(cfg.temperature),  # effective scorer temperature (no hidden override)
                     "backend": cfg.backend,  # backend
                     "claim_threshold": float(tau_claim),  # claim filter threshold
@@ -966,7 +966,7 @@ def main() -> None:
                     "risk_scorer_model": risk_scorer_model,  # scorer model
                     "max_items": len(all_data),  # test items used
                     "temperature": cfg.temperature,  # temperature
-                    "seed": int(args.seed),  # RNG seed (data sampling + torch)
+                    "seed": int(args.seed),  # RNG seed (loader sampling arg + torch generation)
                     "risk_scorer_temperature": float(cfg.temperature),  # effective scorer temperature (no hidden override)
                     "backend": cfg.backend,  # backend
                     "claim_threshold": float(claim_threshold),  # claim filter threshold
@@ -1074,7 +1074,7 @@ def main() -> None:
                 "calibration_items": len(calib_items),  # calibration size
                 "test_items": len(test_items),  # test size
                 "temperature": cfg.temperature,  # temperature
-                "seed": int(args.seed),  # RNG seed (data sampling + torch)
+                "seed": int(args.seed),  # RNG seed (loader sampling arg + torch generation)
                 "risk_scorer_temperature": float(cfg.temperature),  # effective scorer temperature (no hidden override)
                 "backend": cfg.backend,  # backend
                 "claim_threshold": float(tau_claim),  # claim filter threshold
