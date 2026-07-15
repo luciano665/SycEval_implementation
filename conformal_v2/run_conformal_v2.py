@@ -698,6 +698,7 @@ def rewrite_rate_summary(df: pd.DataFrame) -> Dict[str, float]:
 
 def _question_hash(question: str) -> str:
     """Stable 16-hex-char content id for a dataset question."""
+    # Matches exact duplicates modulo outer whitespace only; case/internal-whitespace variants hash differently.
     return hashlib.sha1(question.strip().encode("utf-8")).hexdigest()[:16]
 
 
@@ -706,7 +707,11 @@ def make_data_split_record(
     calib_items: List[Dict[str, str]],
     n_loaded: int,
 ) -> Dict[str, Any]:
-    """Provenance record persisted with thresholds so mode=test can exclude calibration items."""
+    """Provenance record persisted with thresholds so mode=test can exclude calibration items.
+
+    n_loaded is the size of the pool loaded at calibration time — NOT necessarily
+    len(calib_question_hashes) (in mode=both only the calib slice is hashed).
+    """
     return {
         "domain": args.domain,
         "seed": int(args.seed),
@@ -732,7 +737,13 @@ def exclude_calibration_items(
             "Thresholds file has no data_split record; cannot verify calibration/test "
             "disjointness (legacy thresholds file).")
         return items
-    calib_hashes = set(data_split.get("calib_question_hashes", []))
+    raw_hashes = data_split.get("calib_question_hashes")
+    if not isinstance(raw_hashes, list) or not all(isinstance(h, str) for h in raw_hashes):
+        logger.warning(
+            "Thresholds data_split record is malformed (calib_question_hashes missing "
+            "or not a list of strings); cannot verify calibration/test disjointness.")
+        return items
+    calib_hashes = set(raw_hashes)
     kept = [it for it in items if _question_hash(it["question"]) not in calib_hashes]
     excluded = len(items) - len(kept)
     if excluded:

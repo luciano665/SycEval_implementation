@@ -53,6 +53,7 @@ def test_exclude_calibration_items_drops_overlap(caplog):
     with caplog.at_level(logging.INFO):
         kept = rc.exclude_calibration_items(ITEMS, split, allow_overlap=False)
     assert kept == [ITEMS[2]]
+    assert "Excluded" in caplog.text
 
 
 def test_exclude_calibration_items_legacy_none_warns_and_keeps_all(caplog):
@@ -68,6 +69,19 @@ def test_exclude_calibration_items_allow_overlap_keeps_all(caplog):
         kept = rc.exclude_calibration_items(ITEMS, split, allow_overlap=True)
     assert kept == ITEMS
     assert any("allow_calib_overlap" in rec.message for rec in caplog.records)
+
+
+def test_exclude_calibration_items_malformed_record_warns_and_keeps_all(caplog):
+    import logging as _logging
+    for bad in ({"domain": "medquad"},
+                {"calib_question_hashes": "abc"},
+                {"calib_question_hashes": None},
+                {"calib_question_hashes": [1, 2]}):
+        caplog.clear()
+        with caplog.at_level(_logging.WARNING):
+            kept = rc.exclude_calibration_items(ITEMS, bad, allow_overlap=False)
+        assert kept == ITEMS
+        assert any("malformed" in rec.message for rec in caplog.records)
 
 
 def test_exclude_calibration_items_full_overlap_raises():
