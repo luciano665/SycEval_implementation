@@ -26,6 +26,7 @@ Oracle framing (--oracle_truth / --no_oracle_truth):
 
 from __future__ import annotations
 import argparse
+import hashlib
 import json
 from typing import Any, Dict, Hashable, List, Optional, Tuple
 
@@ -695,6 +696,56 @@ def rewrite_rate_summary(df: pd.DataFrame) -> Dict[str, float]:
     }
 
 
+def _question_hash(question: str) -> str:
+    """Stable 16-hex-char content id for a dataset question."""
+    return hashlib.sha1(question.strip().encode("utf-8")).hexdigest()[:16]
+
+
+def make_data_split_record(
+    args: argparse.Namespace,
+    calib_items: List[Dict[str, str]],
+    n_loaded: int,
+) -> Dict[str, Any]:
+    """Provenance record persisted with thresholds so mode=test can exclude calibration items."""
+    return {
+        "domain": args.domain,
+        "seed": int(args.seed),
+        "max_items": int(args.max_items),
+        "n_loaded": int(n_loaded),
+        "calib_question_hashes": [_question_hash(it["question"]) for it in calib_items],
+    }
+
+
+def exclude_calibration_items(
+    items: List[Dict[str, str]],
+    data_split: Optional[Dict[str, Any]],
+    allow_overlap: bool,
+) -> List[Dict[str, str]]:
+    """Drop items whose question was used for calibration (matched by content hash)."""
+    if allow_overlap:
+        logger.warning(
+            "--allow_calib_overlap: calibration items are NOT excluded from the test set; "
+            "any reported rates may be contaminated by calibration data.")
+        return items
+    if not data_split:
+        logger.warning(
+            "Thresholds file has no data_split record; cannot verify calibration/test "
+            "disjointness (legacy thresholds file).")
+        return items
+    calib_hashes = set(data_split.get("calib_question_hashes", []))
+    kept = [it for it in items if _question_hash(it["question"]) not in calib_hashes]
+    excluded = len(items) - len(kept)
+    if excluded:
+        logger.info("Excluded %d calibration items from the test set (%d -> %d).",
+                    excluded, len(items), len(kept))
+    if not kept:
+        raise ValueError(
+            "After excluding calibration items the test set is empty: this run loads exactly "
+            "the items used for calibration. Load more/different items (e.g. larger --max_items) "
+            "or pass --allow_calib_overlap to knowingly test on calibration data.")
+    return kept
+
+
 # 7) JSON helpers to save and load thresholds
 def threshold_to_json(
     fit: ThresholdFitResult,
@@ -702,6 +753,7 @@ def threshold_to_json(
     claim_alpha: Optional[float],
     tau_claim_fallback: Optional[bool] = None,
     oracle_truth: Optional[bool] = None,
+    data_split: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     """Convert thresholds to a JSON-serializable dict"""
     tau_by_group_out = None
@@ -722,6 +774,7 @@ def threshold_to_json(
         "calibration_failed": bool(fit.calibration_failed),
         "tau_claim_fallback": None if tau_claim_fallback is None else bool(tau_claim_fallback),
         "oracle_truth": None if oracle_truth is None else bool(oracle_truth),
+        "data_split": data_split,
     }
 
 
@@ -815,6 +868,8 @@ def main() -> None:
     parser.add_argument("--thresholds_in", type=str, default="thresholds.json", help="Where to load thresholds in test")  # thresholds load
     parser.add_argument("--seed", type=int, default=7, help="Random seed for sampling/splitting")  # seed
     parser.add_argument("--domain", type=str, default="medquad", choices=["medquad", "healthsearch"], help="Dataset domain")
+    parser.add_argument("--allow_calib_overlap", action="store_true",
+                        help="mode=test only: skip excluding calibration items recorded in the thresholds file (knowingly test on calibration data)")
     add_oracle_truth_args(parser)
 
     # Parse CLI tags
@@ -865,11 +920,14 @@ def main() -> None:
             use_group_thresholds=bool(args.use_group_thresholds),
         )
 
+        data_split = make_data_split_record(args, all_data, len(all_data))
+
         with open(args.thresholds_out, "w", encoding="utf-8") as f:
             json.dump(
                 threshold_to_json(fit, tau_claim, claim_alpha,
                                   tau_claim_fallback=tau_claim_fallback,
-                                  oracle_truth=bool(cfg.oracle_truth)),
+                                  oracle_truth=bool(cfg.oracle_truth),
+                                  data_split=data_split),
                 f, indent=2, ensure_ascii=False)
 
         output_obj = {  # build an output JSON object
@@ -894,7 +952,8 @@ def main() -> None:
                 "thresholds_saved_to": args.thresholds_out,  # thresholds file path
                 "thresholds": threshold_to_json(fit, tau_claim, claim_alpha,
                                                 tau_claim_fallback=tau_claim_fallback,
-                                                oracle_truth=bool(cfg.oracle_truth)),  # thresholds values
+                                                oracle_truth=bool(cfg.oracle_truth),
+                                                data_split=data_split),  # thresholds values
             },
             "calibration_debug_records": calib_records,  # raw calibration records for inspection
         }
@@ -909,8 +968,9 @@ def main() -> None:
     # Mode: TEST ONLY
     if args.mode == "test":
         with open(args.thresholds_in, "r", encoding="utf-8") as f:
-            fit, tau_claim, _claim_alpha_in, tau_claim_fallback_in, oracle_truth_in = \
-                thresholds_from_json(json.load(f))  # load thresholds from JSON
+            loaded = json.load(f)
+        fit, tau_claim, _claim_alpha_in, tau_claim_fallback_in, oracle_truth_in = \
+            thresholds_from_json(loaded)
 
         if fit.calibration_failed:
             logger.error(
@@ -922,6 +982,9 @@ def main() -> None:
                 f"run uses oracle_truth={cfg.oracle_truth}. Scores with and without truth "
                 "are different score functions; refit thresholds or match the flag."
             )
+
+        all_data = exclude_calibration_items(
+            all_data, loaded.get("data_split"), bool(args.allow_calib_overlap))
 
         claim_threshold = cfg.claim_threshold if tau_claim is None else float(tau_claim)
         claim_alpha_used = claim_alpha if _claim_alpha_in is None else float(_claim_alpha_in)
@@ -977,7 +1040,8 @@ def main() -> None:
                 "thresholds_loaded_from": args.thresholds_in,  # thresholds file path
                 "thresholds": threshold_to_json(fit, tau_claim, claim_alpha_used,
                                                 tau_claim_fallback=tau_claim_fallback_in,
-                                                oracle_truth=oracle_truth_in),  # thresholds values
+                                                oracle_truth=oracle_truth_in,
+                                                data_split=loaded.get("data_split")),  # thresholds values
             },
             "statistical_results": {
                 "overall_rates": all_stats,  # overall stats
@@ -1008,7 +1072,9 @@ def main() -> None:
 
     calib_items = all_data[:split_idx]  # calibration slice
     test_items = all_data[split_idx:]  # test slice
-    
+
+    data_split = make_data_split_record(args, calib_items, len(all_data))
+
     # run calibration collection
     tau_claim, tau_claim_fallback, scores, bad, groups, calib_records = calibration_collect(
         cfg=cfg,  # config
@@ -1030,7 +1096,8 @@ def main() -> None:
         json.dump(
             threshold_to_json(fit, tau_claim, claim_alpha,
                               tau_claim_fallback=tau_claim_fallback,
-                              oracle_truth=bool(cfg.oracle_truth)),
+                              oracle_truth=bool(cfg.oracle_truth),
+                              data_split=data_split),
             f, indent=2, ensure_ascii=False)
 
     # run test on test subset
@@ -1088,7 +1155,8 @@ def main() -> None:
             "thresholds_saved_to": args.thresholds_out,  # thresholds file path
             "thresholds": threshold_to_json(fit, tau_claim, claim_alpha,
                                             tau_claim_fallback=tau_claim_fallback,
-                                            oracle_truth=bool(cfg.oracle_truth)),  # thresholds values
+                                            oracle_truth=bool(cfg.oracle_truth),
+                                            data_split=data_split),  # thresholds values
         },
         "statistical_results": {
             "overall_rates": all_stats,  # overall
