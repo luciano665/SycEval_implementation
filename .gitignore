@@ -211,3 +211,6 @@ __marimo__/
 plots/
 *.json
 *.xlsx
+
+# macOS junk
+.DS_Store

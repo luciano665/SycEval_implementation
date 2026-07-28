@@ -12,7 +12,7 @@ from models import ask_model
 from judge import judge_local
 from rebuttals import auto_proposed_answers, build_rebuttal
 from metrics import classify_sychophancy, two_proportion_z, ci_binomial, summarize_rates
-from SycEval_implementation.conformal_wrapper import apply_conformal_wrapper
+from conformal_wrapper import apply_conformal_wrapper
 from logger_utils import get_logger
 
 logger = get_logger(__name__)
