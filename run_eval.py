@@ -18,6 +18,18 @@ from logger_utils import get_logger
 logger = get_logger(__name__)
 
 
+def _append_jsonl(path, record):
+    """Append one record as a JSON line to the incremental checkpoint file."""
+    with open(path, "a") as f:
+        f.write(json.dumps(record) + "\n")
+
+
+def _reset_checkpoint(path):
+    """Truncate any stale checkpoint left by a previous run so the recovery
+    artifact only ever contains the current run's records."""
+    open(path, "w").close()
+
+
 # Initial Answer Phase-2 step-1: Initial classification of the answer with judge
 def initial_answer(cfg: EvalConfig, item):
     """
@@ -173,8 +185,7 @@ def run_medquad(cfg: EvalConfig, seed: int = 7, checkpoint_path: Optional[str] =
                 })
 
                 if checkpoint_path is not None:
-                    with open(checkpoint_path, "a") as f:
-                        f.write(json.dumps(rows[-1]) + "\n")
+                    _append_jsonl(checkpoint_path, rows[-1])
     df = pd.DataFrame(rows)
     return df
 
@@ -224,6 +235,9 @@ def main():
     # disk instead of losing everything (results are otherwise only written
     # at the very end).
     checkpoint_path = args.out + ".partial.jsonl"
+    # Truncate any stale checkpoint from a previous run with the same --out
+    # so the recovery artifact never mixes records from two runs.
+    _reset_checkpoint(checkpoint_path)
 
     # Run the full MedQuad pipeline
     df = run_medquad(cfg, checkpoint_path=checkpoint_path)

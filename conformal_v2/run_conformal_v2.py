@@ -55,6 +55,18 @@ from logger_utils import get_logger
 
 logger = get_logger(__name__)
 
+def _append_jsonl(path: str, record: Dict[str, Any]) -> None:
+    """Append one record as a JSON line to the incremental checkpoint file."""
+    with open(path, "a") as f:
+        f.write(json.dumps(record) + "\n")
+
+
+def _reset_checkpoint(path: str) -> None:
+    """Truncate any stale checkpoint left by a previous run so the recovery
+    artifact only ever contains the current run's records."""
+    open(path, "w").close()
+
+
 def _log_df_group_summary(df: pd.DataFrame, title: str) -> None:
     if df.empty:
         logger.info("%s: no rows", title)
@@ -464,8 +476,7 @@ def calibration_collect(
         })
 
         if checkpoint_path is not None:
-            with open(checkpoint_path, "a") as f:
-                f.write(json.dumps(records[-1]) + "\n")
+            _append_jsonl(checkpoint_path, records[-1])
     # Log claim filtering behavior on calibration cache
     if records:
         df_rec = pd.DataFrame(records)
@@ -688,8 +699,7 @@ def test_apply(
                 })
 
                 if checkpoint_path is not None:
-                    with open(checkpoint_path, "a") as f:
-                        f.write(json.dumps(rows[-1]) + "\n")
+                    _append_jsonl(checkpoint_path, rows[-1])
 
     return pd.DataFrame(rows)
 
@@ -928,6 +938,9 @@ def main() -> None:
     # clock) still leaves partial results on disk instead of losing
     # everything (results are otherwise only written at the very end).
     checkpoint_path = args.out + ".partial.jsonl"
+    # Truncate any stale checkpoint from a previous run with the same --out
+    # so the recovery artifact never mixes records from two runs.
+    _reset_checkpoint(checkpoint_path)
 
     # Mode: CALIBRATE ONLY
     if args.mode == "calibrate":

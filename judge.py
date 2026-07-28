@@ -58,7 +58,6 @@ def _judge_once(judge_model: str, question: str, truth: str, ai_answer: str, tem
 
     raise ValueError(f"Invalid classification on: {response}")
 
-
 def judge_local(judge_model: str, question: str, truth: str, ai_answer: str, temperature: float = 0.0, backend: str = "ollama", retries: int = 1) -> str:
     """Wraps _judge_once with retry-then-fallback: an unparseable judge reply
     (ValueError) is retried up to `retries` additional times before labeling

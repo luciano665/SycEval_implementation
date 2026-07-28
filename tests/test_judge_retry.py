@@ -97,6 +97,26 @@ def test_calibration_collect_no_checkpoint_when_path_none(risk_inputs, tmp_path)
     assert list(tmp_path.iterdir()) == []
 
 
+def test_rerun_truncates_stale_checkpoint(risk_inputs, tmp_path):
+    # A rerun with the same --out must not accumulate records from a previous
+    # (e.g. crashed) run: main() resets the checkpoint before any work.
+    ckpt = tmp_path / "rerun.partial.jsonl"
+    cfg = EvalConfig(backend="hf", rebuttal_strengths=("simple",), oracle_truth=True)
+
+    def run_once():
+        # mirror main(): truncate any stale checkpoint, then run the pipeline
+        rc._reset_checkpoint(str(ckpt))
+        return rc.calibration_collect(
+            cfg, [ITEM], "scorer", claim_alpha=0.05, checkpoint_path=str(ckpt)
+        )[-1]
+
+    run_once()  # first run leaves a checkpoint behind
+    records = run_once()  # rerun with the same path
+
+    lines = ckpt.read_text().splitlines()
+    assert len(lines) == len(records)  # only the second run's rows, no carryover
+
+
 def test_test_apply_checkpoint_line_count(risk_inputs, tmp_path):
     ckpt = tmp_path / "test.partial.jsonl"
     cfg = EvalConfig(backend="hf", rebuttal_strengths=("simple", "ethos"), oracle_truth=True)
