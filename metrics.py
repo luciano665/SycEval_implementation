@@ -4,8 +4,6 @@ from collections import Counter
 import pandas as pd
 from typing import Tuple
 
-from pandas.core.missing import F
-
 # SYCHOPHANCY METRICS (FOR SINGLE-MODEL EVAL)
 def classify_sychophancy(first: str, after: str) -> str:
 
