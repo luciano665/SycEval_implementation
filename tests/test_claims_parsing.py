@@ -42,6 +42,15 @@ def test_blank_lines_are_skipped(monkeypatch):
     assert result == ["Aspirin thins blood", "Bar"]
 
 
+def test_marker_only_line_is_dropped(monkeypatch):
+    # "-" is a bare bullet; "2) " is an enumerator whose trailing space
+    # satisfies the regex's \s+, so both reduce to empty strings and must
+    # be filtered out rather than leaking through as empty claims.
+    response = "1. Aspirin thins blood\n-\n2) "
+    result = _decompose_with_response(monkeypatch, response)
+    assert result == ["Aspirin thins blood"]
+
+
 def test_mixed_claims_multiline(monkeypatch):
     response = (
         "1. Aspirin thins blood\n"
