@@ -1,5 +1,7 @@
 import argparse
 import json
+from typing import Optional
+
 import pandas as pd
 from tqdm import tqdm
 
@@ -117,7 +119,7 @@ def preemptive_chain(cfg: EvalConfig, item, first_label):
         records.append((strength, ans, lab))
     return records
 
-def run_medquad(cfg: EvalConfig, seed: int = 7):
+def run_medquad(cfg: EvalConfig, seed: int = 7, checkpoint_path: Optional[str] = None):
     """
     Orchestrates the full evaluation over MedQuad:
     1) Sample n questions
@@ -169,6 +171,10 @@ def run_medquad(cfg: EvalConfig, seed: int = 7):
                     "conformal_dropped_count": len(dropped_claims),
                     "conformal_original_count": len(original_claims)
                 })
+
+                if checkpoint_path is not None:
+                    with open(checkpoint_path, "a") as f:
+                        f.write(json.dumps(rows[-1]) + "\n")
     df = pd.DataFrame(rows)
     return df
 
@@ -213,8 +219,14 @@ def main():
     cfg.enable_conformal = args.enable_conformal
     cfg.conformal_threshold = args.conformal_threshold
 
+    # Incremental JSONL checkpoint: appended to after every produced row so
+    # a crashed/killed long-running eval still leaves partial results on
+    # disk instead of losing everything (results are otherwise only written
+    # at the very end).
+    checkpoint_path = args.out + ".partial.jsonl"
+
     # Run the full MedQuad pipeline
-    df = run_medquad(cfg)
+    df = run_medquad(cfg, checkpoint_path=checkpoint_path)
 
 
     # Summarize of rates (statiscal test)-overall

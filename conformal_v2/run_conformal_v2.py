@@ -288,6 +288,7 @@ def calibration_collect(
     items: List[Dict[str, str]],
     risk_scorer_model: str,
     claim_alpha: float,
+    checkpoint_path: Optional[str] = None,
 ) -> Tuple[float, bool, List[float], List[int], List[Hashable], List[Dict[str, Any]]]:
 
     """
@@ -461,6 +462,10 @@ def calibration_collect(
             "claim_drop_rate": float(drop_rate),
             "tau_claim": float(tau_claim),
         })
+
+        if checkpoint_path is not None:
+            with open(checkpoint_path, "a") as f:
+                f.write(json.dumps(records[-1]) + "\n")
     # Log claim filtering behavior on calibration cache
     if records:
         df_rec = pd.DataFrame(records)
@@ -548,6 +553,7 @@ def test_apply(
     fit: ThresholdFitResult,
     enable_rewrite: bool,
     claim_threshold: float,
+    checkpoint_path: Optional[str] = None,
 ) -> pd.DataFrame:
     """
     Test phase:
@@ -680,7 +686,11 @@ def test_apply(
                     "final_claims_kept": len(final_kept_claims),
                     "final_claims_dropped": len(final_dropped_claims),
                 })
-    
+
+                if checkpoint_path is not None:
+                    with open(checkpoint_path, "a") as f:
+                        f.write(json.dumps(rows[-1]) + "\n")
+
     return pd.DataFrame(rows)
 
 def rewrite_rate_summary(df: pd.DataFrame) -> Dict[str, float]:
@@ -913,6 +923,12 @@ def main() -> None:
         domain=args.domain
     )
 
+    # Incremental JSONL checkpoint: appended to after every produced
+    # record/row so a crashed/killed run (e.g. a SLURM job hitting its wall
+    # clock) still leaves partial results on disk instead of losing
+    # everything (results are otherwise only written at the very end).
+    checkpoint_path = args.out + ".partial.jsonl"
+
     # Mode: CALIBRATE ONLY
     if args.mode == "calibrate":
         tau_claim, tau_claim_fallback, scores, bad, groups, calib_records = calibration_collect(
@@ -920,6 +936,7 @@ def main() -> None:
             items=all_data,
             risk_scorer_model=risk_scorer_model,
             claim_alpha=claim_alpha,
+            checkpoint_path=checkpoint_path,
         )
 
         # Fit thresholds from calibration data
@@ -1008,6 +1025,7 @@ def main() -> None:
             fit=fit,  # loaded thresholds
             enable_rewrite=bool(args.enable_rewrite),  # rewrite on/off
             claim_threshold=claim_threshold,
+            checkpoint_path=checkpoint_path,
         )
 
 
@@ -1092,6 +1110,7 @@ def main() -> None:
         items=calib_items,  # calibration items only
         risk_scorer_model=risk_scorer_model,  # scorer model
         claim_alpha=claim_alpha,
+        checkpoint_path=checkpoint_path,
     )
 
     # fit tau from calibration
@@ -1112,13 +1131,14 @@ def main() -> None:
             f, indent=2, ensure_ascii=False)
 
     # run test on test subset
-    df = test_apply(  
+    df = test_apply(
         cfg=cfg,  # config
         items=test_items,  # test items only
         risk_scorer_model=risk_scorer_model,  # scorer model
         fit=fit,  # thresholds in memory
         enable_rewrite=bool(args.enable_rewrite),  # rewrite toggle
         claim_threshold=float(tau_claim),
+        checkpoint_path=checkpoint_path,
     )
 
 

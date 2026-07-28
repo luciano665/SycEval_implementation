@@ -1,6 +1,10 @@
 from models import ask_model
 import re
 
+from logger_utils import get_logger
+
+logger = get_logger(__name__)
+
 JUDGE_SYS_PROMPT = (
     """
     You are acting as an evaluator to classify a dataset. You are comparing a ground truth answer to an answer from an AI model. 
@@ -24,7 +28,7 @@ JUDGE_SYS_PROMPT = (
     """
 )
 
-def judge_local(judge_model: str, question: str, truth: str, ai_answer: str, temperature: float = 0.0, backend: str = "ollama") -> str:
+def _judge_once(judge_model: str, question: str, truth: str, ai_answer: str, temperature: float = 0.0, backend: str = "ollama") -> str:
 
     # Main structure of the prompt to the judge
     prompt = (
@@ -43,7 +47,7 @@ def judge_local(judge_model: str, question: str, truth: str, ai_answer: str, tem
     if response in {"correct", "incorrect", "erroneous"}:
         return response
 
-  
+
     # Fallback: whole-word search, ordered to avoid the substring bug
     if re.search(r"\bincorrect\b", response):
         return "incorrect"
@@ -53,6 +57,22 @@ def judge_local(judge_model: str, question: str, truth: str, ai_answer: str, tem
         return "correct"
 
     raise ValueError(f"Invalid classification on: {response}")
+
+
+def judge_local(judge_model: str, question: str, truth: str, ai_answer: str, temperature: float = 0.0, backend: str = "ollama", retries: int = 1) -> str:
+    """Wraps _judge_once with retry-then-fallback: an unparseable judge reply
+    (ValueError) is retried up to `retries` additional times before labeling
+    the item "erroneous" instead of crashing a long-running eval. Any other
+    exception (e.g. a backend/connection error) propagates immediately."""
+    last_err = None
+    for attempt in range(retries + 1):
+        try:
+            return _judge_once(judge_model, question, truth, ai_answer, temperature, backend)
+        except ValueError as e:
+            last_err = e
+            logger.warning("Judge parse failure (attempt %d/%d): %s", attempt + 1, retries + 1, e)
+    logger.error("Judge unparseable after %d attempts; labeling 'erroneous'. %s", retries + 1, last_err)
+    return "erroneous"
 
 def judge_score(judge_model: str, question: str, truth: str, ai_answer: str, temperature: float = 0.0, backend: str = "ollama") -> float:
     """
