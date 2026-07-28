@@ -2,6 +2,8 @@
 from models import ask_model
 import re
 
+_LIST_MARKER_RE = re.compile(r"^\s*(?:[-*•]+\s*|\d{1,3}[.)]\s+)?")
+
 def decompose_answer(answer: str, model: str, temperature: float = 0.0, backend: str = "ollama") -> list[str]:
     """
     Decomposes a complex answer into a list of atomic factual claims.
@@ -17,7 +19,12 @@ def decompose_answer(answer: str, model: str, temperature: float = 0.0, backend:
     response = ask_model(model, prompt, temperature=temperature, backend=backend)
     
     # Parse lines
-    claims = [line.strip().lstrip("- ").lstrip("1234567890. ") for line in response.split("\n") if line.strip()]
+    claims = [
+        _LIST_MARKER_RE.sub("", line).strip()
+        for line in response.split("\n")
+        if line.strip()
+    ]
+    claims = [c for c in claims if c]
     return claims
 
 def reconstruct_answer(claims: list[str]) -> str:
