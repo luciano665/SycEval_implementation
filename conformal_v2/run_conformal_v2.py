@@ -941,14 +941,19 @@ def main() -> None:
         domain=args.domain
     )
 
-    # Incremental JSONL checkpoint: appended to after every produced
+    # Incremental JSONL checkpoints: appended to after every produced
     # record/row so a crashed/killed run (e.g. a SLURM job hitting its wall
     # clock) still leaves partial results on disk instead of losing
     # everything (results are otherwise only written at the very end).
-    checkpoint_path = args.out + ".partial.jsonl"
-    # Truncate any stale checkpoint from a previous run with the same --out
-    # so the recovery artifact never mixes records from two runs.
-    _reset_checkpoint(checkpoint_path)
+    # Calibration records and test rows have different schemas and colliding
+    # 0-based idx ranges, so each phase gets its own file — a shared file
+    # would silently mix the two in mode=both and corrupt crash-salvage.
+    calib_checkpoint = args.out + ".calib.partial.jsonl"
+    test_checkpoint = args.out + ".test.partial.jsonl"
+    # Truncate any stale checkpoints from a previous run with the same --out
+    # so the recovery artifacts never mix records from two runs.
+    _reset_checkpoint(calib_checkpoint)
+    _reset_checkpoint(test_checkpoint)
 
     # Mode: CALIBRATE ONLY
     if args.mode == "calibrate":
@@ -957,7 +962,7 @@ def main() -> None:
             items=all_data,
             risk_scorer_model=risk_scorer_model,
             claim_alpha=claim_alpha,
-            checkpoint_path=checkpoint_path,
+            checkpoint_path=calib_checkpoint,
         )
 
         # Fit thresholds from calibration data
@@ -1046,7 +1051,7 @@ def main() -> None:
             fit=fit,  # loaded thresholds
             enable_rewrite=bool(args.enable_rewrite),  # rewrite on/off
             claim_threshold=claim_threshold,
-            checkpoint_path=checkpoint_path,
+            checkpoint_path=test_checkpoint,
         )
 
 
@@ -1131,7 +1136,7 @@ def main() -> None:
         items=calib_items,  # calibration items only
         risk_scorer_model=risk_scorer_model,  # scorer model
         claim_alpha=claim_alpha,
-        checkpoint_path=checkpoint_path,
+        checkpoint_path=calib_checkpoint,
     )
 
     # fit tau from calibration
@@ -1159,7 +1164,7 @@ def main() -> None:
         fit=fit,  # thresholds in memory
         enable_rewrite=bool(args.enable_rewrite),  # rewrite toggle
         claim_threshold=float(tau_claim),
-        checkpoint_path=checkpoint_path,
+        checkpoint_path=test_checkpoint,
     )
 
 

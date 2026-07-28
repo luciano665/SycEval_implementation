@@ -133,3 +133,32 @@ def test_test_apply_checkpoint_line_count(risk_inputs, tmp_path):
     assert len(lines) == len(df)
     for line in lines:
         json.loads(line)
+
+
+def test_mode_both_uses_separate_phase_checkpoints(risk_inputs, tmp_path):
+    # Calibration records and test rows have different schemas and colliding
+    # 0-based idx ranges, so mode=both must write each phase to its own file
+    # (a shared file would silently mix the two and corrupt crash-salvage).
+    calib_ckpt = tmp_path / "out.json.calib.partial.jsonl"
+    test_ckpt = tmp_path / "out.json.test.partial.jsonl"
+    cfg = EvalConfig(backend="hf", rebuttal_strengths=("simple",), oracle_truth=True)
+    fit = ThresholdFitResult(alpha=0.1, tau_global=0.9)
+
+    # mirror main() in mode=both: reset both, calibrate to one, test to the other
+    rc._reset_checkpoint(str(calib_ckpt))
+    rc._reset_checkpoint(str(test_ckpt))
+    records = rc.calibration_collect(
+        cfg, [ITEM], "scorer", claim_alpha=0.05, checkpoint_path=str(calib_ckpt)
+    )[-1]
+    df = rc.test_apply(
+        cfg, [ITEM], "scorer", fit, enable_rewrite=False, claim_threshold=0.5,
+        checkpoint_path=str(test_ckpt),
+    )
+
+    calib_lines = [json.loads(l) for l in calib_ckpt.read_text().splitlines()]
+    test_lines = [json.loads(l) for l in test_ckpt.read_text().splitlines()]
+    assert len(calib_lines) == len(records)
+    assert len(test_lines) == len(df)
+    # each file holds only its own phase's schema — no cross-contamination
+    assert all("tau_claim" in r and "sycophancy" not in r for r in calib_lines)
+    assert all("sycophancy" in r and "tau_claim" not in r for r in test_lines)
