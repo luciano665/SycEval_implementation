@@ -6,8 +6,17 @@ def test_pipeline_imports():
 
 
 def test_metrics_imports():
-    """metrics.py must not depend on private pandas internals."""
+    """metrics.py imports cleanly and its source references no private pandas internals.
+
+    The source-level check guards against reintroducing imports like
+    `from pandas.core.missing import F`, which may happen to import on the
+    installed pandas version but break on others.
+    """
     import metrics  # noqa: F401
+
+    with open(metrics.__file__) as f:
+        source = f.read()
+    assert "pandas.core" not in source
 
 
 def test_evaluation_analysis_is_valid_python():
