@@ -570,15 +570,15 @@ def test_apply(
     Test phase:
     For each rebuttal-step instance:
       - generate draft
-      - purify draft via claim filtering (using calibrated claim_threshold)
-      - compute risk score s
+      - compute risk score s on the RAW draft (matches calibration, C3)
+      - purify draft ONCE via claim filtering (calibrated claim_threshold); judge it
       - choose tau (global or group)
-      - if s > tau and enable_rewrite: rewrite -> final answer
-      - else final answer = draft
-      - purify final answer via claim filtering
+      - if s > tau and enable_rewrite: rewrite from the purified draft,
+        then purify the rewritten text once -> final answer
+      - else final answer = purified draft (purification results reused, C12)
       - judge final answer label
       - compute sycophancy kind from lab0 -> final_label
-      - store row
+      - store row (raw and purified draft both kept)
 
     Returns:
       A DataFrame with one row per rebuttal-step instance.
@@ -596,6 +596,8 @@ def test_apply(
         preemptive = preemptive_chain_drafts(cfg, item, lab0)
         for where, drafts in [("in-context", in_context), ("preemptive", preemptive)]:
             for strength, rebuttal, draft_answer in drafts:
+                raw_draft = draft_answer  # keep the unpurified text
+
                 # Score risk on the RAW draft BEFORE purification — the
                 # calibration phase scores the raw draft too (C3), so the
                 # calibrated tau applies to the same score function.
@@ -604,25 +606,27 @@ def test_apply(
                     question=q,
                     rebuttal=rebuttal,
                     initial_answer=ai0,
-                    draft_answer=draft_answer,  # raw, unpurified
+                    draft_answer=raw_draft,  # raw, unpurified
                     truth=truth if cfg.oracle_truth else None,
                     backend=cfg.backend,
                     temperature=cfg.temperature,
                 )
 
+                # Purify the draft exactly once (C12); the purified text is
+                # what gets judged, stored, and (if triggered) rewritten.
                 (
-                    draft_answer,
+                    purified_draft,
                     draft_kept_claims,
                     draft_dropped_claims,
                     draft_all_claims,
                     _draft_scores,
-                ) = purify_answer_with_claims(draft_answer, item, cfg, claim_threshold, rebuttal=rebuttal, initial_answer=ai0, truth=truth)
+                ) = purify_answer_with_claims(raw_draft, item, cfg, claim_threshold, rebuttal=rebuttal, initial_answer=ai0, truth=truth)
 
                 draft_label = judge_local(
                     cfg.judge_model,
                     q,
                     truth,
-                    draft_answer,
+                    purified_draft,
                     temperature=cfg.temperature,
                     backend=cfg.backend,
                 )
@@ -635,26 +639,29 @@ def test_apply(
                 rewrite_triggered = bool(enable_rewrite and (float(s) > float(tau)))
 
                 if rewrite_triggered:
-                    final_raw = anti_sycophancy_rewrite(
+                    rewritten = anti_sycophancy_rewrite(
                         tested_model=cfg.tested_model,
                         question=q,
                         rebuttal=rebuttal,
-                        draft_answer=draft_answer,
+                        draft_answer=purified_draft,
                         initial_answer=ai0,
                         truth=truth if cfg.oracle_truth else None,
                         backend=cfg.backend,
                         temperature=cfg.temperature
                     )
+                    # Only new text (the rewrite) needs a new purification pass.
+                    (
+                        final_purified,
+                        final_kept_claims,
+                        final_dropped_claims,
+                        final_all_claims,
+                        _final_scores,
+                    ) = purify_answer_with_claims(rewritten, item, cfg, claim_threshold, rebuttal=rebuttal, initial_answer=ai0, truth=truth)
                 else:
-                    final_raw = draft_answer
-
-                (
-                    final_purified,
-                    final_kept_claims,
-                    final_dropped_claims,
-                    final_all_claims,
-                    _final_scores,
-                ) = purify_answer_with_claims(final_raw, item, cfg, claim_threshold, rebuttal=rebuttal, initial_answer=ai0, truth=truth)
+                    # Accepted draft: reuse the single draft purification (C12).
+                    final_purified = purified_draft
+                    final_kept_claims, final_dropped_claims, final_all_claims = (
+                        draft_kept_claims, draft_dropped_claims, draft_all_claims)
 
                 # judge correctness of final answer
                 final_label = judge_local(
@@ -675,7 +682,8 @@ def test_apply(
                     "strength": strength,  # rebuttal strength
                     "first_label": lab0,  # initial label
 
-                    "draft_answer": draft_answer,  # draft answer text
+                    "draft_answer_raw": raw_draft,  # unpurified draft (what the risk scorer saw)
+                    "draft_answer": purified_draft,  # purified draft text (what was judged)
                     "draft_label": draft_label,  # draft correctness label
                     "draft_sycophancy": classify_sychophancy(lab0, draft_label),  # sycophancy on draft
 
