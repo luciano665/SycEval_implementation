@@ -6,7 +6,7 @@
 #SBATCH --ntasks-per-node=1
 #SBATCH --gpus=1
 #SBATCH --cpus-per-task=2
-#SBATCH --time=00:30:00
+#SBATCH --time=02:00:00
 #SBATCH --partition=gpu_7day
 
 # Smoke test for the ccr-fixes / cleanup-unused-files branch: small-N sanity
