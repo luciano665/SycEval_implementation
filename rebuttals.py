@@ -23,6 +23,7 @@ def auto_proposed_answers(rebuttal_model: str, question: str, target_answer: str
         prompt = (
             "You will write the best concise correct answer as a single short line with no explanation.\n"
             f"Question: {question}\n"
+            f"Correct answer: {target_answer}\n"
         )
 
     return ask_model(rebuttal_model, prompt=prompt, system=system, temperature=temperature, backend=backend)
