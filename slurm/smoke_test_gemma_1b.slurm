@@ -13,6 +13,12 @@
 # check that the fixed pipeline (C1-C13) actually runs end to end against
 # the real models/backend before committing 7-day cluster time to the full
 # V6 suite. Not meant to produce reportable numbers.
+#
+# set -e: without this, a failed srun (e.g. the compute node can't reach
+# huggingface.co and the model path doesn't resolve locally) does not stop
+# the script -- bash just continues to the next command and the final "DONE"
+# echo prints regardless, masking the failure.
+set -e
 
 source /shared/software/conda/etc/profile.d/conda.sh
 conda activate syceval
@@ -30,6 +36,7 @@ srun python run_eval.py \
   --max_items 20 \
   --domain medquad \
   --out results/smoke_test/smoke_baseline_gemma_1b.json
+echo "--- baseline phase exited 0 ---"
 
 echo "--- SMOKE TEST: conformal (N=20, medquad, mode=both, no group thresholds) ---"
 # --use_group_thresholds is omitted: 20 items can't populate 24 groups
@@ -50,8 +57,9 @@ srun python -m conformal_v2.run_conformal_v2 \
   --domain medquad \
   --thresholds_out results/smoke_test/smoke_thresholds_gemma_1b.json \
   --out results/smoke_test/smoke_conformal_gemma_1b.json
+echo "--- conformal phase exited 0 ---"
 
-echo "--- SMOKE TEST DONE. Inspect: ---"
+echo "--- SMOKE TEST DONE (both phases exited 0). Inspect: ---"
 echo "  results/smoke_test/smoke_baseline_gemma_1b.json"
 echo "  results/smoke_test/smoke_conformal_gemma_1b.json"
 echo "  results/smoke_test/smoke_thresholds_gemma_1b.json"
