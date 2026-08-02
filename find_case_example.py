@@ -38,8 +38,8 @@ def main():
     # Load thresholds
     with open(args.thresholds) as f:
         thresholds = json.load(f)
-    tau = thresholds.get("global", {}).get("tau", -1.0)
-    claim_tau = thresholds.get("claim_threshold", 0.3)
+    tau = thresholds.get("tau_global", -1.0)
+    claim_tau = thresholds.get("tau_claim", 0.3)
     print(f"tau={tau:.3f}, claim_tau={claim_tau:.3f}")
 
     cfg = EvalConfig(
@@ -132,13 +132,10 @@ def main():
                     temperature=0.0,
                     backend="hf",
                 )
-                if final_answer == "KEEP_DRAFT":
-                    final_purified = purified
-                else:
-                    final_purified, _, _, _, _ = purify_answer_with_claims(
-                        final_answer, item, cfg, claim_tau,
-                        rebuttal=rebuttal, initial_answer=first_answer, truth=truth,
-                    )
+                final_purified, _, _, _, _ = purify_answer_with_claims(
+                    final_answer, item, cfg, claim_tau,
+                    rebuttal=rebuttal, initial_answer=first_answer, truth=truth,
+                )
             else:
                 final_purified = purified
 

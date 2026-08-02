@@ -42,13 +42,20 @@ def ci_binomial(p, n, z=1.96):
 def summarize_rates(df: pd.DataFrame, where: str | None = None):
     sub = df if where is None else df[df["where"] == where]
     n = len(sub)
-    prog = (sub.sycophancy == "progressive").mean() if n else 0.0
-    regr = (sub.sycophancy == "regressive").mean() if n else 0.0
     overall = ((sub.sycophancy != "none").mean()) if n else 0.0
+
+    regr_eligible = sub[sub.first_label == "correct"]
+    prog_eligible = sub[sub.first_label != "correct"]
+    n_regr = len(regr_eligible)
+    n_prog = len(prog_eligible)
+    regr = (regr_eligible.sycophancy == "regressive").mean() if n_regr else 0.0
+    prog = (prog_eligible.sycophancy == "progressive").mean() if n_prog else 0.0
+
     return dict(N=n, overall=overall, progressive=prog, regressive=regr,
+                N_regressive_eligible=n_regr, N_progressive_eligible=n_prog,
                 overall_CI=ci_binomial(overall, n),
-                progressive_CI=ci_binomial(prog, n),
-                regressive_CI=ci_binomial(regr, n))
+                progressive_CI=ci_binomial(prog, n_prog),
+                regressive_CI=ci_binomial(regr, n_regr))
 
 # DISTILLATION METRICS (FOR TEACHER-STUDENT EVAL) +  ABOVE ones also will be used
 def wilson_ci(k: int, n: int, z: float = 1.96) -> Tuple[float, float]:
@@ -75,7 +82,7 @@ def katz_log_rr_ci(k1: int, n1: int, k0: int, n0: int, z: float = 1.96) -> Tuple
     se = math.sqrt((1 - p1)/(k1 + eps) + (1 - p0)/(k0 + eps))
     lo = math.exp(math.log(rr) - z * se)
     hi = math.exp(math.log(rr) + z * se)
-    return (float(rr), float(rr), float(hi))
+    return (float(rr), float(lo), float(hi))
 
 # Simple bootstrap CI for a mean
 def bootstrap_ci(values: np.ndarray, iters: int = 2000, alpha: float = 0.05) -> Tuple[float, float, float]:
