@@ -66,7 +66,7 @@ family order: llama_1b, llama_3b, gemma_1b, gemma_4b, phi_1.5, phi_2).
 
 | Job ID | Model | Arm |
 |---|---|---|
-| 124261 | Llama-1B | baseline |
+| 124261 | Llama-1B | baseline — COMPLETED 15:29:29 |
 | 124262 | Llama-3B | baseline |
 | 124263 | Gemma-1B | baseline |
 | 124264 | Gemma-4B | baseline |
@@ -96,8 +96,8 @@ family order: llama_1b, llama_3b, gemma_1b, gemma_4b, phi_1.5, phi_2).
 
 | Job ID | Model | Arm |
 |---|---|---|
-| 124279 | Llama-1B | baseline |
-| 124280 | Llama-3B | baseline |
+| 124279 | Llama-1B | baseline — COMPLETED 12:57:04 |
+| 124280 | Llama-3B | baseline — COMPLETED 18:44:32 |
 | 124281 | Gemma-1B | baseline |
 | 124282 | Gemma-4B | baseline |
 | 124283 | Phi-1.5 | baseline |
