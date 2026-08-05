@@ -53,65 +53,77 @@ settings — every dimension touched at least once.
 mapping follows script submission order (baselines then conformal, in
 family order: llama_1b, llama_3b, gemma_1b, gemma_4b, phi_1.5, phi_2).
 
+> **Note**: the first HealthSearchQA launch (jobs 124249-124260) was
+> cancelled via `scancel -u $USER` and all 4 suites relaunched together as
+> one clean batch, 2026-08-04. Cancellation was a preference for
+> synced/together timing, not a correctness issue — verified beforehand
+> that zero `.py` pipeline files changed between the HPC's last pull and
+> the relaunch, so the cancelled run would have been on fully-fixed code
+> too. All job IDs below are from the relaunch.
+
 ### HealthSearchQA — baseline + oracle-on (`submit_v6_suite.sh`)
 **Status: SUBMITTED** — 2026-08-04
 
 | Job ID | Model | Arm |
 |---|---|---|
-| 124249 | Llama-1B | baseline |
-| 124250 | Llama-3B | baseline |
-| 124251 | Gemma-1B | baseline |
-| 124252 | Gemma-4B | baseline |
-| 124253 | Phi-1.5 | baseline |
-| 124254 | Phi-2 | baseline |
-| 124255 | Llama-1B | conformal, oracle-on |
-| 124256 | Llama-3B | conformal, oracle-on |
-| 124257 | Gemma-1B | conformal, oracle-on |
-| 124258 | Gemma-4B | conformal, oracle-on |
-| 124259 | Phi-1.5 | conformal, oracle-on |
-| 124260 | Phi-2 | conformal, oracle-on |
+| 124261 | Llama-1B | baseline |
+| 124262 | Llama-3B | baseline |
+| 124263 | Gemma-1B | baseline |
+| 124264 | Gemma-4B | baseline |
+| 124265 | Phi-1.5 | baseline |
+| 124266 | Phi-2 | baseline |
+| 124267 | Llama-1B | conformal, oracle-on |
+| 124268 | Llama-3B | conformal, oracle-on |
+| 124269 | Gemma-1B | conformal, oracle-on |
+| 124270 | Gemma-4B | conformal, oracle-on |
+| 124271 | Phi-1.5 | conformal, oracle-on |
+| 124272 | Phi-2 | conformal, oracle-on |
 
 ### HealthSearchQA — oracle-off (`submit_v6_suite_no_oracle.sh`)
-**Status: NOT YET LAUNCHED**
+**Status: SUBMITTED** — 2026-08-04
 
 | Job ID | Model | Arm |
 |---|---|---|
-| | Llama-1B | conformal, oracle-off |
-| | Llama-3B | conformal, oracle-off |
-| | Gemma-1B | conformal, oracle-off |
-| | Gemma-4B | conformal, oracle-off |
-| | Phi-1.5 | conformal, oracle-off |
-| | Phi-2 | conformal, oracle-off |
+| 124273 | Llama-1B | conformal, oracle-off |
+| 124274 | Llama-3B | conformal, oracle-off |
+| 124275 | Gemma-1B | conformal, oracle-off |
+| 124276 | Gemma-4B | conformal, oracle-off |
+| 124277 | Phi-1.5 | conformal, oracle-off |
+| 124278 | Phi-2 | conformal, oracle-off |
 
 ### MedQuad — baseline + oracle-on (`submit_v6_suite_medquad.sh`)
-**Status: NOT YET LAUNCHED**
+**Status: SUBMITTED** — 2026-08-04
 
 | Job ID | Model | Arm |
 |---|---|---|
-| | Llama-1B | baseline |
-| | Llama-3B | baseline |
-| | Gemma-1B | baseline |
-| | Gemma-4B | baseline |
-| | Phi-1.5 | baseline |
-| | Phi-2 | baseline |
-| | Llama-1B | conformal, oracle-on |
-| | Llama-3B | conformal, oracle-on |
-| | Gemma-1B | conformal, oracle-on |
-| | Gemma-4B | conformal, oracle-on |
-| | Phi-1.5 | conformal, oracle-on |
-| | Phi-2 | conformal, oracle-on |
+| 124279 | Llama-1B | baseline |
+| 124280 | Llama-3B | baseline |
+| 124281 | Gemma-1B | baseline |
+| 124282 | Gemma-4B | baseline |
+| 124283 | Phi-1.5 | baseline |
+| 124284 | Phi-2 | baseline |
+| 124285 | Llama-1B | conformal, oracle-on |
+| 124286 | Llama-3B | conformal, oracle-on |
+| 124287 | Gemma-1B | conformal, oracle-on |
+| 124288 | Gemma-4B | conformal, oracle-on |
+| 124289 | Phi-1.5 | conformal, oracle-on |
+| 124290 | Phi-2 | conformal, oracle-on |
 
 ### MedQuad — oracle-off (`submit_v6_suite_medquad_no_oracle.sh`)
-**Status: NOT YET LAUNCHED**
+**Status: SUBMITTED** — 2026-08-04
 
 | Job ID | Model | Arm |
 |---|---|---|
-| | Llama-1B | conformal, oracle-off |
-| | Llama-3B | conformal, oracle-off |
-| | Gemma-1B | conformal, oracle-off |
-| | Gemma-4B | conformal, oracle-off |
-| | Phi-1.5 | conformal, oracle-off |
-| | Phi-2 | conformal, oracle-off |
+| 124291 | Llama-1B | conformal, oracle-off |
+| 124292 | Llama-3B | conformal, oracle-off |
+| 124293 | Gemma-1B | conformal, oracle-off |
+| 124294 | Gemma-4B | conformal, oracle-off |
+| 124295 | Phi-1.5 | conformal, oracle-off |
+| 124296 | Phi-2 | conformal, oracle-off |
+
+**All 36 jobs submitted.** Once each finishes, update its row's Arm column
+or add a Status note (e.g. "COMPLETED 46:12", "FAILED — see §4") so this
+table stays a real record, not just a launch log.
 
 ---
 
