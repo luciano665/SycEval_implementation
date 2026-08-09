@@ -62,68 +62,71 @@ family order: llama_1b, llama_3b, gemma_1b, gemma_4b, phi_1.5, phi_2).
 > too. All job IDs below are from the relaunch.
 
 ### HealthSearchQA — baseline + oracle-on (`submit_v6_suite.sh`)
-**Status: SUBMITTED** — 2026-08-04
+**Status: ALL 12 COMPLETED** — 2026-08-06 (exit 0:0 across the board)
 
-| Job ID | Model | Arm |
-|---|---|---|
-| 124261 | Llama-1B | baseline — COMPLETED 15:29:29 |
-| 124262 | Llama-3B | baseline |
-| 124263 | Gemma-1B | baseline |
-| 124264 | Gemma-4B | baseline |
-| 124265 | Phi-1.5 | baseline |
-| 124266 | Phi-2 | baseline |
-| 124267 | Llama-1B | conformal, oracle-on |
-| 124268 | Llama-3B | conformal, oracle-on |
-| 124269 | Gemma-1B | conformal, oracle-on |
-| 124270 | Gemma-4B | conformal, oracle-on |
-| 124271 | Phi-1.5 | conformal, oracle-on |
-| 124272 | Phi-2 | conformal, oracle-on |
+| Job ID | Model | Arm | Elapsed |
+|---|---|---|---|
+| 124261 | Llama-1B | baseline | 15:29:29 |
+| 124262 | Llama-3B | baseline | 22:17:30 |
+| 124263 | Gemma-1B | baseline | 21:08:23 |
+| 124264 | Gemma-4B | baseline | 1-06:12:49 |
+| 124265 | Phi-1.5 | baseline | 1-01:58:48 |
+| 124266 | Phi-2 | baseline | 1-05:21:13 |
+| 124267 | Llama-1B | conformal, oracle-on | 1-07:55:49 |
+| 124268 | Llama-3B | conformal, oracle-on | 1-15:01:08 |
+| 124269 | Gemma-1B | conformal, oracle-on | 1-10:53:19 |
+| 124270 | Gemma-4B | conformal, oracle-on | 2-04:18:28 |
+| 124271 | Phi-1.5 | conformal, oracle-on | 1-14:20:05 |
+| 124272 | Phi-2 | conformal, oracle-on | 1-17:37:14 |
 
 ### HealthSearchQA — oracle-off (`submit_v6_suite_no_oracle.sh`)
-**Status: SUBMITTED** — 2026-08-04
+**Status: ALL 6 COMPLETED** — 2026-08-06 (exit 0:0 across the board)
 
-| Job ID | Model | Arm |
-|---|---|---|
-| 124273 | Llama-1B | conformal, oracle-off |
-| 124274 | Llama-3B | conformal, oracle-off |
-| 124275 | Gemma-1B | conformal, oracle-off |
-| 124276 | Gemma-4B | conformal, oracle-off |
-| 124277 | Phi-1.5 | conformal, oracle-off |
-| 124278 | Phi-2 | conformal, oracle-off |
+| Job ID | Model | Arm | Elapsed |
+|---|---|---|---|
+| 124273 | Llama-1B | conformal, oracle-off | 1-04:20:07 |
+| 124274 | Llama-3B | conformal, oracle-off | 1-14:43:00 |
+| 124275 | Gemma-1B | conformal, oracle-off | 1-11:23:24 |
+| 124276 | Gemma-4B | conformal, oracle-off | 2-05:00:33 |
+| 124277 | Phi-1.5 | conformal, oracle-off | 1-15:33:46 |
+| 124278 | Phi-2 | conformal, oracle-off | 1-18:38:34 |
 
 ### MedQuad — baseline + oracle-on (`submit_v6_suite_medquad.sh`)
-**Status: SUBMITTED** — 2026-08-04
+**Status: ALL 12 COMPLETED** — 2026-08-06 (exit 0:0 across the board)
 
-| Job ID | Model | Arm |
-|---|---|---|
-| 124279 | Llama-1B | baseline — COMPLETED 12:57:04 |
-| 124280 | Llama-3B | baseline — COMPLETED 18:44:32 |
-| 124281 | Gemma-1B | baseline |
-| 124282 | Gemma-4B | baseline |
-| 124283 | Phi-1.5 | baseline |
-| 124284 | Phi-2 | baseline |
-| 124285 | Llama-1B | conformal, oracle-on |
-| 124286 | Llama-3B | conformal, oracle-on |
-| 124287 | Gemma-1B | conformal, oracle-on |
-| 124288 | Gemma-4B | conformal, oracle-on |
-| 124289 | Phi-1.5 | conformal, oracle-on |
-| 124290 | Phi-2 | conformal, oracle-on |
+| Job ID | Model | Arm | Elapsed |
+|---|---|---|---|
+| 124279 | Llama-1B | baseline | 12:57:04 |
+| 124280 | Llama-3B | baseline | 18:44:32 |
+| 124281 | Gemma-1B | baseline | 20:20:27 |
+| 124282 | Gemma-4B | baseline | 1-00:33:53 |
+| 124283 | Phi-1.5 | baseline | 1-00:28:02 |
+| 124284 | Phi-2 | baseline | 1-03:25:34 |
+| 124285 | Llama-1B | conformal, oracle-on | 1-06:34:38 |
+| 124286 | Llama-3B | conformal, oracle-on | 1-17:11:26 |
+| 124287 | Gemma-1B | conformal, oracle-on | 1-14:03:28 |
+| 124288 | Gemma-4B | conformal, oracle-on | 1-22:27:17 |
+| 124289 | Phi-1.5 | conformal, oracle-on | 1-15:35:38 |
+| 124290 | Phi-2 | conformal, oracle-on | 1-20:35:06 |
 
 ### MedQuad — oracle-off (`submit_v6_suite_medquad_no_oracle.sh`)
-**Status: SUBMITTED** — 2026-08-04
+**Status: ALL 6 COMPLETED** — 2026-08-06 (exit 0:0 across the board)
 
-| Job ID | Model | Arm |
-|---|---|---|
-| 124291 | Llama-1B | conformal, oracle-off |
-| 124292 | Llama-3B | conformal, oracle-off |
-| 124293 | Gemma-1B | conformal, oracle-off |
-| 124294 | Gemma-4B | conformal, oracle-off |
-| 124295 | Phi-1.5 | conformal, oracle-off |
-| 124296 | Phi-2 | conformal, oracle-off |
+| Job ID | Model | Arm | Elapsed |
+|---|---|---|---|
+| 124291 | Llama-1B | conformal, oracle-off | 1-03:19:55 |
+| 124292 | Llama-3B | conformal, oracle-off | 1-15:21:59 |
+| 124293 | Gemma-1B | conformal, oracle-off | 1-14:23:30 |
+| 124294 | Gemma-4B | conformal, oracle-off | 1-22:37:33 |
+| 124295 | Phi-1.5 | conformal, oracle-off | 1-14:52:43 |
+| 124296 | Phi-2 | conformal, oracle-off | 1-19:29:13 |
 
-**All 36 jobs submitted.** Once each finishes, update its row's Arm column
-or add a Status note (e.g. "COMPLETED 46:12", "FAILED — see §4") so this
-table stays a real record, not just a launch log.
+**All 36 jobs COMPLETED as of 2026-08-06** (confirmed via `sacct`: every
+job ID present, every state `COMPLETED`, exit code `0:0` with no
+exceptions). This confirms the jobs *ran to completion* — it does NOT yet
+confirm the *output content* is trustworthy (calibration could still have
+degenerated per-model, judge parse failures could have spiked, etc.). See
+§4/§6 before treating any of these numbers as final.
 
 ---
 
