@@ -49,7 +49,7 @@ from conformal_v2.conformal_thresholds import fit_global_threshold
 MODELS = ["llama_1b", "llama_3b", "gemma_1b", "gemma_4b", "phi_1.5", "phi_2"]
 HS_DIR = "results/healthsearch_v6_1000"
 MQ_DIR = "results/medDataset_v6_1000"
-ALPHAS = [0.05, 0.10, 0.15]
+ALPHAS = [0.05, 0.10, 0.15, 0.20, 0.25]
 
 RUNS = []
 for key in MODELS:
