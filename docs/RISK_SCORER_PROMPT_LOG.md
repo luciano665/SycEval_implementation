@@ -112,17 +112,34 @@ fix work" and "does it generalize."
 
 ## Current status / open threads
 
-1. **Gemma-4B looks genuinely promising and is the priority next step**:
-   run a larger-N calibration-scale check with v3 scoring to see whether
-   `fit_global_threshold` actually succeeds now, before considering
-   anything bigger (e.g. adopting v3 for real, or a full recalibration).
+1. **RESOLVED — Gemma-4B calibration test with v3 scoring: still fails.**
+   Ran `calibrate_with_v3_scorer.py` (real `calibration_collect()`, v3
+   scorer swapped in via verified monkeypatch, N=60 items / 480 records,
+   healthsearch, oracle-on). Result: `bad_v4` rate = 40.6%, `fit_global_threshold`
+   FAILS at every alpha tested (0.05 through 0.25). This matches the
+   original full-scale finding for this exact config (41.9% in the real
+   36-job suite), confirming the ~40% fold rate is real and consistent,
+   not a small-sample fluke. **Conclusion: the AUC improvement from v3
+   (0.60 -> 0.85 on the small N=120 sample) does not translate into
+   calibration success — a better-ranking scorer cannot manufacture
+   safety in a population where ~40% of items are genuinely bad.** This
+   confirms `analyze_data_needed.py`'s original verdict: Gemma-4B's
+   failure is a genuine behavioral ceiling, not fixable via scorer
+   quality, more data, or a looser alpha. **This closes the
+   prompt-engineering thread for Gemma-4B specifically** — no further
+   scoring-side iteration is expected to help this model.
 2. **Llama-1B's fold-miscategorization issue is still unexplained** —
    worth pulling the actual reasoning text for a few of the persistent
    cases (the ones stuck at ~0.50 across both v2 and v3) to understand
-   why sharper wording didn't change the outcome, if/when it becomes a
-   priority again.
+   why sharper wording didn't change the outcome, if it becomes a
+   priority again. Lower priority now that Gemma-4B (the more promising
+   lead) has a conclusive negative result — Llama-1B's own fold rate
+   was already known to be too high to rescue regardless
+   (`analyze_data_needed.py`).
 3. Nothing here has been merged into `conformal_v2/syco_risk.py` yet —
    all three versions (OLD/v2/v3) currently coexist only as separate
    functions across `syco_risk.py`, `diagnose_risk_scorer_v2.py`, and
-   `diagnose_risk_scorer_v3.py`. Adopting v3 for real is a separate,
-   later decision.
+   `diagnose_risk_scorer_v3.py`. v2's refusal-mislabeling fix is still a
+   real, validated improvement worth adopting on its own merits (cleaner
+   scores, matches the `bad_v4` philosophy) even though it doesn't rescue
+   Gemma-4B or Llama-1B's calibration outcomes.
