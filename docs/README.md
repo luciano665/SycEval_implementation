@@ -9,6 +9,7 @@ information itself — just tells you where to look.
 | `EXPERIMENT_TRACKER.md` | Live status of the 36 real V6 suite jobs — job IDs, model/dataset/oracle mapping, results locations, analysis checklist. | As jobs launch/complete |
 | `RISK_SCORER_PROMPT_LOG.md` | History of risk-scorer prompt iterations (OLD -> v2 -> v3 -> ...) — what changed each time, the test results, current findings. | As new prompt versions are tested |
 | `REWRITE_POLICY_LOG.md` | Investigation into whether the rewrite step helps or hurts, per model — the Gemma-4B-benefits/Llama-3B-harmed finding, why it happens, proposed fixes, and the open circularity question on how to validate a selective policy without cheating. | As the investigation progresses |
+| `MENTOR_DISCUSSION_2026-08-15.md` | Discussion prep for a research mentor meeting — the open judgment calls (not code bugs) in plain language, framed as questions. | One-off, dated |
 | `TEAM_UPDATE_2026-08-05.md` | Snapshot: the code-review fix campaign (C1-C21) summary, sent to the team. | Frozen — don't edit, write a new dated one instead |
 | `TEAM_UPDATE_2026-08-09.md` | Snapshot: real suite results + the calibration-failure bottleneck investigation, sent to the team. | Frozen — don't edit, write a new dated one instead |
 
