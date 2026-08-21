@@ -76,7 +76,7 @@ def risk_inputs(monkeypatch):
 
 def test_calibration_collect_checkpoint_line_count(risk_inputs, tmp_path):
     ckpt = tmp_path / "calib.partial.jsonl"
-    cfg = EvalConfig(backend="hf", rebuttal_strengths=("simple", "ethos"), oracle_truth=True)
+    cfg = EvalConfig(backend="hf", rebuttal_strengths=("simple", "ethos"))
     items = [ITEM, {"question": "What is Y?", "answer": "REFERENCE_ANSWER_2"}]
 
     _, _, _, _, _, records = rc.calibration_collect(
@@ -91,7 +91,7 @@ def test_calibration_collect_checkpoint_line_count(risk_inputs, tmp_path):
 
 
 def test_calibration_collect_no_checkpoint_when_path_none(risk_inputs, tmp_path):
-    cfg = EvalConfig(backend="hf", rebuttal_strengths=("simple",), oracle_truth=True)
+    cfg = EvalConfig(backend="hf", rebuttal_strengths=("simple",))
     # Should not raise / attempt to write anything when checkpoint_path is None.
     rc.calibration_collect(cfg, [ITEM], "scorer", claim_alpha=0.05)
     assert list(tmp_path.iterdir()) == []
@@ -101,7 +101,7 @@ def test_rerun_truncates_stale_checkpoint(risk_inputs, tmp_path):
     # A rerun with the same --out must not accumulate records from a previous
     # (e.g. crashed) run: main() resets the checkpoint before any work.
     ckpt = tmp_path / "rerun.partial.jsonl"
-    cfg = EvalConfig(backend="hf", rebuttal_strengths=("simple",), oracle_truth=True)
+    cfg = EvalConfig(backend="hf", rebuttal_strengths=("simple",))
 
     def run_once():
         # mirror main(): truncate any stale checkpoint, then run the pipeline
@@ -119,7 +119,7 @@ def test_rerun_truncates_stale_checkpoint(risk_inputs, tmp_path):
 
 def test_test_apply_checkpoint_line_count(risk_inputs, tmp_path):
     ckpt = tmp_path / "test.partial.jsonl"
-    cfg = EvalConfig(backend="hf", rebuttal_strengths=("simple", "ethos"), oracle_truth=True)
+    cfg = EvalConfig(backend="hf", rebuttal_strengths=("simple", "ethos"))
     fit = ThresholdFitResult(alpha=0.1, tau_global=0.9)
     items = [ITEM, {"question": "What is Y?", "answer": "REFERENCE_ANSWER_2"}]
 
@@ -141,7 +141,7 @@ def test_mode_both_uses_separate_phase_checkpoints(risk_inputs, tmp_path):
     # (a shared file would silently mix the two and corrupt crash-salvage).
     calib_ckpt = tmp_path / "out.json.calib.partial.jsonl"
     test_ckpt = tmp_path / "out.json.test.partial.jsonl"
-    cfg = EvalConfig(backend="hf", rebuttal_strengths=("simple",), oracle_truth=True)
+    cfg = EvalConfig(backend="hf", rebuttal_strengths=("simple",))
     fit = ThresholdFitResult(alpha=0.1, tau_global=0.9)
 
     # mirror main() in mode=both: reset both, calibrate to one, test to the other

@@ -33,15 +33,15 @@ def test_threshold_json_roundtrip_with_flags():
     fit = ThresholdFitResult(alpha=0.05, tau_global=-1.0, tau_by_group=None,
                              calibration_failed=True)
     d = rc.threshold_to_json(fit, tau_claim=0.3, claim_alpha=0.05,
-                             tau_claim_fallback=True, oracle_truth=True)
+                             tau_claim_fallback=True)
     assert d["calibration_failed"] is True
     assert d["tau_claim_fallback"] is True
-    assert d["oracle_truth"] is True
-    fit2, tau_claim2, claim_alpha2, fallback2, oracle2 = rc.thresholds_from_json(d)
+    assert "oracle_truth" not in d  # removed in conformal_v9 (deployable-only)
+    fit2, tau_claim2, claim_alpha2, fallback2 = rc.thresholds_from_json(d)
     assert fit2.calibration_failed is True
     assert fit2.tau_global == -1.0
     assert tau_claim2 == 0.3 and claim_alpha2 == 0.05
-    assert fallback2 is True and oracle2 is True
+    assert fallback2 is True
 
 
 def test_thresholds_from_json_legacy_files():
@@ -49,9 +49,9 @@ def test_thresholds_from_json_legacy_files():
     # leave the unknowables as None.
     legacy = {"alpha": 0.05, "tau_global": -1.0, "tau_by_group": None,
               "tau_claim": 0.3, "claim_alpha": 0.05}
-    fit, tau_claim, claim_alpha, fallback, oracle = rc.thresholds_from_json(legacy)
+    fit, tau_claim, claim_alpha, fallback = rc.thresholds_from_json(legacy)
     assert fit.calibration_failed is True
-    assert fallback is None and oracle is None
+    assert fallback is None
 
 
 def test_rewrite_rate_summary():
@@ -75,7 +75,7 @@ def test_tau_claim_fallback_flag(monkeypatch):
     monkeypatch.setattr(rc, "sycophancy_risk_score", lambda *a, **k: 0.5)
     monkeypatch.setattr(rc, "judge_local", lambda *a, **k: "correct")
     monkeypatch.setattr(rc, "judge_claim_support", lambda *a, **k: False)
-    cfg = EvalConfig(backend="hf", rebuttal_strengths=("simple",), oracle_truth=True)
+    cfg = EvalConfig(backend="hf", rebuttal_strengths=("simple",))
     tau_claim, tau_claim_fallback, scores, bad, groups, records = \
         rc.calibration_collect(cfg, [ITEM], "scorer", claim_alpha=0.05)
     assert tau_claim == 0.3

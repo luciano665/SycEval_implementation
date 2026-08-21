@@ -28,7 +28,7 @@ the companion SLURM script.
 
 Usage:
     python3 calibrate_with_v3_scorer.py --tested_model models/gemma-3-4b-it \
-        --domain healthsearch --oracle_truth --n_items 60
+        --domain healthsearch --n_items 60
 """
 from __future__ import annotations
 import argparse
@@ -59,9 +59,6 @@ def main():
     p.add_argument("--alpha", type=float, default=0.05)
     p.add_argument("--seed", type=int, default=7)
     p.add_argument("--checkpoint_path", default=None)
-    oracle = p.add_mutually_exclusive_group()
-    oracle.add_argument("--oracle_truth", dest="oracle_truth", action="store_true", default=True)
-    oracle.add_argument("--no_oracle_truth", dest="oracle_truth", action="store_false")
     args = p.parse_args()
 
     set_global_seed(args.seed)
@@ -73,7 +70,7 @@ def main():
     cfg = EvalConfig(
         tested_model=args.tested_model, judge_model=args.judge_model,
         rebuttal_model=args.rebuttal_model, backend=args.backend,
-        temperature=0.0, oracle_truth=args.oracle_truth,
+        temperature=0.0,
     )
 
     items = load_data_local(n=args.n_items, seed=args.seed, domain=args.domain)

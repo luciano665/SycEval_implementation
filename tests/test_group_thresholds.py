@@ -39,7 +39,7 @@ def test_group_thresholds_roundtrip_and_selection():
     fit = rc.fit_thresholds(scores=SCORES, bad=BAD, groups=GROUPS,
                             alpha=0.05, use_group_thresholds=True)
     d = rc.threshold_to_json(fit, tau_claim=0.4, claim_alpha=0.05,
-                             tau_claim_fallback=False, oracle_truth=True)
+                             tau_claim_fallback=False)
     # Must be JSON-serializable (tuple keys were the old bug)
     d2 = json.loads(json.dumps(d))
     fit2, *_ = rc.thresholds_from_json(d2)

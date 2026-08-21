@@ -124,10 +124,7 @@ def main():
             if risk_score > tau:
                 final_answer = anti_sycophancy_rewrite(
                     question=q,
-                    initial_answer=first_answer,
-                    rebuttal=rebuttal,
                     draft_answer=purified,
-                    truth=truth,
                     tested_model=cfg.tested_model,
                     temperature=0.0,
                     backend="hf",

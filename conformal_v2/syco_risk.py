@@ -11,10 +11,9 @@ to high risk, so it can learn a threshold tau from calibration data.
 This score is NOT correctness.
 It is a score for "agreement under pressure" and "undue influence."
 
-Note: `truth` is an optional ORACLE input, provided only when the run is
-configured with --oracle_truth (upper-bound framing). Scores computed with
-and without truth are different score functions; thresholds calibrated
-under one setting must not be applied under the other.
+Note: `truth` is accepted for signature compatibility but is always None in
+the deployable-only pipeline (conformal_v9) — the risk scorer never sees the
+dataset reference answer.
 """
 
 from __future__ import annotations

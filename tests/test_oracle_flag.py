@@ -1,3 +1,9 @@
+"""Deployable-only invariant (conformal_v9): the oracle-truth option was
+removed. The claim scorer, risk scorer, and rewrite must NEVER receive the
+dataset reference answer, in either calibration or test. The judges
+(judge_local / judge_claim_support) are evaluation-side labelers and MUST
+still receive it."""
+
 import pytest
 
 from conformal_v2 import run_conformal_v2 as rc
@@ -38,9 +44,9 @@ def cap(monkeypatch):
 
     monkeypatch.setattr(rc, "sycophancy_risk_score", fake_risk)
 
-    def fake_rewrite(tested_model, question, rebuttal, draft_answer,
-                     initial_answer, truth=None, **k):
-        c.rewrite_truths.append(truth)
+    def fake_rewrite(tested_model, question, draft_answer, **k):
+        # 'truth' must no longer be part of the rewrite interface at all.
+        c.rewrite_truths.append(k.get("truth", None))
         return "REWRITTEN"
 
     monkeypatch.setattr(rc, "anti_sycophancy_rewrite", fake_rewrite)
@@ -59,16 +65,15 @@ def cap(monkeypatch):
     return c
 
 
-def make_cfg(oracle: bool) -> EvalConfig:
-    return EvalConfig(backend="hf", rebuttal_strengths=("simple",),
-                      oracle_truth=oracle)
+def make_cfg() -> EvalConfig:
+    return EvalConfig(backend="hf", rebuttal_strengths=("simple",))
 
 
 FIT = ThresholdFitResult(alpha=0.1, tau_global=0.5)
 
 
-def test_test_apply_truth_free_when_oracle_off(cap):
-    rc.test_apply(make_cfg(False), [ITEM], "scorer", FIT,
+def test_test_apply_intervention_is_truth_free(cap):
+    rc.test_apply(make_cfg(), [ITEM], "scorer", FIT,
                   enable_rewrite=True, claim_threshold=0.5)
     assert cap.risk_truths and all(t is None for t in cap.risk_truths)
     assert cap.claim_truths and all(t is None for t in cap.claim_truths)
@@ -77,33 +82,16 @@ def test_test_apply_truth_free_when_oracle_off(cap):
     assert cap.judge_truths and all(t == "REFERENCE_ANSWER" for t in cap.judge_truths)
 
 
-def test_test_apply_truth_passed_when_oracle_on(cap):
-    rc.test_apply(make_cfg(True), [ITEM], "scorer", FIT,
-                  enable_rewrite=True, claim_threshold=0.5)
-    assert cap.risk_truths and all(t == "REFERENCE_ANSWER" for t in cap.risk_truths)
-    assert cap.claim_truths and all(t == "REFERENCE_ANSWER" for t in cap.claim_truths)
-    assert cap.rewrite_truths and all(t == "REFERENCE_ANSWER" for t in cap.rewrite_truths)
-
-
-def test_calibration_truth_free_when_oracle_off(cap):
-    rc.calibration_collect(make_cfg(False), [ITEM], "scorer", claim_alpha=0.05)
+def test_calibration_intervention_is_truth_free(cap):
+    rc.calibration_collect(make_cfg(), [ITEM], "scorer", claim_alpha=0.05)
     assert cap.claim_truths and all(t is None for t in cap.claim_truths)
     assert cap.risk_truths and all(t is None for t in cap.risk_truths)
-    # Labelers keep truth even with oracle off:
+    # Labelers keep truth:
     assert cap.support_truths and all(t == "REFERENCE_ANSWER" for t in cap.support_truths)
     assert cap.judge_truths and all(t == "REFERENCE_ANSWER" for t in cap.judge_truths)
 
 
-def test_calibration_truth_passed_when_oracle_on(cap):
-    rc.calibration_collect(make_cfg(True), [ITEM], "scorer", claim_alpha=0.05)
-    assert cap.claim_truths and all(t == "REFERENCE_ANSWER" for t in cap.claim_truths)
-    assert cap.risk_truths and all(t == "REFERENCE_ANSWER" for t in cap.risk_truths)
-
-
-def test_cli_flag_default_and_negation():
-    import argparse
-    parser = argparse.ArgumentParser()
-    rc.add_oracle_truth_args(parser)
-    assert parser.parse_args([]).oracle_truth is True
-    assert parser.parse_args(["--no_oracle_truth"]).oracle_truth is False
-    assert parser.parse_args(["--oracle_truth"]).oracle_truth is True
+def test_no_oracle_option_remains():
+    # The config field and the CLI-flag helper must be gone entirely.
+    assert not hasattr(EvalConfig(), "oracle_truth")
+    assert not hasattr(rc, "add_oracle_truth_args")

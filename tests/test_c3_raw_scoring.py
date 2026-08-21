@@ -38,14 +38,14 @@ def risk_inputs(monkeypatch):
 
 
 def test_calibration_risk_scores_raw_draft(risk_inputs):
-    cfg = EvalConfig(backend="hf", rebuttal_strengths=("simple",), oracle_truth=True)
+    cfg = EvalConfig(backend="hf", rebuttal_strengths=("simple",))
     rc.calibration_collect(cfg, [ITEM], "scorer", claim_alpha=0.05)
     assert risk_inputs["draft_answers"], "risk scorer never called"
     assert all(d == "RAW_DRAFT_TEXT" for d in risk_inputs["draft_answers"])
 
 
 def test_calibration_bad_label_still_judged_on_purified(risk_inputs):
-    cfg = EvalConfig(backend="hf", rebuttal_strengths=("simple",), oracle_truth=True)
+    cfg = EvalConfig(backend="hf", rebuttal_strengths=("simple",))
     rc.calibration_collect(cfg, [ITEM], "scorer", claim_alpha=0.05)
     # calibration judges drafts AFTER purification (delivered-on-accept object)
     assert "claim one claim two" in risk_inputs["judged_texts"]
@@ -53,7 +53,7 @@ def test_calibration_bad_label_still_judged_on_purified(risk_inputs):
 
 
 def test_test_apply_still_scores_raw(risk_inputs):
-    cfg = EvalConfig(backend="hf", rebuttal_strengths=("simple",), oracle_truth=True)
+    cfg = EvalConfig(backend="hf", rebuttal_strengths=("simple",))
     fit = ThresholdFitResult(alpha=0.1, tau_global=0.9)
     rc.test_apply(cfg, [ITEM], "scorer", fit, enable_rewrite=False, claim_threshold=0.5)
     assert all(d == "RAW_DRAFT_TEXT" for d in risk_inputs["draft_answers"])
@@ -63,7 +63,7 @@ def test_test_apply_still_scores_raw(risk_inputs):
 # strength, test_apply produces 2 instances (in-context + preemptive).
 
 def test_test_apply_accepted_path_purifies_once(risk_inputs):
-    cfg = EvalConfig(backend="hf", rebuttal_strengths=("simple",), oracle_truth=True)
+    cfg = EvalConfig(backend="hf", rebuttal_strengths=("simple",))
     # fake risk = 0.5 <= tau 0.9 -> no rewrite even though rewriting is enabled
     fit = ThresholdFitResult(alpha=0.1, tau_global=0.9)
     df = rc.test_apply(cfg, [ITEM], "scorer", fit, enable_rewrite=True, claim_threshold=0.5)
@@ -82,13 +82,12 @@ def test_test_apply_accepted_path_purifies_once(risk_inputs):
 def test_test_apply_rewrite_path_purifies_twice(risk_inputs, monkeypatch):
     rewrite_inputs = []
 
-    def fake_rewrite(tested_model, question, rebuttal, draft_answer,
-                     initial_answer, truth=None, **k):
+    def fake_rewrite(tested_model, question, draft_answer, truth=None, **k):
         rewrite_inputs.append(draft_answer)
         return "REWRITTEN_TEXT"
 
     monkeypatch.setattr(rc, "anti_sycophancy_rewrite", fake_rewrite)
-    cfg = EvalConfig(backend="hf", rebuttal_strengths=("simple",), oracle_truth=True)
+    cfg = EvalConfig(backend="hf", rebuttal_strengths=("simple",))
     # fake risk = 0.5 > tau 0.4 -> rewrite triggers on every instance
     fit = ThresholdFitResult(alpha=0.1, tau_global=0.4)
     df = rc.test_apply(cfg, [ITEM], "scorer", fit, enable_rewrite=True, claim_threshold=0.5)

@@ -28,7 +28,7 @@ access, so run it via the companion SLURM script, not on the login node.
 
 Usage:
     python3 diagnose_risk_scorer.py --tested_model models/Llama-3.2-1B-Instruct \
-        --domain healthsearch --oracle_truth --n_items 15 --max_examples 5
+        --domain healthsearch --n_items 15 --max_examples 5
 """
 from __future__ import annotations
 import argparse
@@ -82,9 +82,6 @@ def main():
     p.add_argument("--n_items", type=int, default=15, help="how many fresh dataset items to sample")
     p.add_argument("--max_examples", type=int, default=5, help="how many 'good but high risk' transcripts to print")
     p.add_argument("--seed", type=int, default=7)
-    oracle = p.add_mutually_exclusive_group()
-    oracle.add_argument("--oracle_truth", dest="oracle_truth", action="store_true", default=True)
-    oracle.add_argument("--no_oracle_truth", dest="oracle_truth", action="store_false")
     args = p.parse_args()
 
     set_global_seed(args.seed)
@@ -97,7 +94,7 @@ def main():
     cfg = EvalConfig(
         tested_model=args.tested_model, judge_model=args.judge_model,
         rebuttal_model=args.rebuttal_model, backend=args.backend,
-        temperature=0.0, oracle_truth=args.oracle_truth,
+        temperature=0.0,
     )
 
     items = load_data_local(n=args.n_items, seed=args.seed, domain=args.domain)
@@ -117,7 +114,7 @@ def main():
         for where, strength, rebuttal, draft in drafts:
             score, raw = scored_with_reasoning(
                 risk_scorer_model, q, rebuttal, ai0, draft,
-                truth if cfg.oracle_truth else None, cfg.backend, cfg.temperature,
+                None, cfg.backend, cfg.temperature,  # deployable-only: risk scorer is truth-free
             )
             draft_label = judge_local(cfg.judge_model, q, truth, draft, temperature=cfg.temperature, backend=cfg.backend)
             kind = classify_sychophancy(lab0, draft_label)

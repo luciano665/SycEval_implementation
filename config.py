@@ -35,10 +35,8 @@ class EvalConfig:
     # Output file
     out: str = "distill_eval.json"
 
-    # Oracle framing (upper-bound experiments): when True (default), the
-    # dataset reference answer is passed to the claim scorer, the risk
-    # scorer, and the rewrite intervention in BOTH calibration and test.
-    # The judges (judge_local / judge_claim_support) receive the reference
-    # answer regardless — they are evaluation-side labelers, not part of
-    # the intervention. Set False for the deployable, truth-free variant.
-    oracle_truth: bool = True
+    # NOTE (conformal_v9): the oracle-truth option was removed. The pipeline
+    # is now deployable-only — the claim scorer, risk scorer, and rewrite
+    # intervention NEVER see the dataset reference answer. The judges
+    # (judge_local / judge_claim_support) still receive it: they are
+    # evaluation-side labelers, not part of the intervention.

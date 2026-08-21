@@ -12,15 +12,12 @@
 We calibrate tau to control regressive sycophancy rate among accepted drafts:
   bad = 1 if (initial_label -> draft_label) is regressive, else 0
 
-Oracle framing (--oracle_truth / --no_oracle_truth):
-  By default the dataset reference answer ("truth") is provided to the
-  claim scorer, the risk scorer, and the rewrite intervention in BOTH
-  calibration and test. Results therefore measure an ORACLE-ASSISTED
-  upper bound, not a deployable truth-free system. Pass --no_oracle_truth
-  for the truth-free variant. The flag is recorded in output metadata and
-  in the thresholds file; thresholds fitted under one
-  setting must not be applied under the other. judge_local and
-  judge_claim_support always receive truth: they are evaluation-side.
+Deployable-only (conformal_v9): the oracle-truth option was removed. The
+  dataset reference answer ("truth") is NEVER provided to the claim scorer,
+  the risk scorer, or the rewrite intervention, in either calibration or
+  test. Results therefore measure the real deployable, truth-free system.
+  judge_local and judge_claim_support still receive truth: they are
+  evaluation-side labelers, not part of the intervention.
 
 """
 
@@ -107,7 +104,7 @@ def purify_answer_with_claims(
     claim_threshold: float,
     rebuttal: Optional[str] = None,
     initial_answer: Optional[str] = None,
-    truth: Optional[str] = None,  # Oracle reference answer; forwarded to the claim scorer only when cfg.oracle_truth is True (upper-bound framing)
+    truth: Optional[str] = None,  # accepted for call-site compatibility but IGNORED: the claim scorer is truth-free (deployable-only, conformal_v9)
 ) -> Tuple[str, List[str], List[str], List[str], List[float]]:
     """
     Decompose -> score -> filter -> reconstruct to reduce sycophantic content.
@@ -126,7 +123,7 @@ def purify_answer_with_claims(
             cfg.judge_model,
             rebuttal=rebuttal,
             initial_answer=initial_answer,
-            truth=truth if cfg.oracle_truth else None,
+            truth=None,  # deployable-only: claim scorer never sees the reference answer
             temperature=cfg.temperature,
             backend=cfg.backend,
         )
@@ -362,7 +359,7 @@ def calibration_collect(
                         cfg.judge_model,
                         rebuttal=rebuttal,
                         initial_answer=ai0,
-                        truth=truth if cfg.oracle_truth else None,
+                        truth=None,  # deployable-only: claim scorer never sees the reference answer
                         temperature=cfg.temperature,
                         backend=cfg.backend,
                     )
@@ -443,7 +440,7 @@ def calibration_collect(
             rebuttal=cached["rebuttal"],
             initial_answer=cached["initial_answer"],
             draft_answer=cached["draft_answer_raw"],
-            truth=cached["truth"] if cfg.oracle_truth else None,
+            truth=None,  # deployable-only: risk scorer never sees the reference answer
             backend=cfg.backend,
             temperature=cfg.temperature,
         )
@@ -607,7 +604,7 @@ def test_apply(
                     rebuttal=rebuttal,
                     initial_answer=ai0,
                     draft_answer=raw_draft,  # raw, unpurified
-                    truth=truth if cfg.oracle_truth else None,
+                    truth=None,  # deployable-only: risk scorer never sees the reference answer
                     backend=cfg.backend,
                     temperature=cfg.temperature,
                 )
@@ -642,10 +639,7 @@ def test_apply(
                     rewritten = anti_sycophancy_rewrite(
                         tested_model=cfg.tested_model,
                         question=q,
-                        rebuttal=rebuttal,
                         draft_answer=purified_draft,
-                        initial_answer=ai0,
-                        truth=truth if cfg.oracle_truth else None,
                         backend=cfg.backend,
                         temperature=cfg.temperature
                     )
@@ -791,7 +785,6 @@ def threshold_to_json(
     tau_claim: Optional[float],
     claim_alpha: Optional[float],
     tau_claim_fallback: Optional[bool] = None,
-    oracle_truth: Optional[bool] = None,
     data_split: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     """Convert thresholds to a JSON-serializable dict"""
@@ -812,14 +805,13 @@ def threshold_to_json(
         "claim_alpha": None if claim_alpha is None else float(claim_alpha),
         "calibration_failed": bool(fit.calibration_failed),
         "tau_claim_fallback": None if tau_claim_fallback is None else bool(tau_claim_fallback),
-        "oracle_truth": None if oracle_truth is None else bool(oracle_truth),
         "data_split": data_split,
     }
 
 
 def thresholds_from_json(
     d: Dict[str, Any]
-) -> Tuple[ThresholdFitResult, Optional[float], Optional[float], Optional[bool], Optional[bool]]:
+) -> Tuple[ThresholdFitResult, Optional[float], Optional[float], Optional[bool]]:
     """
     Load thresholds from JSON.
 
@@ -834,7 +826,6 @@ def thresholds_from_json(
         files that predate the field)
       tau_claim, claim_alpha: calibrated claim threshold and its alpha
       tau_claim_fallback: True/False if recorded, else None for legacy files
-      oracle_truth: True/False if recorded, else None for legacy files
     """
 
     alpha = float(d["alpha"])
@@ -859,26 +850,10 @@ def thresholds_from_json(
 
     calibration_failed = bool(d.get("calibration_failed", tau_global < 0.0))
     tau_claim_fallback = d.get("tau_claim_fallback", None)
-    oracle_truth = d.get("oracle_truth", None)
     fit = ThresholdFitResult(alpha=alpha, tau_global=tau_global,
                              tau_by_group=tau_by_group,
                              calibration_failed=calibration_failed)
-    return fit, tau_claim, claim_alpha, tau_claim_fallback, oracle_truth
-
-def add_oracle_truth_args(parser: argparse.ArgumentParser) -> None:
-    """Paired flags so the default can be True while staying overridable."""
-    parser.add_argument(
-        "--oracle_truth", dest="oracle_truth", action="store_true", default=True,
-        help="Provide the dataset reference answer to the claim scorer, risk "
-             "scorer, and rewrite in BOTH calibration and test (oracle "
-             "upper-bound framing). DEFAULT: on.",
-    )
-    parser.add_argument(
-        "--no_oracle_truth", dest="oracle_truth", action="store_false",
-        help="Truth-free intervention: the claim scorer, risk scorer, and "
-             "rewrite never see the reference answer (deployable variant).",
-    )
-
+    return fit, tau_claim, claim_alpha, tau_claim_fallback
 
 # 8) Main: supports separate runs or all-in-one
 def main() -> None:
@@ -909,7 +884,6 @@ def main() -> None:
     parser.add_argument("--domain", type=str, default="medquad", choices=["medquad", "healthsearch"], help="Dataset domain")
     parser.add_argument("--allow_calib_overlap", action="store_true",
                         help="mode=test only: skip excluding calibration items recorded in the thresholds file (knowingly test on calibration data)")
-    add_oracle_truth_args(parser)
 
     # Parse CLI tags
     args = parser.parse_args()
@@ -926,7 +900,6 @@ def main() -> None:
         temperature=args.temperature,  # set temperature
         backend=args.backend,  # set backend
         domain=args.domain,
-        oracle_truth=bool(args.oracle_truth),
     )
 
     # Choose risk scorer model (default judge)
@@ -980,7 +953,6 @@ def main() -> None:
             json.dump(
                 threshold_to_json(fit, tau_claim, claim_alpha,
                                   tau_claim_fallback=tau_claim_fallback,
-                                  oracle_truth=bool(cfg.oracle_truth),
                                   data_split=data_split),
                 f, indent=2, ensure_ascii=False)
 
@@ -1001,12 +973,10 @@ def main() -> None:
                     "claim_alpha": float(claim_alpha),  # claim alpha
                     "alpha": float(args.alpha),  # alpha
                     "use_group_thresholds": bool(args.use_group_thresholds),  # option A
-                    "oracle_truth": bool(cfg.oracle_truth),  # oracle framing flag
                 },
                 "thresholds_saved_to": args.thresholds_out,  # thresholds file path
                 "thresholds": threshold_to_json(fit, tau_claim, claim_alpha,
                                                 tau_claim_fallback=tau_claim_fallback,
-                                                oracle_truth=bool(cfg.oracle_truth),
                                                 data_split=data_split),  # thresholds values
             },
             "calibration_debug_records": calib_records,  # raw calibration records for inspection
@@ -1023,19 +993,13 @@ def main() -> None:
     if args.mode == "test":
         with open(args.thresholds_in, "r", encoding="utf-8") as f:
             loaded = json.load(f)
-        fit, tau_claim, _claim_alpha_in, tau_claim_fallback_in, oracle_truth_in = \
+        fit, tau_claim, _claim_alpha_in, tau_claim_fallback_in = \
             thresholds_from_json(loaded)
 
         if fit.calibration_failed:
             logger.error(
                 "Loaded thresholds have calibration_failed=true (tau_global=%.3f): "
                 "with --enable_rewrite every draft will be rewritten.", fit.tau_global)
-        if oracle_truth_in is not None and bool(oracle_truth_in) != bool(cfg.oracle_truth):
-            raise ValueError(
-                f"Thresholds were calibrated with oracle_truth={oracle_truth_in} but this "
-                f"run uses oracle_truth={cfg.oracle_truth}. Scores with and without truth "
-                "are different score functions; refit thresholds or match the flag."
-            )
 
         all_data = exclude_calibration_items(
             all_data, loaded.get("data_split"), bool(args.allow_calib_overlap))
@@ -1090,12 +1054,10 @@ def main() -> None:
                     "claim_threshold": float(claim_threshold),  # claim filter threshold
                     "claim_alpha": float(claim_alpha_used),  # claim alpha
                     "enable_rewrite": bool(args.enable_rewrite),  # rewrite flag
-                    "oracle_truth": bool(cfg.oracle_truth),  # oracle framing flag
                 },
                 "thresholds_loaded_from": args.thresholds_in,  # thresholds file path
                 "thresholds": threshold_to_json(fit, tau_claim, claim_alpha_used,
                                                 tau_claim_fallback=tau_claim_fallback_in,
-                                                oracle_truth=oracle_truth_in,
                                                 data_split=loaded.get("data_split")),  # thresholds values
             },
             "statistical_results": {
@@ -1152,7 +1114,6 @@ def main() -> None:
         json.dump(
             threshold_to_json(fit, tau_claim, claim_alpha,
                               tau_claim_fallback=tau_claim_fallback,
-                              oracle_truth=bool(cfg.oracle_truth),
                               data_split=data_split),
             f, indent=2, ensure_ascii=False)
 
@@ -1207,12 +1168,10 @@ def main() -> None:
                 "calib_frac": float(args.calib_frac),  # split fraction
                 "use_group_thresholds": bool(args.use_group_thresholds),
                 "enable_rewrite": bool(args.enable_rewrite),  # rewrite toggle
-                "oracle_truth": bool(cfg.oracle_truth),  # oracle framing flag
             },
             "thresholds_saved_to": args.thresholds_out,  # thresholds file path
             "thresholds": threshold_to_json(fit, tau_claim, claim_alpha,
                                             tau_claim_fallback=tau_claim_fallback,
-                                            oracle_truth=bool(cfg.oracle_truth),
                                             data_split=data_split),  # thresholds values
         },
         "statistical_results": {
