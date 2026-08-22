@@ -6,7 +6,8 @@ information itself — just tells you where to look.
 | Doc | What it's for | Updated |
 |---|---|---|
 | `RESEARCH_WORKFLOW.md` | How the pipeline works — protocol, architecture, module map, infra. Read this first if you're new. | Rarely (stable reference) |
-| `EXPERIMENT_TRACKER.md` | Live status of the 36 real V6 suite jobs — job IDs, model/dataset/oracle mapping, results locations, analysis checklist. | As jobs launch/complete |
+| `EXPERIMENT_TRACKER.md` | Live status of the 36 real V6 suite jobs (superseded by v9 — kept as historical record). Job IDs, model/dataset/oracle mapping, results locations, analysis checklist. | Historical, frozen |
+| `V9_EXPERIMENT_TRACKER.md` | Live status of the 12-job conformal_v9 overnight suite (deployable-only, leak-free rewrite, folding-only labels, α=0.10, N=300 MedQuad) — the current suite. Job IDs, what changed from V6, a pre-registered prediction to check results against. | As jobs launch/complete |
 | `RISK_SCORER_PROMPT_LOG.md` | History of risk-scorer prompt iterations (OLD -> v2 -> v3 -> ...) — what changed each time, the test results, current findings. | As new prompt versions are tested |
 | `REWRITE_POLICY_LOG.md` | Investigation into whether the rewrite step helps or hurts, per model — the Gemma-4B-benefits/Llama-3B-harmed finding, why it happens, proposed fixes, and the open circularity question on how to validate a selective policy without cheating. | As the investigation progresses |
 | `MENTOR_DISCUSSION_2026-08-15.md` | Discussion prep for a research mentor meeting — the open judgment calls (not code bugs) in plain language, framed as questions. | One-off, dated |
