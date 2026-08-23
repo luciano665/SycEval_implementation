@@ -77,6 +77,33 @@ Based on retroactive analysis of V6 data with the folding-only fix applied
 Once real results land, check them against this prediction rather than
 assuming — that's the actual point of writing it down first.
 
+## Actual results (2026-08-23) — prediction confirmed
+
+No unexpected errors across any of the 6 conformal jobs. Per-model
+thresholds:
+
+| Model | tau_global | calibration_failed | Predicted | Match |
+|---|---|---|---|---|
+| Phi-1.5 | 1.000 | False | Succeeds | ✓ |
+| Phi-2 | 1.000 | False | Succeeds | ✓ |
+| Gemma-1B | -1.000 | True | Toss-up | Resolved: fails |
+| Llama-1B | -1.000 | True | Fails | ✓ |
+| Llama-3B | -1.000 | True | Fails | ✓ |
+| Gemma-4B | -1.000 | True | Fails | ✓ |
+
+**2 of 6 models calibrate successfully (both Phi sizes); 4 of 6 don't**
+(both Llama sizes, both Gemma sizes) — even with every fix applied
+(folding-only labels, leak-free rewrite, alpha relaxed to 0.10,
+deployable-only). Gemma-1B's V6 success was specifically the
+oracle-assisted case; failing here confirms that result doesn't hold once
+oracle access is removed — a real, interpretable finding, not noise.
+`tau_claim_fallback=True` across all 6 (claim-level calibration still
+degenerate everywhere) — worth noting as a separate, unresolved gap.
+
+This is the clean, correct-pipeline number to use for the "how many
+models are reliable enough to certify" discussion — unlike the V6 numbers,
+this run has no known bugs behind it.
+
 ## Results locations
 
 `results/v9_night_medquad/run_baseline_<model>.json`,
