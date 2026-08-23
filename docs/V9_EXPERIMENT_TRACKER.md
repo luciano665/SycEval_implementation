@@ -36,23 +36,27 @@ rewrite produces populated `final_answer` text, checkpoint counts correct
 
 ## Suite launch status
 
-**Status: SUBMITTED** — 2026-08-22, via `bash slurm/submit_v9_night.sh`.
-Job ID → model/arm mapping follows the script's exact submission order.
+**Status: ALL 12 COMPLETED** — submitted 2026-08-22, all confirmed
+`COMPLETED` exit `0:0` as of 2026-08-23. Job ID → model/arm mapping
+follows the script's exact submission order.
 
-| Job ID | Model | Arm | Status |
+| Job ID | Model | Arm | Elapsed |
 |---|---|---|---|
-| 133620 | Llama-1B | baseline | |
-| 133621 | Llama-1B | conformal | |
-| 133622 | Llama-3B | baseline | |
-| 133623 | Llama-3B | conformal | |
-| 133624 | Gemma-1B | baseline | |
-| 133625 | Gemma-1B | conformal | |
-| 133626 | Gemma-4B | baseline | |
-| 133627 | Gemma-4B | conformal | |
-| 133628 | Phi-1.5 | baseline | |
-| 133629 | Phi-1.5 | conformal | |
-| 133630 | Phi-2 | baseline | |
-| 133631 | Phi-2 | conformal | |
+| 133620 | Llama-1B | baseline | 03:31:07 |
+| 133621 | Llama-1B | conformal | 07:25:38 |
+| 133622 | Llama-3B | baseline | 05:41:49 |
+| 133623 | Llama-3B | conformal | 12:14:46 |
+| 133624 | Gemma-1B | baseline | 05:45:30 |
+| 133625 | Gemma-1B | conformal | 12:13:52 |
+| 133626 | Gemma-4B | baseline | 07:26:01 |
+| 133627 | Gemma-4B | conformal | 13:19:08 |
+| 133628 | Phi-1.5 | baseline | 06:16:51 |
+| 133629 | Phi-1.5 | conformal | 10:39:47 |
+| 133630 | Phi-2 | baseline | 07:25:04 |
+| 133631 | Phi-2 | conformal | 11:40:03 |
+
+**Confirms the run finished — not yet whether the content is trustworthy.**
+See "Next steps" below before treating any thresholds/results as final.
 
 Fill in Status as jobs complete (`sacct -j <id> --format=JobID,State,ExitCode,Elapsed`).
 
