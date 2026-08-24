@@ -16,11 +16,12 @@
 #   1) VRAM: gpt-oss-20b ships natively in MXFP4 (~16GB per OpenAI's card),
 #      but models.py forces dtype=bf16/fp16 on load -- if it can't use the
 #      native quantized weights and upcasts, real usage could be ~42GB.
-#      Using generic --gpus=1 (same as every other job in this project) --
-#      an explicit A100 pin was tried first but /scratch isn't mounted on
-#      those nodes (confirmed via interactive srun), so this may land on
-#      an A30 (24GB) and OOM if the upcast happens. If it OOMs, that
-#      itself answers the VRAM question and we can pin to A40 next.
+#      Using generic --gpus=1 (same as every other job in this project).
+#      Note: this can still land on an A100 node (confirmed happening
+#      twice) -- /scratch isn't mounted there, which is why HF_HOME below
+#      points at the project filesystem instead, not $SCRATCH. If this
+#      lands on an A30 (24GB) and OOMs, that itself answers the VRAM
+#      question and we pin to A40 next.
 #   2) Chat format: gpt-oss uses OpenAI's "harmony" response format, not
 #      plain system/user/assistant. parse_float_0_1() looks for a literal
 #      "Final Score:" line -- if harmony wraps the output differently,
@@ -38,7 +39,7 @@ set -e
 
 source /shared/software/conda/etc/profile.d/conda.sh
 conda activate syceval
-export HF_HOME=$SCRATCH/hf_home
+export HF_HOME=$PWD/.hf_home
 mkdir -p $HF_HOME
 mkdir -p results/smoke_test_gptoss_scorer
 
