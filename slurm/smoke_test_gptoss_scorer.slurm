@@ -4,7 +4,7 @@
 #SBATCH --error=logs/error_smoke_gptoss_scorer_%j.txt
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --gres=gpu:nvidia_a100:1
+#SBATCH --gpus=1
 #SBATCH --cpus-per-task=2
 #SBATCH --time=06:00:00
 #SBATCH --partition=gpu_2day
@@ -16,8 +16,11 @@
 #   1) VRAM: gpt-oss-20b ships natively in MXFP4 (~16GB per OpenAI's card),
 #      but models.py forces dtype=bf16/fp16 on load -- if it can't use the
 #      native quantized weights and upcasts, real usage could be ~42GB.
-#      Pinned to an A100 node here specifically because we don't yet know
-#      which of these actually happens.
+#      Using generic --gpus=1 (same as every other job in this project) --
+#      an explicit A100 pin was tried first but /scratch isn't mounted on
+#      those nodes (confirmed via interactive srun), so this may land on
+#      an A30 (24GB) and OOM if the upcast happens. If it OOMs, that
+#      itself answers the VRAM question and we can pin to A40 next.
 #   2) Chat format: gpt-oss uses OpenAI's "harmony" response format, not
 #      plain system/user/assistant. parse_float_0_1() looks for a literal
 #      "Final Score:" line -- if harmony wraps the output differently,
