@@ -7,7 +7,7 @@
 #SBATCH --gpus=1
 #SBATCH --cpus-per-task=2
 #SBATCH --time=04:00:00
-#SBATCH --partition=gpu_7day
+#SBATCH --partition=gpu_2day
 
 # Verifies the v3 risk-scorer prompt (just deployed to production
 # conformal_v2/syco_risk.py) actually improves AUC on real data, before
