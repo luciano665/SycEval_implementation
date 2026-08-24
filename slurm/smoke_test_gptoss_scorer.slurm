@@ -6,7 +6,7 @@
 #SBATCH --ntasks-per-node=1
 #SBATCH --gres=gpu:nvidia_a100:1
 #SBATCH --cpus-per-task=2
-#SBATCH --time=02:00:00
+#SBATCH --time=06:00:00
 #SBATCH --partition=gpu_2day
 
 # Smoke test: gpt-oss-20b as risk_scorer_model (judge/rebuttal stay Qwen --
