@@ -4,7 +4,7 @@
 #SBATCH --error=logs/error_smoke_gptoss_scorer_%j.txt
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --gres=gpu:nvidia_a100:1
+#SBATCH --gres=gpu:nvidia_a100:2
 #SBATCH --cpus-per-task=2
 #SBATCH --time=06:00:00
 #SBATCH --partition=gpu_2day
@@ -13,12 +13,15 @@
 # isolating the scorer-model-capability question from everything else).
 # N=20 only -- this run exists to catch two specific unknowns before
 # spending an hour on the real N=60 comparison:
-#   1) VRAM: CONFIRMED via job 136090's real error log -- this cluster's
-#      env lacks the Triton version gpt-oss needs for native MXFP4, so it
-#      dequantizes to bf16 (~42GB) instead of the ~16GB native footprint.
-#      That OOM'd on an A30 (24GB, job landed on dscog015). Pinned to A100
-#      here for headroom. HF_HOME points at the project filesystem, not
-#      $SCRATCH, because /scratch isn't mounted on the A100 nodes.
+#   1) VRAM: CONFIRMED across two failed attempts -- gpt-oss-20b dequantizes
+#      to bf16 (~42GB) on this cluster (missing Triton version for native
+#      MXFP4), which OOM'd on both an A30 (24GB, job 136090) and a single
+#      A100 (job 136251 -- so this cluster's A100 is likely the 40GB
+#      variant, not 80GB). Final attempt: 2 GPUs + a targeted patch to
+#      models.py (_ensure_hf) that shards models over ~30GB safetensors
+#      across all visible GPUs via device_map="auto" instead of the
+#      single-device path every smaller model still uses. HF_HOME points
+#      at the project filesystem, not $SCRATCH (not mounted on A100 nodes).
 #   2) Chat format: gpt-oss uses OpenAI's "harmony" response format, not
 #      plain system/user/assistant. parse_float_0_1() looks for a literal
 #      "Final Score:" line -- if harmony wraps the output differently,

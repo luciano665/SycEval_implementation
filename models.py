@@ -42,6 +42,20 @@ class HFHandle:
     model: any
     device: str = "cpu"
     dtype: str = "bfloat16"
+    is_sharded: bool = False
+
+
+def _local_safetensors_size_gb(model_name: str) -> float:
+    """Sum of top-level *.safetensors files only (skips duplicate-format
+    subdirs like original/ or metal/ some repos ship alongside the real
+    weights) -- used to decide if a model needs multi-GPU sharding."""
+    if not os.path.isdir(model_name):
+        return 0.0
+    total = 0
+    for f in os.listdir(model_name):
+        if f.endswith(".safetensors"):
+            total += os.path.getsize(os.path.join(model_name, f))
+    return total / (1024 ** 3)
 
 class ModelProvider:
     """
@@ -79,17 +93,22 @@ class ModelProvider:
         # Check if model is already cached
         if model_name in self._hf_cache:
             h = self._hf_cache[model_name]
+            # Sharded (device_map="auto") models stay wherever accelerate put
+            # them permanently -- .to() is unsupported/unsafe on a dispatched
+            # model, so skip the swap dance entirely for these.
+            if h.is_sharded:
+                return h
             # If we are on a GPU platform, ensure this model is the one on GPU
             if device in ["cuda", "mps"]:
                 # If this model is not currently active on GPU, swap it in
                 if h.model.device.type == "cpu":
-                    # Move currently active model to CPU to free memory
+                    # Move currently active (non-sharded) model to CPU to free memory
                     for other_name, other_h in self._hf_cache.items():
-                        if other_name != model_name and other_h.model.device.type != "cpu":
+                        if other_name != model_name and not other_h.is_sharded and other_h.model.device.type != "cpu":
                             other_h.model.to("cpu")
                             if torch.cuda.is_available():
                                 torch.cuda.empty_cache()
-                    
+
                     # Move requested model to GPU
                     h.model.to(device)
             return h
@@ -112,6 +131,37 @@ class ModelProvider:
                         tok.pad_token = "<pad>"
                 else:
                     raise
+
+        # Models too big for one GPU's VRAM (e.g. gpt-oss-20b dequantized to
+        # bf16 on a cluster without the Triton version its native MXFP4
+        # format needs) get sharded across all visible GPUs via accelerate's
+        # device_map="auto" instead of the single-device load+swap path
+        # every other (smaller) model uses.
+        needs_sharding = (
+            device == "cuda"
+            and torch
+            and torch.cuda.device_count() > 1
+            and _local_safetensors_size_gb(model_name) > 30.0
+        )
+        if needs_sharding:
+            tok_padding_room_gb = 18  # leave headroom on GPU 0 for other cached models
+            max_memory = {0: f"{tok_padding_room_gb}GiB"}
+            for i in range(1, torch.cuda.device_count()):
+                max_memory[i] = "38GiB"
+            model = AutoModelForCausalLM.from_pretrained(
+                model_name,
+                dtype=dtype,
+                device_map="auto",
+                max_memory=max_memory,
+                low_cpu_mem_usage=True,
+                trust_remote_code=True,
+            )
+            tok_pad = getattr(tok, "pad_token", None)
+            if tok_pad is None and hasattr(tok, "eos_token"):
+                tok.pad_token = tok.eos_token
+            h = HFHandle(name=model_name, tok=tok, model=model, device="cuda", dtype=str(dtype), is_sharded=True)
+            self._hf_cache[model_name] = h
+            return h
 
         try:
             # Try standard load first
@@ -206,9 +256,12 @@ class ModelProvider:
                 raise e
 
         # If we are on GPU, swap out others before moving this one in
+        # (sharded models are skipped -- .to() is unsafe on a dispatched
+        # model, and they were loaded with headroom reserved for exactly
+        # this case: smaller models coexisting alongside them on GPU 0)
         if device in ["cuda", "mps"]:
              for other_name, other_h in self._hf_cache.items():
-                if other_h.model.device.type != "cpu":
+                if not other_h.is_sharded and other_h.model.device.type != "cpu":
                     logger.info(
                         "Moving %s to CPU to free memory for %s",
                         other_name,
