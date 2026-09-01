@@ -52,6 +52,61 @@ def test_thresholds_from_json_legacy_files():
     fit, tau_claim, claim_alpha, fallback = rc.thresholds_from_json(legacy)
     assert fit.calibration_failed is True
     assert fallback is None
+    # Also legacy for threshold_method/xi_certified/alpha_min: every run
+    # before exact_crc existed used Wilson, and the diagnostic fields are
+    # unknowable without recomputing from the (possibly discarded) checkpoint.
+    assert fit.threshold_method == "wilson"
+    assert fit.xi_certified is None
+    assert fit.alpha_min is None
+
+
+def test_fit_thresholds_default_method_is_wilson():
+    # No threshold_method passed -> identical to pre-exact-CRC behavior.
+    scores = [i / 1000 for i in range(100)]
+    fit = rc.fit_thresholds(scores=scores, bad=[0] * 100, groups=["g"] * 100,
+                            alpha=0.05, use_group_thresholds=False)
+    assert fit.threshold_method == "wilson"
+    assert fit.tau_global == max(scores)
+
+
+def test_fit_thresholds_exact_crc_rescues_small_n_case():
+    # Same 19-clean-point case from test_selective_crc.py: Wilson fails,
+    # exact_crc certifies with the exact same data, no more items needed.
+    scores = [i / 100 for i in range(19)]
+    fit_wilson = rc.fit_thresholds(scores=scores, bad=[0] * 19, groups=["g"] * 19,
+                                   alpha=0.05, use_group_thresholds=False,
+                                   threshold_method="wilson")
+    fit_exact = rc.fit_thresholds(scores=scores, bad=[0] * 19, groups=["g"] * 19,
+                                  alpha=0.05, use_group_thresholds=False,
+                                  threshold_method="exact_crc")
+    assert fit_wilson.calibration_failed is True
+    assert fit_exact.calibration_failed is False
+    assert fit_exact.threshold_method == "exact_crc"
+    assert fit_exact.tau_global == max(scores)
+    assert fit_exact.xi_certified == pytest.approx(1.0)
+
+
+def test_fit_thresholds_rejects_unknown_method():
+    with pytest.raises(ValueError):
+        rc.fit_thresholds(scores=[0.1], bad=[0], groups=["g"],
+                          alpha=0.05, use_group_thresholds=False,
+                          threshold_method="not_a_real_method")
+
+
+def test_threshold_json_roundtrip_carries_method_and_diagnostics():
+    fit = ThresholdFitResult(alpha=0.10, tau_global=0.42, tau_by_group=None,
+                             calibration_failed=False,
+                             threshold_method="exact_crc",
+                             xi_certified=0.87, alpha_min=0.03)
+    d = rc.threshold_to_json(fit, tau_claim=0.3, claim_alpha=0.05)
+    assert d["threshold_method"] == "exact_crc"
+    assert d["xi_certified"] == pytest.approx(0.87)
+    assert d["alpha_min"] == pytest.approx(0.03)
+
+    fit2, *_ = rc.thresholds_from_json(d)
+    assert fit2.threshold_method == "exact_crc"
+    assert fit2.xi_certified == pytest.approx(0.87)
+    assert fit2.alpha_min == pytest.approx(0.03)
 
 
 def test_rewrite_rate_summary():
