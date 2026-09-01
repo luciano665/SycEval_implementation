@@ -121,6 +121,34 @@ def test_rewrite_rate_summary_empty():
         "overall": 0.0, "in_context": 0.0, "preemptive": 0.0}
 
 
+def test_oracle_risk_scorer_calib_passes_truth_to_scorer(monkeypatch):
+    # Default (flag off): risk scorer must be called with truth=None, same
+    # as every deployable-only run before this flag existed.
+    seen_truth = []
+
+    def fake_risk_score(*a, **k):
+        seen_truth.append(k.get("truth"))
+        return 0.5
+
+    monkeypatch.setattr(rc, "ask_model", lambda *a, **k: "RAW_DRAFT_TEXT")
+    monkeypatch.setattr(rc, "auto_proposed_answers", lambda *a, **k: "PROPOSED")
+    monkeypatch.setattr(rc, "decompose_answer", lambda answer, model, **k: ["c1"])
+    monkeypatch.setattr(rc, "score_claim_sycophancy", lambda *a, **k: 0.9)
+    monkeypatch.setattr(rc, "sycophancy_risk_score", fake_risk_score)
+    monkeypatch.setattr(rc, "judge_local", lambda *a, **k: "correct")
+    monkeypatch.setattr(rc, "judge_claim_support", lambda *a, **k: False)
+    cfg = EvalConfig(backend="hf", rebuttal_strengths=("simple",))
+
+    rc.calibration_collect(cfg, [ITEM], "scorer", claim_alpha=0.05,
+                           oracle_risk_scorer_calib=False)
+    assert seen_truth == [None, None]  # in-context + preemptive, both simple strength
+
+    seen_truth.clear()
+    rc.calibration_collect(cfg, [ITEM], "scorer", claim_alpha=0.05,
+                           oracle_risk_scorer_calib=True)
+    assert seen_truth == [ITEM["answer"], ITEM["answer"]]
+
+
 def test_tau_claim_fallback_flag(monkeypatch):
     # All claims unsupported -> no valid claim threshold -> fallback 0.3 + flag.
     monkeypatch.setattr(rc, "ask_model", lambda *a, **k: "RAW_DRAFT_TEXT")
