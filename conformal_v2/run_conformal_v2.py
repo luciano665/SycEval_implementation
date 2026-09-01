@@ -44,8 +44,10 @@ from .syco_risk import sycophancy_risk_score
 from .conformal_thresholds import (
     ThresholdFitResult,
     fit_global_threshold,
+    fit_global_threshold_exact_crc,
     fit_threshold_by_group,
     choose_threshold,
+    certifiable_fraction,
 )
 from .safe_rewrite import anti_sycophancy_rewrite
 from logger_utils import get_logger
@@ -501,6 +503,7 @@ def fit_thresholds(
     groups: List[Hashable],
     alpha: float,
     use_group_thresholds: bool,
+    threshold_method: str = "wilson",
 ) -> ThresholdFitResult:
     """
     Fit tau thresholds using the functions in conformal_thresholds.py.
@@ -515,25 +518,41 @@ def fit_thresholds(
     per group at alpha=0.05) or its tau degenerates to -1.0 (always-rewrite
     within that group); with 24 groups this typically requires several
     thousand calibration items.
-    """
 
-    tau_global = fit_global_threshold(scores, bad, alpha)
+    threshold_method
+      "wilson" (default — unchanged behavior, matches every run before
+      this option existed) or "exact_crc": use the exact finite-sample
+      conformal risk control bound (Angelopoulos & Bates) instead of the
+      Wilson confidence interval. See conformal_thresholds.py's
+      exact_crc_feasible docstring for why this bound stays valid under
+      the candidate-tau scan where Wilson's does not (review_findings.md
+      C14). Regardless of which method is selected, the certifiable_fraction
+      diagnostic (xi_certified, alpha_min) is always computed with the
+      EXACT bound, since it's meant to answer "how far is this population
+      from certifiable" independent of which method produced tau_global.
+    """
+    if threshold_method not in ("wilson", "exact_crc"):
+        raise ValueError(f"unknown threshold_method: {threshold_method!r}")
+
+    fitter = fit_global_threshold if threshold_method == "wilson" else fit_global_threshold_exact_crc
+    tau_global = fitter(scores, bad, alpha)
 
     calibration_failed = bool(float(tau_global) < 0.0)
     if calibration_failed:
         logger.error(
-            "RISK CALIBRATION FAILED: no threshold satisfies alpha=%.3f "
-            "(Wilson upper bound on the regressive rate exceeded alpha for "
-            "every candidate tau). tau_global=-1.0 -> with --enable_rewrite "
-            "EVERY test draft will be rewritten; the run degenerates to an "
-            "always-rewrite policy with no selective risk control.",
-            float(alpha),
+            "RISK CALIBRATION FAILED (%s bound): no threshold satisfies "
+            "alpha=%.3f for every candidate tau. tau_global=-1.0 -> with "
+            "--enable_rewrite EVERY test draft will be rewritten; the run "
+            "degenerates to an always-rewrite policy with no selective "
+            "risk control.",
+            threshold_method, float(alpha),
         )
 
     # default: no group thresholds
     tau_by_group: Optional[Dict[Hashable, float]] = None
     if use_group_thresholds:
-        tau_by_group = fit_threshold_by_group(scores, bad, groups, alpha)
+        tau_by_group = fit_threshold_by_group(scores, bad, groups, alpha,
+                                              threshold_method=threshold_method)
         for g, tau_g in tau_by_group.items():
             if float(tau_g) < 0.0:
                 logger.error(
@@ -543,12 +562,31 @@ def fit_thresholds(
                     g, float(alpha),
                 )
 
+    # Selective-certification diagnostic — always computed with the exact
+    # bound (independent of threshold_method) so it's a consistent,
+    # comparable number regardless of which method produced tau_global.
+    sel = certifiable_fraction(scores, bad, alpha)
+    if sel.certifiable:
+        logger.info(
+            "certifiable_fraction: xi=%.3f of calibration population "
+            "certified (alpha_min=%.3f)", sel.xi, sel.alpha_min,
+        )
+    else:
+        logger.info(
+            "certifiable_fraction: NOT certifiable at alpha=%.3f "
+            "(alpha_min=%.3f is the loosest alpha that would certify anything)",
+            float(alpha), sel.alpha_min,
+        )
+
     # package results into the dataclass
     fit = ThresholdFitResult(
         alpha=alpha,
         tau_global=float(tau_global),
         tau_by_group=tau_by_group,
         calibration_failed=calibration_failed,
+        threshold_method=threshold_method,
+        xi_certified=float(sel.xi),
+        alpha_min=float(sel.alpha_min),
     )
 
     return fit
@@ -806,6 +844,9 @@ def threshold_to_json(
         "calibration_failed": bool(fit.calibration_failed),
         "tau_claim_fallback": None if tau_claim_fallback is None else bool(tau_claim_fallback),
         "data_split": data_split,
+        "threshold_method": str(fit.threshold_method),
+        "xi_certified": None if fit.xi_certified is None else float(fit.xi_certified),
+        "alpha_min": None if fit.alpha_min is None else float(fit.alpha_min),
     }
 
 
@@ -850,9 +891,19 @@ def thresholds_from_json(
 
     calibration_failed = bool(d.get("calibration_failed", tau_global < 0.0))
     tau_claim_fallback = d.get("tau_claim_fallback", None)
+    # Legacy files (pre-exact-CRC) lack these keys: default threshold_method
+    # to "wilson" since that's what every run before this option used, and
+    # leave xi_certified/alpha_min as None (unknowable without recomputing
+    # from the calibration checkpoint).
+    threshold_method = str(d.get("threshold_method", "wilson"))
+    xi_certified = d.get("xi_certified", None)
+    alpha_min = d.get("alpha_min", None)
     fit = ThresholdFitResult(alpha=alpha, tau_global=tau_global,
                              tau_by_group=tau_by_group,
-                             calibration_failed=calibration_failed)
+                             calibration_failed=calibration_failed,
+                             threshold_method=threshold_method,
+                             xi_certified=None if xi_certified is None else float(xi_certified),
+                             alpha_min=None if alpha_min is None else float(alpha_min))
     return fit, tau_claim, claim_alpha, tau_claim_fallback
 
 # 8) Main: supports separate runs or all-in-one
@@ -875,6 +926,7 @@ def main() -> None:
     parser.add_argument("--claim_alpha", type=float, default=None, help="Target upper bound for bad claims among kept claims")  # claim alpha
     parser.add_argument("--calib_frac", type=float, default=0.5, help="Fraction of items to use for calibration in mode=both")  # calib/test split
     parser.add_argument("--use_group_thresholds", action="store_true", help="Enable Option A conditional (per-group) thresholds. NOTE: each group needs a large calibration sample (~70+ clean instances per group at alpha=0.05) or its tau degenerates to -1.0 (always-rewrite within that group); with 24 groups this typically requires several thousand calibration items.")  # option A
+    parser.add_argument("--threshold_method", type=str, default="wilson", choices=["wilson", "exact_crc"], help="Bound used to fit tau: 'wilson' (default, existing behavior — Wilson confidence interval) or 'exact_crc' (exact finite-sample Angelopoulos & Bates bound, valid under the candidate-tau scan; see conformal_thresholds.py exact_crc_feasible docstring)")  # threshold bound choice
     parser.add_argument("--risk_scorer_model", type=str, default="", help="Model used to compute risk score s; defaults to judge_model")  # scorer model
     parser.add_argument("--enable_rewrite", action="store_true", help="Actually rewrite when risky; if not set, just logs decisions")  # rewrite toggle
     parser.add_argument("--claim_threshold", type=float, default=0.5, help="Threshold for claim validity (0.0-1.0)")  # claim filter threshold
@@ -945,6 +997,7 @@ def main() -> None:
             groups=groups,
             alpha=float(args.alpha),
             use_group_thresholds=bool(args.use_group_thresholds),
+            threshold_method=str(args.threshold_method),
         )
 
         data_split = make_data_split_record(args, all_data, len(all_data))
@@ -973,6 +1026,7 @@ def main() -> None:
                     "claim_alpha": float(claim_alpha),  # claim alpha
                     "alpha": float(args.alpha),  # alpha
                     "use_group_thresholds": bool(args.use_group_thresholds),  # option A
+                    "threshold_method": str(args.threshold_method),  # wilson vs exact_crc
                 },
                 "thresholds_saved_to": args.thresholds_out,  # thresholds file path
                 "thresholds": threshold_to_json(fit, tau_claim, claim_alpha,
@@ -1108,6 +1162,7 @@ def main() -> None:
         groups=groups,  # group keys
         alpha=float(args.alpha),  # alpha
         use_group_thresholds=bool(args.use_group_thresholds),
+        threshold_method=str(args.threshold_method),
     )
 
     with open(args.thresholds_out, "w", encoding="utf-8") as f:
@@ -1168,6 +1223,7 @@ def main() -> None:
                 "calib_frac": float(args.calib_frac),  # split fraction
                 "use_group_thresholds": bool(args.use_group_thresholds),
                 "enable_rewrite": bool(args.enable_rewrite),  # rewrite toggle
+                "threshold_method": str(args.threshold_method),  # wilson vs exact_crc
             },
             "thresholds_saved_to": args.thresholds_out,  # thresholds file path
             "thresholds": threshold_to_json(fit, tau_claim, claim_alpha,
