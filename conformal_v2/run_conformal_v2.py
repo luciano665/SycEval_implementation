@@ -300,6 +300,7 @@ def calibration_collect(
     risk_scorer_model: str,
     claim_alpha: float,
     checkpoint_path: Optional[str] = None,
+    oracle_risk_scorer_calib: bool = False,
 ) -> Tuple[float, bool, List[float], List[int], List[Hashable], List[Dict[str, Any]]]:
 
     """
@@ -323,7 +324,28 @@ def calibration_collect(
       bad: list of y values (0/1)
       groups: list of group keys for Option A
       records: debug records (useful to inspect calibration)
+
+    oracle_risk_scorer_calib
+      DIAGNOSTIC ONLY, default False (unchanged deployable-only behavior).
+      When True, the risk scorer sees the reference answer during
+      CALIBRATION ONLY -- never at test time, that path is untouched and
+      stays leak-free. Purpose: answer "is the risk scorer the bottleneck,
+      or is this a genuine behavioral ceiling in the tested model." If
+      calibration still fails with the risk scorer handed the correct
+      answer, that rules out scorer quality entirely -- no amount of
+      information given to the scorer could reveal a safe accept-region
+      that doesn't exist. This produces a diagnostic-only thresholds file;
+      never use its tau operationally (there is nothing to apply it to
+      without the same oracle access at test time, which would reintroduce
+      the C1 leak this flag deliberately does not touch).
     """
+
+    if oracle_risk_scorer_calib:
+        logger.warning(
+            "oracle_risk_scorer_calib=True: risk scorer sees the reference "
+            "answer during calibration. DIAGNOSTIC ONLY -- do not report the "
+            "resulting tau/calibration_failed as a deployable result."
+        )
 
     scores: List[float] = []
     bad: List[int] = []
@@ -442,7 +464,10 @@ def calibration_collect(
             rebuttal=cached["rebuttal"],
             initial_answer=cached["initial_answer"],
             draft_answer=cached["draft_answer_raw"],
-            truth=None,  # deployable-only: risk scorer never sees the reference answer
+            # deployable-only by default (truth=None); oracle_risk_scorer_calib
+            # is a CALIBRATION-ONLY diagnostic escape hatch (see docstring) --
+            # test_apply's risk-score call below is NEVER touched by this flag.
+            truth=(cached["truth"] if oracle_risk_scorer_calib else None),
             backend=cfg.backend,
             temperature=cfg.temperature,
         )
@@ -936,6 +961,8 @@ def main() -> None:
     parser.add_argument("--domain", type=str, default="medquad", choices=["medquad", "healthsearch"], help="Dataset domain")
     parser.add_argument("--allow_calib_overlap", action="store_true",
                         help="mode=test only: skip excluding calibration items recorded in the thresholds file (knowingly test on calibration data)")
+    parser.add_argument("--oracle_risk_scorer_calib", action="store_true",
+                        help="DIAGNOSTIC ONLY: risk scorer sees the reference answer during calibration (never at test time). Answers whether calibration failure is a risk-scorer bottleneck (calibration starts succeeding) or a genuine behavioral ceiling (still fails even with the correct answer handed to the scorer). Do not report the resulting tau as a deployable result -- there is no matching oracle-assisted test-time path to apply it to.")
 
     # Parse CLI tags
     args = parser.parse_args()
@@ -988,6 +1015,7 @@ def main() -> None:
             risk_scorer_model=risk_scorer_model,
             claim_alpha=claim_alpha,
             checkpoint_path=calib_checkpoint,
+            oracle_risk_scorer_calib=bool(args.oracle_risk_scorer_calib),
         )
 
         # Fit thresholds from calibration data
@@ -1027,6 +1055,7 @@ def main() -> None:
                     "alpha": float(args.alpha),  # alpha
                     "use_group_thresholds": bool(args.use_group_thresholds),  # option A
                     "threshold_method": str(args.threshold_method),  # wilson vs exact_crc
+                    "oracle_risk_scorer_calib": bool(args.oracle_risk_scorer_calib),  # DIAGNOSTIC ONLY flag; see calibration_collect docstring
                 },
                 "thresholds_saved_to": args.thresholds_out,  # thresholds file path
                 "thresholds": threshold_to_json(fit, tau_claim, claim_alpha,
@@ -1153,6 +1182,7 @@ def main() -> None:
         risk_scorer_model=risk_scorer_model,  # scorer model
         claim_alpha=claim_alpha,
         checkpoint_path=calib_checkpoint,
+        oracle_risk_scorer_calib=bool(args.oracle_risk_scorer_calib),
     )
 
     # fit tau from calibration
@@ -1224,6 +1254,7 @@ def main() -> None:
                 "use_group_thresholds": bool(args.use_group_thresholds),
                 "enable_rewrite": bool(args.enable_rewrite),  # rewrite toggle
                 "threshold_method": str(args.threshold_method),  # wilson vs exact_crc
+                "oracle_risk_scorer_calib": bool(args.oracle_risk_scorer_calib),  # DIAGNOSTIC ONLY flag; see calibration_collect docstring
             },
             "thresholds_saved_to": args.thresholds_out,  # thresholds file path
             "thresholds": threshold_to_json(fit, tau_claim, claim_alpha,
