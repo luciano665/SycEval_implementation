@@ -26,12 +26,23 @@ calib_frac=0.5) — only the threshold-fitting bound changes:
 | judge/rebuttal models | Qwen2.5-7B-Instruct | unchanged |
 | baseline results | `results/v9_night_medquad/run_baseline_<model>.json` | **reused, not rerun** (see below) |
 
-**No new baseline jobs.** `run_eval.py` (baseline) never calls
+**No new baseline jobs, by default.** `run_eval.py` (baseline) never calls
 `fit_thresholds`/threshold fitting at all — only the conformal arm does.
 Since nothing about baseline generation changed, `run_baseline_<model>.json`
 from v9n (same seed, same judge, same 300-item set) is the correct,
 valid, already-computed baseline to pair every v10 conformal result
 against. This suite is 6 jobs, not 12.
+
+**If the v9 baseline data is ever unavailable** (deleted, not synced,
+whatever): `submit_v10_suite.sh` checks for all 6
+`results/v9_night_medquad/run_baseline_<model>.json` files before
+submitting anything and aborts with a clear message if any are missing —
+it will not silently leave you with conformal-only results that have
+nothing to pair against. `slurm/v10_<model>_baseline.slurm` (6 scripts,
+one per model) exist as an explicit fallback in that case — same
+model/judge/data as v9n's baseline, just writing into
+`results/v10_exact_crc_medquad/` instead. Not run by default; only submit
+them if the preflight check in `submit_v10_suite.sh` fails.
 
 ## Local validation before spending cluster time
 
