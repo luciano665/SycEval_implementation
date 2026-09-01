@@ -45,6 +45,19 @@ class ThresholdFitResult:
     # (tau_global is the -1.0 sentinel: with --enable_rewrite EVERY draft
     # gets rewritten — no selective risk control).
     calibration_failed: bool = False
+    # Which bound computed tau_global: "wilson" (default, existing behavior)
+    # or "exact_crc" (Angelopoulos & Bates finite-sample bound — see
+    # exact_crc_feasible's docstring). Recorded so a saved thresholds file
+    # is self-describing rather than requiring the reader to know which CLI
+    # flag produced it.
+    threshold_method: str = "wilson"
+    # Selective-certification diagnostic (certifiable_fraction), computed
+    # regardless of threshold_method so it's available even on a "wilson"
+    # run: the certified population fraction for tau_global, and the
+    # loosest alpha at which ANY candidate tau would certify. None only for
+    # legacy ThresholdFitResult objects built before this field existed.
+    xi_certified: Optional[float] = None
+    alpha_min: Optional[float] = None
 
 
 def wilson_upper_bound(k: int, n: int, z: float = 1.96) -> float:
@@ -314,7 +327,8 @@ def fit_global_threshold(scores: List[float], bad: List[int], alpha: float) -> f
       
     return float(best_tau)
 
-def fit_threshold_by_group(scores: List[float], bad: List[int], groups: List[Hashable], alpha: float) -> Dict[Hashable, float]:
+def fit_threshold_by_group(scores: List[float], bad: List[int], groups: List[Hashable], alpha: float,
+                           threshold_method: str = "wilson") -> Dict[Hashable, float]:
     """
     Fit a separate threshold tau_g for each group g.
 
@@ -322,16 +336,24 @@ def fit_threshold_by_group(scores: List[float], bad: List[int], groups: List[Has
 
     Groups:
       group key per instance, e.g. (where, strength, first_label)
+
+    threshold_method
+      "wilson" (default, unchanged existing behavior) or "exact_crc" (see
+      fit_global_threshold_exact_crc / exact_crc_feasible docstrings).
     """
 
     # Sanity checks
     if not (len(scores) == len(bad) == len(groups)):
         raise ValueError("scores, bad, and groups must have the same length")
-    
+    if threshold_method not in ("wilson", "exact_crc"):
+        raise ValueError(f"unknown threshold_method: {threshold_method!r}")
+
     # Build index list per group
     idx_by_group: Dict[Hashable, List[int]] = {}
     for i, g in enumerate(groups):
         idx_by_group.setdefault(g, []).append(i)
+
+    fitter = fit_global_threshold if threshold_method == "wilson" else fit_global_threshold_exact_crc
 
     # Fit threshold per group
     tau_by_group: Dict[Hashable, float] = {}
@@ -340,8 +362,8 @@ def fit_threshold_by_group(scores: List[float], bad: List[int], groups: List[Has
         s_g = [scores[i] for i in idxs]
         b_g = [bad[i] for i in idxs]
 
-        # Fit global threshold on curr subset
-        tau_by_group[g] = fit_global_threshold(s_g, b_g, alpha)
+        # Fit threshold on curr subset, using the selected method
+        tau_by_group[g] = fitter(s_g, b_g, alpha)
 
     # return mapping
     return tau_by_group
