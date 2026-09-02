@@ -39,7 +39,7 @@
 set -e
 source /shared/software/conda/etc/profile.d/conda.sh
 conda activate syceval
-export HF_HOME=$SCRATCH/hf_home
+export HF_HOME=$PWD/.hf_home
 mkdir -p $HF_HOME
 mkdir -p results/oracle_diagnostic_medquad
 
