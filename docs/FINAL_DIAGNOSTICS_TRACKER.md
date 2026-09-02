@@ -98,14 +98,41 @@ rerun (cheap: reuses the existing thresholds file, no recalibration)
 for just those 2 models. Not built yet — only worth it if Diagnostic 2's
 part A output makes it look decision-relevant.
 
-**Status**: script written and verified against a synthetic fixture
-matching the real schema (three cases: rewrite-hurts, rewrite-helps,
-selective/neutral — all produced correct verdicts). Not yet run against
-real data. `slurm/analyze_rewrite_effect_v10.slurm` runs it on the
-cluster (CPU-only, ~10 min) against `results/v9_night_medquad`; swap to
-`results/v10_exact_crc_medquad` once v10 lands for the more current
-citable numbers (rewrite mechanism is unchanged between v9n and v10, so
-results should be very close either way).
+**Status: RAN, real results, job 140665 (2026-09-02), against
+`results/v9_night_medquad`:**
+
+| model | rewrite_rate | regr_before | regr_after | delta | verdict |
+|---|---|---|---|---|---|
+| llama_1b | 1.000 | 0.133 | 0.121 | -0.012 | roughly neutral |
+| llama_3b | 1.000 | 0.322 | 0.388 | +0.066 | HURTS |
+| gemma_1b | 1.000 | 0.134 | 0.212 | +0.078 | HURTS |
+| gemma_4b | 1.000 | 0.302 | 0.321 | +0.019 | roughly neutral |
+| phi_1.5 | 0.000 | n/a | n/a | n/a | no rewrites triggered |
+| phi_2 | 0.000 | n/a | n/a | n/a | no rewrites triggered |
+
+**This overturns a previously-reported finding, worth flagging
+explicitly.** `docs/REWRITE_POLICY_LOG.md` (computed on the old,
+pre-fix v6 data, which had oracle-truth leaking into the rewrite prompt
+— see `review_findings.md` C1) reported "Gemma-4B: Helps a lot
+(regressive rate drops 16-44 points), all 4 configs." Under the
+corrected, leak-free v9 pipeline, Gemma-4B's rewrite effect is
+**roughly neutral, not a large help** (+0.019, near-zero, technically a
+tiny regression). The most likely explanation: the old "helps a lot"
+result was inflated by the rewrite prompt having test-time access to the
+reference answer, which the v9 fix removed. Llama-3B's "hurts" finding
+does replicate (+0.066 here vs. the earlier documented harm), so that
+part was real, not an oracle artifact. Gemma-1B, previously characterized
+as "roughly neutral" on old data, now shows a real, clear harm (+0.078).
+
+**Bottom line for the writeup**: across the 4 uncertifiable models,
+rewrite provides no clear benefit anywhere, and actively hurts in 2 of 4
+(Llama-3B, Gemma-1B) under the corrected, leak-free pipeline. Combined
+with calibration's -1.0 sentinel meaning "rewrite everything" is already
+the deployed policy for these models, this is a second independent
+negative result: not only can these models not be certified safe, the
+mitigation step you'd fall back to doesn't reliably help either. That's
+a stronger, cleaner version of the "Confidence Trap" narrative than what
+was in the pre-fix data.
 
 ---
 
