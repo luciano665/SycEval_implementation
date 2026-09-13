@@ -106,18 +106,105 @@ real, trustworthy result; the projection was a cheap pre-check, not a
 substitute for actually collecting the data — treat it as validated
 (and shown to have real limits) rather than confirmed.
 
+## Results: rates (MedQuad, N=1000)
+
+Two measurements, and they disagree — the paired one is the trustworthy
+one.
+
+**Paired before/after rewrite** (`analyze_rewrite_effect_v10.py`, same
+draft compared to itself, `rewrite_rate=1.000` for all four failing
+models since `tau=-1` means rewrite-everything):
+
+| Model | regr_before | regr_after | delta | verdict |
+|---|---|---|---|---|
+| llama_1b | 0.134 | 0.178 | **+0.044** | rewrite hurts |
+| llama_3b | 0.285 | 0.338 | **+0.052** | rewrite hurts |
+| gemma_1b | 0.129 | 0.179 | **+0.050** | rewrite hurts |
+| gemma_4b | 0.281 | 0.296 | **+0.015** | roughly neutral |
+| phi_1.5 / phi_2 | n/a | n/a | n/a | 0 rewrites triggered |
+
+**Rewrite never helps any model, and now hurts 3 of 4** (at N=300 it hurt
+2 of 4 — Llama-1B moved from neutral to harmful).
+
+**Headline baseline-vs-conformal** (`analyze_final_n1000_headline.py`,
+two separate runs) gives different, partly contradictory deltas:
+llama_1b +0.030, llama_3b −0.000, gemma_1b −0.021, gemma_4b **−0.102**,
+phi_1.5 −0.015, phi_2 −0.034.
+
+**Do not report Gemma-4B's −0.102 as a rewrite effect.** The paired
+measurement puts the real effect at +0.015, essentially neutral. This
+is the same artifact already documented at N=300 (see
+`FINAL_DIAGNOSTICS_TRACKER.md`: the old "Gemma-4B helps a lot" claim
+traced to the C1 oracle leak), reappearing because the headline method
+compares two independently-sampled runs rather than the same draft
+before and after.
+
+**Unexplained, worth checking before the writeup**: the conformal arm's
+*pre-rewrite* drafts fold less than the separate baseline run —
+Gemma-4B 0.281 vs 0.398, Gemma-1B 0.129 vs 0.200. Something before the
+rewrite step accounts for the headline "improvement." Leading
+hypothesis: the claim-level filter, which runs on every draft regardless
+of the rewrite decision and is operating on the uncalibrated 0.3
+fallback (`tau_claim_fallback=True` for all models). Not verified.
+
+---
+
+## Second dataset: HealthSearchQA (N=1000)
+
+Same protocol, only `--domain` changes — deployable-only, leak-free
+rewrite, folding-only labels, alpha=0.10, `threshold_method=exact_crc`,
+`calib_frac=0.2` (200 calib / 800 test). Holding every other knob fixed
+is deliberate: any difference between the two datasets is then
+attributable to the dataset rather than a config change.
+
+The v6-era HealthSearchQA results are **not** reusable — `review_findings.md`
+C1 (oracle truth leaking into the test-time intervention) applies to
+them, and that leak is what produced the since-retracted "7.4%
+reduction" figure.
+
+**Pre-launch verification**: `smoke_test_final_hs.slurm` (job `143068`,
+N=20). COMPLETED, exit `0:0`, 44:18. Confirmed 4 calib of 20 loaded
+(`calib_frac=0.2`), 128 records (16 test items × 8 instances), real
+HealthSearchQA questions, and coherent answer text — the field
+difference from MedQuad (`Free_form_answer` vs `Answer`) flows through
+the loader, judge, and claim decomposition correctly.
+
+**Status: 12 jobs submitted 2026-09-13**, results pending.
+
+| Job ID | Model | Arm |
+|---|---|---|
+| 144670 | Llama-1B | baseline |
+| 144671 | Llama-1B | conformal |
+| 144672 | Llama-3B | baseline |
+| 144673 | Llama-3B | conformal |
+| 144674 | Gemma-1B | baseline |
+| 144675 | Gemma-1B | conformal |
+| 144676 | Gemma-4B | baseline |
+| 144677 | Gemma-4B | conformal |
+| 144678 | Phi-1.5 | baseline |
+| 144679 | Phi-1.5 | conformal |
+| 144680 | Phi-2 | baseline |
+| 144681 | Phi-2 | conformal |
+
 ## Results locations
 
-`results/final_n1000_medquad/run_baseline_<model>.json`,
-`run_conformal_<model>.json`, `thresholds_<model>.json`.
+MedQuad: `results/final_n1000_medquad/`
+HealthSearchQA: `results/final_n1000_healthsearch/`
+Both contain `run_baseline_<model>.json`, `run_conformal_<model>.json`,
+`thresholds_<model>.json`.
 
 ## Next steps
 
-1. Headline baseline-vs-conformal analysis (paired to the 800-item test
-   split, same pattern as `analyze_v9_headline.py` but pointed at this
-   directory and this calib_frac) — not yet run.
-2. This is the dataset to report in the paper's main results table —
-   supersedes the N=300 v9n numbers as the primary reported result,
-   though v9n's numbers remain valid as the smaller-scale, independently
+1. When the HealthSearchQA suite finishes: calibration verdicts +
+   `analyze_final_n1000_headline.py` / `analyze_rewrite_effect_v10.py`
+   pointed at `results/final_n1000_healthsearch`.
+2. Check the pre-rewrite gap noted above (conformal drafts folding less
+   than baseline) before any headline number goes in the paper.
+3. The oracle diagnostic ran at N=300 while these suites are N=1000. If
+   both appear in the paper, either note the scale difference or rerun
+   the oracle at N=1000 — calibration-only for 4 models, so relatively
+   cheap.
+4. These two suites are the paper's primary reported results; the N=300
+   v9n numbers remain valid as the smaller-scale, independently
    cross-validated version (Wilson vs. exact-CRC agreement, oracle test)
-   that the diagnostic story was actually built on.
+   that the diagnostic story was built on.
