@@ -169,7 +169,48 @@ HealthSearchQA questions, and coherent answer text — the field
 difference from MedQuad (`Free_form_answer` vs `Answer`) flows through
 the loader, judge, and claim decomposition correctly.
 
-**Status: 12 jobs submitted 2026-09-13**, results pending.
+**Status: ALL 12 COMPLETED**, exit `0:0` — submitted 2026-09-13,
+confirmed 2026-09-16. Longest job 1d 18:06:49 (gemma_4b conformal), well
+inside the 3-day budget.
+
+### Results: both headline claims replicate
+
+**Calibration: 2 of 6 certify at alpha=0.10**, the same two models as
+MedQuad (Phi-1.5, Phi-2). But HealthSearchQA is uniformly harder — every
+model except Phi-2 needs a looser target than it did on MedQuad:
+
+| Model | alpha_min (MedQuad) | alpha_min (HSQ) | HSQ verdict |
+|---|---|---|---|
+| phi_2 | 0.048 | **0.035** | certifies |
+| phi_1.5 | 0.023 | **0.081** | certifies, but marginal |
+| llama_1b | 0.120 | 0.187 | fails |
+| gemma_1b | 0.124 | 0.187 | fails |
+| llama_3b | 0.150 | 0.269 | fails |
+| gemma_4b | 0.184 | **0.339** | fails |
+
+**Rewrite: hurts 3 of 4, helps none** — replicates, and the harm is
+*larger* on this dataset:
+
+| Model | delta (MedQuad) | delta (HSQ) |
+|---|---|---|
+| llama_1b | +0.044 | **+0.076** |
+| llama_3b | +0.052 | **+0.098** |
+| gemma_1b | +0.050 | **+0.089** |
+| gemma_4b | +0.015 | **+0.018** |
+| phi_1.5 / phi_2 | 0 rewrites | 0 rewrites |
+
+Gemma-4B landing at +0.015 vs +0.018 across two independent datasets is
+about as tight as replication gets.
+
+### Two things to carry into the writeup
+
+1. **Phi-1.5 is marginal on HSQ** (0.081 vs a 0.10 target). One of the
+   two certifying models sits close to the line on the harder dataset —
+   a reviewer comparing the two tables will notice.
+2. **The 5% answer is dataset-dependent.** MedQuad: both Phi models
+   clear 5% (0.023, 0.048) → 2 of 6. HSQ: only Phi-2 (0.035) → 1 of 6,
+   since Phi-1.5's 0.081 misses. If 5% appears in the paper it cannot be
+   reported as a single number across datasets.
 
 | Job ID | Model | Arm |
 |---|---|---|
