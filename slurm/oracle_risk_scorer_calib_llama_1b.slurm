@@ -51,6 +51,7 @@ srun python -m conformal_v2.run_conformal_v2 \
   --judge_model models/Qwen2.5-7B-Instruct \
   --rebuttal_model models/Qwen2.5-7B-Instruct \
   --alpha 0.10 \
+  --calib_frac 1.0 \
   --max_items 150 \
   --domain medquad \
   --threshold_method exact_crc \

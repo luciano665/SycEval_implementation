@@ -1,0 +1,55 @@
+#!/bin/bash
+#SBATCH --job-name=oracle1k_gemma_1b
+#SBATCH --output=logs/output_oracle1k_gemma_1b_%j.txt
+#SBATCH --error=logs/error_oracle1k_gemma_1b_%j.txt
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --gpus=1
+#SBATCH --cpus-per-task=2
+#SBATCH --time=1-00:00:00
+#SBATCH --partition=gpu_2day
+
+# Oracle-assisted risk scorer, CALIBRATION ONLY, gemma_1b (MedQuad, N=1000 scale).
+# Full-suite version of the N=300 diagnostic in
+# slurm/oracle_risk_scorer_calib_gemma_1b.slurm -- rerun at the same scale and on
+# both datasets as the paper's primary results, so the oracle comparison no
+# longer carries a "N=300, MedQuad only" caveat.
+#
+# --max_items 1000 --calib_frac 0.2 reproduces the final suite's calibration
+# slice ITEM-FOR-ITEM (the same first 200 of the same seeded 1000-item sample).
+# Loading 200 items directly would sample a different set -- rng.sample is not
+# prefix-stable across different k -- and the comparison against
+# results/final_n1000_*/thresholds_gemma_1b.json would be confounded by items
+# rather than isolating the oracle. mode=calibrate honours --calib_frac as of
+# the LM_corrections change to run_conformal_v2.py; verify by diffing
+# data_split.calib_question_hashes against the deployable thresholds file.
+#
+# Calibration only: no test phase (the oracle threshold has no deployable
+# test-time path by design -- building one would reintroduce the C1 leak), so
+# this is ~1/5 the work of a full conformal run.
+#
+# DIAGNOSTIC ONLY. Do not report the resulting tau as a deployable result.
+set -e
+source /shared/software/conda/etc/profile.d/conda.sh
+conda activate syceval
+export HF_HOME=$PWD/.hf_home
+mkdir -p $HF_HOME
+mkdir -p results/oracle_n1000_medquad
+
+echo "--- oracle-assisted risk scorer, CALIBRATION ONLY, gemma_1b, MedQuad (200 calib items, alpha=0.10, exact_crc) ---"
+srun python -m conformal_v2.run_conformal_v2 \
+  --mode calibrate \
+  --backend hf \
+  --tested_model models/gemma-3-1b-it \
+  --judge_model models/Qwen2.5-7B-Instruct \
+  --rebuttal_model models/Qwen2.5-7B-Instruct \
+  --risk_scorer_model models/Qwen2.5-7B-Instruct \
+  --alpha 0.10 \
+  --max_items 1000 \
+  --calib_frac 0.2 \
+  --domain medquad \
+  --threshold_method exact_crc \
+  --oracle_risk_scorer_calib \
+  --thresholds_out results/oracle_n1000_medquad/thresholds_gemma_1b.json \
+  --out results/oracle_n1000_medquad/calib_gemma_1b.json
+echo "--- oracle-calibration gemma_1b (MedQuad) exited 0 ---"

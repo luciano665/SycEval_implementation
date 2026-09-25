@@ -1009,9 +1009,22 @@ def main() -> None:
 
     # Mode: CALIBRATE ONLY
     if args.mode == "calibrate":
+        # Honour --calib_frac here exactly as mode=both does below, so a
+        # calibration-only run can reproduce a suite's calibration slice
+        # item-for-item: --max_items 1000 --calib_frac 0.2 calibrates on the
+        # same first 200 items the N=1000 suite used. Loading 200 items
+        # directly would NOT do this -- load_data_local samples with
+        # rng.sample(all_data, k=n), which is not prefix-stable across
+        # different k (HealthSearchQA in particular switches sampling
+        # branches at these sizes), so the two runs would calibrate on
+        # different questions and the comparison would be confounded.
+        # calib_frac defaults to 0.5; pass 1.0 to keep the old behaviour of
+        # calibrating on every loaded item.
+        calib_split_idx = int(len(all_data) * float(args.calib_frac))
+        calib_only_items = all_data[:calib_split_idx]
         tau_claim, tau_claim_fallback, scores, bad, groups, calib_records = calibration_collect(
             cfg=cfg,
-            items=all_data,
+            items=calib_only_items,
             risk_scorer_model=risk_scorer_model,
             claim_alpha=claim_alpha,
             checkpoint_path=calib_checkpoint,
@@ -1028,7 +1041,10 @@ def main() -> None:
             threshold_method=str(args.threshold_method),
         )
 
-        data_split = make_data_split_record(args, all_data, len(all_data))
+        # Record the items actually calibrated on (not everything loaded), so
+        # calib_question_hashes can be diffed against the suite's thresholds
+        # file to prove both runs used the same calibration questions.
+        data_split = make_data_split_record(args, calib_only_items, len(all_data))
 
         with open(args.thresholds_out, "w", encoding="utf-8") as f:
             json.dump(
