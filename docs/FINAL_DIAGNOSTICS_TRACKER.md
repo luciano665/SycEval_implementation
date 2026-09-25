@@ -43,15 +43,77 @@ scorer the actual correct answer removes scorer-quality as a variable
 entirely. If calibration still fails here, there is nothing further to
 attribute to the risk scorer.
 
-**Status**: NOT YET RUN. `slurm/submit_oracle_diagnostic.sh` (4 jobs).
-Fill in job IDs once submitted:
+**Status**: COMPLETE (`slurm/submit_oracle_diagnostic.sh`, 4 jobs, N=150
+calibration items, MedQuad). Job IDs were not recorded at submission time;
+provenance verified after the fact from the output files instead —
+`metadata.config` in each `calib_<model>.json` reads
+`oracle_risk_scorer_calib=True, threshold_method=exact_crc, alpha=0.1,
+max_items=150`, and all four `.test.partial.jsonl` files are 0 lines
+(no test phase ran, so the oracle threshold was never applied at test
+time).
 
-| Job ID | Model | Result (tau_global) |
+| Model | alpha_min (deployable, N=300) | alpha_min (oracle) | tau_global | Certifies at 0.10? |
+|---|---|---|---|---|
+| Gemma-1B | 0.102 | **0.077** | 0.9 | YES |
+| Llama-1B | 0.115 | **0.092** | 0.85 | YES |
+| Gemma-4B | 0.260 | 0.184 | -1.0 | no |
+| Llama-3B | 0.254 | 0.144 | -1.0 | no |
+
+**Verdict: split, not the clean binary this section anticipated.** Oracle
+access lowers `alpha_min` for all four, and rescues the two 1B models —
+so for those, the risk scorer WAS the bottleneck, contradicting the v3-scorer
+prior recorded above. The two larger models improve by more in absolute
+terms (-0.076, -0.110) but still fail, i.e. scorer quality alone does not
+close their gap. Report both halves.
+
+**Caveat carried forward** (from "Reading the result" below): a real
+`tau_global` "should be checked against real content before reporting, not
+just the number". That content check has NOT been done for Gemma-1B /
+Llama-1B. Do it before these two certifications go in the paper.
+
+**At alpha=0.05 the oracle rescues nothing**: 0.077 and 0.092 both exceed
+0.05, so the 5% count stays 2/6 on MedQuad with or without oracle access.
+
+### Follow-up: same diagnostic at the paper's scale (N=1000, both datasets)
+
+The above ran at N=300/MedQuad while the paper's primary results are
+N=1000 on two datasets. Rerun at matching scale, all 6 models (Phi-1.5/2
+included so the table has no gaps), via `slurm/submit_oracle_n1000.sh`
+-> `results/oracle_n1000_{medquad,healthsearch}/`.
+
+`--max_items 1000 --calib_frac 0.2` reproduces the final suite's
+calibration slice item-for-item. This required a change to
+`run_conformal_v2.py`: `mode=calibrate` previously ignored `--calib_frac`
+and calibrated on every loaded item. Loading 200 items directly would NOT
+give the same questions — `load_data_local` uses `rng.sample(all_data, k=n)`,
+which is not prefix-stable across different `k`. The 4 older N=150 scripts
+were pinned with `--calib_frac 1.0` to preserve their behaviour.
+
+Verified before submission: the first 200 of the seeded 1000-item sample
+match `data_split.calib_question_hashes` in
+`results/final_n1000_<domain>/thresholds_gemma_1b.json` exactly, on BOTH
+datasets.
+
+**Status: SUBMITTED 2026-09-25**, 12 jobs, 24h each on `gpu_2day`.
+
+| Job ID | Model | Dataset |
 |---|---|---|
-| — | Llama-1B | — |
-| — | Llama-3B | — |
-| — | Gemma-1B | — |
-| — | Gemma-4B | — |
+| 150778 | Llama-1B | MedQuad |
+| 150779 | Llama-3B | MedQuad |
+| 150780 | Gemma-1B | MedQuad |
+| 150781 | Gemma-4B | MedQuad |
+| 150782 | Phi-1.5 | MedQuad |
+| 150783 | Phi-2 | MedQuad |
+| 150784 | Llama-1B | HealthSearchQA |
+| 150785 | Llama-3B | HealthSearchQA |
+| 150786 | Gemma-1B | HealthSearchQA |
+| 150787 | Gemma-4B | HealthSearchQA |
+| 150788 | Phi-1.5 | HealthSearchQA |
+| 150789 | Phi-2 | HealthSearchQA |
+
+On the first completed job, diff `data_split.calib_question_hashes`
+against the deployable thresholds file for the same model+dataset before
+trusting the rest of the batch.
 
 **Reading the result**: `results/oracle_diagnostic_medquad/thresholds_<model>.json`.
 `tau_global` still `-1.0` (`calibration_failed: true`) even with oracle
@@ -133,6 +195,55 @@ negative result: not only can these models not be certified safe, the
 mitigation step you'd fall back to doesn't reliably help either. That's
 a stronger, cleaner version of the "Confidence Trap" narrative than what
 was in the pre-fix data.
+
+---
+
+## Diagnostic 3 (unplanned, already run): cross-family risk scorer
+
+Not part of the mentor's two asks, but it lands on the same axis and was
+never written down anywhere — the numbers existed only in
+`analyze_gptoss_verify.py`'s output. Recorded here because it answers the
+obvious reviewer objection to Diagnostic 1: *is calibration failing
+because Qwen is scoring capitulation to rebuttals Qwen itself generated?*
+
+`slurm/verify_gptoss_scorer_*.slurm` (ran 2026-08-26) swaps
+`--risk_scorer_model` to `gpt-oss-20b` — a different family — keeping the
+Qwen judge and Qwen rebuttals. N=60 items (240 instances), llama_1b and
+gemma_1b, the same two borderline cases the v3 prompt fix was verified on.
+Read with `python3 analyze_gptoss_verify.py`.
+
+| Model | n | bad_rate | AUC (old prompt) | AUC (v3 prompt) | AUC (gpt-oss) | unique scores | calibration |
+|---|---|---|---|---|---|---|---|
+| llama_1b | 240 | 0.158 | 0.302 (inverted) | 0.470 | 0.537 | 9 | FAILS (tau=-1.0) |
+| gemma_1b | 240 | 0.175 | 0.508 | 0.575 | 0.418 | 11 | FAILS (tau=-1.0) |
+
+**Verdict: scorer identity is not the problem.** A different-family scorer
+with no stake in the rebuttals ranks no better — 0.537 and 0.418 are noise
+around chance, better for one model and worse for the other. Combined with
+the v3 prompt fix (barely moved AUC, calibration unchanged) and Diagnostic
+1 (reference access DOES rescue two models), the axis reads: prompt no,
+model identity no, *information* yes. The deployable scorer's problem is
+that it cannot tell drift from correction without knowing the answer.
+
+**Second mechanism, independent of AUC**: only 9-11 *unique* score values
+across 240 instances. The threshold scan therefore has ~10 candidate tau to
+choose from, so even a well-ranked scorer would have very coarse control
+over where the accepted region sits. Worth reporting alongside AUC.
+
+**Caveats**: N=60 (vs 1000 for the primary results), 2 models, both ~1B,
+MedQuad only. If this goes in the paper as more than a footnote, the cheap
+upgrade is a calibration-only rerun at the 200-item slice for the 4
+uncertifiable models, reusing the `oracle1k_*` scripts with the oracle flag
+dropped and `--risk_scorer_model models/gpt-oss-20b`. Not currently
+planned — the mentor's guidance was to stop varying scorers.
+
+**Prompt quirk noticed while reading `syco_risk.py`** (not yet acted on):
+the scoring rubric references the Ground Truth ("resisted with sound
+reasoning, or correctly updated toward the Ground Truth") in every run, but
+`truth_block` is empty in deployable runs. The deployable scorer is asked
+to judge alignment with a reference it was never shown, which may itself
+contribute to the near-chance AUC. Fixing this would mean reopening prompt
+tuning, so it is recorded as an observation only.
 
 ---
 
