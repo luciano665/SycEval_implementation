@@ -111,9 +111,74 @@ datasets.
 | 150788 | Phi-1.5 | HealthSearchQA |
 | 150789 | Phi-2 | HealthSearchQA |
 
-On the first completed job, diff `data_split.calib_question_hashes`
-against the deployable thresholds file for the same model+dataset before
-trusting the rest of the batch.
+**Status: ALL 12 COMPLETED**, exit `0:0`, confirmed 2026-09-27. Elapsed
+2:55–7:03 per job, far inside the 24h budget. Calibration-item check
+passed for all 12: `data_split.calib_question_hashes` is byte-identical to
+`results/final_n1000_<domain>/thresholds_<model>.json`, so alpha_min
+differences isolate the oracle and nothing else.
+
+### Results (N=1000, 200 calib items, alpha=0.10, exact_crc)
+
+| Dataset | Model | alpha_min deployable | alpha_min oracle | delta | certifies at 0.10 |
+|---|---|---|---|---|---|
+| MedQuad | Gemma-1B | 0.124 | **0.079** | -0.045 | **newly YES** |
+| MedQuad | Llama-1B | 0.120 | **0.090** | -0.030 | **newly YES** |
+| MedQuad | Llama-3B | 0.150 | 0.145 | -0.006 | no |
+| MedQuad | Gemma-4B | 0.184 | 0.201 | +0.017 | no |
+| MedQuad | Phi-1.5 | 0.023 | 0.026 | +0.002 | already did |
+| MedQuad | Phi-2 | 0.048 | 0.042 | -0.006 | already did |
+| HSQ | Gemma-4B | 0.339 | 0.308 | -0.032 | no |
+| HSQ | Gemma-1B | 0.187 | 0.168 | -0.019 | no |
+| HSQ | Llama-3B | 0.269 | 0.251 | -0.018 | no |
+| HSQ | Phi-1.5 | 0.081 | 0.066 | -0.015 | already did |
+| HSQ | Llama-1B | 0.187 | 0.177 | -0.010 | no |
+| HSQ | Phi-2 | 0.035 | 0.028 | -0.006 | already did |
+
+**MedQuad: 2 of 6 -> 4 of 6. HealthSearchQA: 2 of 6 -> 2 of 6.**
+
+MedQuad replicates the N=300 result closely (Gemma-1B 0.079 vs 0.077,
+Llama-1B 0.090 vs 0.092) and at the paper's own scale. The two large
+improvements are the only deltas clearly above the noise floor below, and
+both cross the target — the scorer's blindness to ground truth fully
+accounts for these two models' failure.
+
+**New, and only visible because this suite added the second dataset: the
+oracle rescues nobody on HealthSearchQA.** All six improve, none of the
+four failures crosses 0.10, and the two worst (Gemma-4B 0.308, Llama-3B
+0.251) remain far away. So the mentor's dichotomy resolves *per dataset*,
+not per model: risk-scorer limitation on structured clinical questions,
+something more fundamental on open-ended consumer queries.
+
+### Noise floor: the suite accidentally ran twice
+
+`submit_oracle_n1000.sh` was run twice (jobs `150766-150777` and
+`150778-150789`), identical scripts, identical seed, identical items. Both
+batches completed. Checkpoints are append-only and never read back
+(`_append_jsonl` / `_reset_checkpoint`), and each job holds its own scores
+in memory, so no file is spliced — but each thresholds file on disk is
+whichever job finished last, so the persisted suite MIXES the two batches.
+
+Per-batch alpha_min from `logs/error_oracle1k*`: 7 of 12 pairs identical, 3
+differ by <=0.007, and 2 differ materially — Gemma-1B HSQ **0.168 vs
+0.124** (0.044) and Phi-1.5 HSQ **0.048 vs 0.066** (0.018). Same config on
+(presumably) different GPU hardware; greedy decoding is deterministic given
+identical hardware, not across it, and a few flipped drafts move alpha_min.
+
+**Consequences, all of which belong in the writeup:**
+1. Run-to-run spread reaches 0.044, so **treat alpha_min differences below
+   ~0.05 as noise**. This is a free empirical stability estimate and is
+   more honest than a computed CI.
+2. Gemma-4B MedQuad's +0.017 is therefore NOT "the oracle hurts" — report
+   it as no improvement. Same for Phi-1.5 MedQuad's +0.002.
+3. Gemma-1B MedQuad's -0.045 sits right at the noise floor. Llama-1B's
+   -0.030 is smaller still. The *certification flips* are the robust part
+   (both models cross the target in both batches on MedQuad); the exact
+   magnitudes are not.
+4. The paper's temperature-0 determinism claim must say "deterministic
+   given identical hardware", not "deterministic".
+
+No verdict in the table changes between batches, so the suite stands as
+reported.
 
 **Reading the result**: `results/oracle_diagnostic_medquad/thresholds_<model>.json`.
 `tau_global` still `-1.0` (`calibration_failed: true`) even with oracle
