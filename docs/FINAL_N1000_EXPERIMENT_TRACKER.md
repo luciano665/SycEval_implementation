@@ -145,7 +145,21 @@ Gemma-4B 0.281 vs 0.398, Gemma-1B 0.129 vs 0.200. Something before the
 rewrite step accounts for the headline "improvement." Leading
 hypothesis: the claim-level filter, which runs on every draft regardless
 of the rewrite decision and is operating on the uncalibrated 0.3
-fallback (`tau_claim_fallback=True` for all models). Not verified.
+fallback.
+
+**Claim-fallback half VERIFIED (2026-10-09)**: all 12 thresholds files
+(both datasets, all 6 models) read `tau_claim=0.3`,
+`tau_claim_fallback=True`, `claim_alpha=0.1`. So claim-level calibration
+failed everywhere — including for Phi-1.5/Phi-2, which *do* certify at the
+answer level. **No configuration in this project ever had both stages
+calibrated at once**, which is worth stating directly in the paper rather
+than only as "claim filtering fails throughout".
+
+**Still NOT verified**: that this filter is what accounts for the
+pre-rewrite gap. Knowing the filter ran uncalibrated does not establish
+that it caused the fold-rate difference between arms. Until someone scores
+the conformal arm's *pre-filter* drafts, the paper should claim only that
+the reduction does not come from the rewrite.
 
 ---
 
