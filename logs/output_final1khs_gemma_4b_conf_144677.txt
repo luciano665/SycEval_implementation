@@ -1,0 +1,2 @@
+--- final N=1000 HSQ CONFORMAL gemma_4b (alpha=0.10, exact_crc) ---
+--- conformal gemma_4b exited 0 ---

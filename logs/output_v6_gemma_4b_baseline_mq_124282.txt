@@ -1,0 +1,1 @@
+--- Gemma 4B V6 Baseline (N=1000, MedQuad) ---

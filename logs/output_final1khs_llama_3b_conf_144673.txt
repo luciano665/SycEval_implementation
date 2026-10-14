@@ -1,0 +1,2 @@
+--- final N=1000 HSQ CONFORMAL llama_3b (alpha=0.10, exact_crc) ---
+--- conformal llama_3b exited 0 ---

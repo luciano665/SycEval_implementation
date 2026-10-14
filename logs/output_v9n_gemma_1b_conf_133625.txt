@@ -1,0 +1,2 @@
+--- v9 CONFORMAL gemma_1b (N=300, alpha=0.10, deployable+folding-only) ---
+--- conformal gemma_1b exited 0 ---

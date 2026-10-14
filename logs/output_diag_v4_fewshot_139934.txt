@@ -1,0 +1,6 @@
+--- v4-fewshot quick gate: llama_1b (N=20) ---
+tested_model=models/Llama-3.2-1B-Instruct  domain=medquad  n_instances=160  n_bad_v4=15
+
+          OLD       v3        v4-fewshot  
+AUC       0.660     0.660     0.698       
+--- exited 0 ---

@@ -1,0 +1,12 @@
+--- exact-CRC retrofit on v9 calibration checkpoints (alpha=0.10) ---
+Target alpha = 0.1, results dir = results/v9_night_medquad
+
+model     n_calib  wilson_tau  exact_tau  exact_xi  alpha_min verdict
+---------------------------------------------------------------------
+llama_1b  1200     -1.000      -1.000     0.000     0.115     STILL FAILS: real ceiling regardless of bound
+llama_3b  1200     -1.000      -1.000     0.000     0.254     STILL FAILS: real ceiling regardless of bound
+gemma_1b  1200     -1.000      -1.000     0.000     0.102     STILL FAILS: real ceiling regardless of bound
+gemma_4b  1200     -1.000      -1.000     0.000     0.260     STILL FAILS: real ceiling regardless of bound
+phi_1.5   1200     1.000       1.000      1.000     0.032     both certify
+phi_2     1200     1.000       1.000      1.000     0.053     both certify
+--- done ---

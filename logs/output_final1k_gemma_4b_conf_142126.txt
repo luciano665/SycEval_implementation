@@ -1,0 +1,2 @@
+--- final N=1000 CONFORMAL gemma_4b (alpha=0.10, exact_crc, calib_frac=0.2) ---
+--- conformal gemma_4b exited 0 ---

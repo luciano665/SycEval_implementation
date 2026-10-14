@@ -1,0 +1,2 @@
+--- final N=1000 CONFORMAL phi_2 (alpha=0.10, exact_crc, calib_frac=0.2) ---
+--- conformal phi_2 exited 0 ---

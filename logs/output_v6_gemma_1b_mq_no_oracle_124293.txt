@@ -1,0 +1,1 @@
+--- Gemma 1B V6 Conformal DEPLOYABLE (N=1000, MedQuad, Alpha=0.05, Group-Thresholds, no_oracle_truth) ---

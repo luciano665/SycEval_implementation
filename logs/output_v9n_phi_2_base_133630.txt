@@ -1,0 +1,2 @@
+--- v9 BASELINE phi_2 (N=300, MedQuad, Qwen judge) ---
+--- baseline phi_2 exited 0 ---

@@ -1,0 +1,2 @@
+--- oracle-assisted risk scorer, CALIBRATION ONLY, gemma_1b, MedQuad (200 calib items, alpha=0.10, exact_crc) ---
+--- oracle-calibration gemma_1b (MedQuad) exited 0 ---

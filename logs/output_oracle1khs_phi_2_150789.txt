@@ -1,0 +1,2 @@
+--- oracle-assisted risk scorer, CALIBRATION ONLY, phi_2, HealthSearchQA (200 calib items, alpha=0.10, exact_crc) ---
+--- oracle-calibration phi_2 (HealthSearchQA) exited 0 ---

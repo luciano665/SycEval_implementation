@@ -1,0 +1,9 @@
+2026-08-15 17:16:11 | WARNING | models | Failed to register ministral3: The config you are passing has a `model_type` attribute that is not consistent with the model type you passed (config has mistral and you passed ministral3. Fix one of those so they match!
+2026-08-15 17:16:11 | INFO | data_loader | Loading local dataset: healthsearch (15 items)
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:  50%|█████     | 1/2 [00:00<00:00,  2.39it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00,  3.41it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00,  3.20it/s]
+2026-08-15 17:16:14 | INFO | models | Moving models/gemma-3-4b-it to cuda
+The following generation flags are not valid and may be ignored: ['top_p', 'top_k']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00, 112.22it/s]
+2026-08-15 17:16:33 | INFO | models | Moving models/gemma-3-4b-it to CPU to free memory for models/Qwen2.5-7B-Instruct
+2026-08-15 17:16:35 | INFO | models | Moving models/Qwen2.5-7B-Instruct to cuda
+The following generation flags are not valid and may be ignored: ['temperature', 'top_p', 'top_k']. Set `TRANSFORMERS_VERBOSITY=info` for more details.

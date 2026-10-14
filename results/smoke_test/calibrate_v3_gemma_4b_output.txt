@@ -1,0 +1,13 @@
+model=models/gemma-3-4b-it  domain=healthsearch  n_items=60  n_records=480
+tau_claim=0.300  tau_claim_fallback=True
+bad_orig rate: 306/480 = 0.637
+bad_v4  rate: 195/480 = 0.406
+
+alpha     tau_orig_def      tau_bad_v4        
+0.05      FAIL              FAIL              
+0.1       FAIL              FAIL              
+0.15      FAIL              FAIL              
+0.2       FAIL              FAIL              
+0.25      FAIL              FAIL              
+
+Requested target alpha=0.05: bad_v4 result = FAILS

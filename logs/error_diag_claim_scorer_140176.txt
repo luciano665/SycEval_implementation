@@ -1,0 +1,8 @@
+2026-08-30 12:44:06 | WARNING | models | Failed to register ministral3: The config you are passing has a `model_type` attribute that is not consistent with the model type you passed (config has mistral and you passed ministral3. Fix one of those so they match!
+2026-08-30 12:44:07 | INFO | data_loader | Loading local dataset: medquad (20 items)
+2026-08-30 12:44:08 | INFO | models | Moving models/Llama-3.2-1B-Instruct to cuda
+The following generation flags are not valid and may be ignored: ['temperature', 'top_p']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00, 45.81it/s]
+2026-08-30 12:44:13 | INFO | models | Moving models/Llama-3.2-1B-Instruct to CPU to free memory for models/Qwen2.5-7B-Instruct
+2026-08-30 12:44:13 | INFO | models | Moving models/Qwen2.5-7B-Instruct to cuda
+The following generation flags are not valid and may be ignored: ['temperature', 'top_p', 'top_k']. Set `TRANSFORMERS_VERBOSITY=info` for more details.

@@ -1,0 +1,2 @@
+--- final N=1000 HSQ BASELINE phi_1.5 ---
+--- baseline phi_1.5 exited 0 ---

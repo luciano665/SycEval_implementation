@@ -1,0 +1,2 @@
+--- final N=1000 HSQ CONFORMAL phi_1.5 (alpha=0.10, exact_crc) ---
+--- conformal phi_1.5 exited 0 ---

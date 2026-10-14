@@ -1,0 +1,2 @@
+--- final N=1000 BASELINE gemma_4b (MedQuad, Qwen judge) ---
+--- baseline gemma_4b exited 0 ---

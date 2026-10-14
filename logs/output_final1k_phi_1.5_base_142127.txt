@@ -1,0 +1,2 @@
+--- final N=1000 BASELINE phi_1.5 (MedQuad, Qwen judge) ---
+--- baseline phi_1.5 exited 0 ---

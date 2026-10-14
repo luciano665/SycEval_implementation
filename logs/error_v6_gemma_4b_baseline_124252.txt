@@ -1,0 +1,16 @@
+2026-08-04 22:51:39 | WARNING | models | Failed to register ministral3: The config you are passing has a `model_type` attribute that is not consistent with the model type you passed (config has mistral and you passed ministral3. Fix one of those so they match!
+2026-08-04 22:51:39 | INFO | data_loader | Loading local dataset: healthsearch (1000 items)
+MedQuad:   0%|          | 0/1000 [00:00<?, ?it/s]
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s][A
+Loading checkpoint shards:  50%|█████     | 1/2 [00:03<00:03,  3.00s/it][A
+Loading checkpoint shards: 100%|██████████| 2/2 [00:04<00:00,  2.13s/it][ALoading checkpoint shards: 100%|██████████| 2/2 [00:04<00:00,  2.26s/it]
+2026-08-04 22:51:45 | INFO | models | Moving models/gemma-3-4b-it to cuda
+The following generation flags are not valid and may be ignored: ['top_p', 'top_k']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s][ALoading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00, 107.52it/s]
+2026-08-04 22:52:11 | INFO | models | Moving models/gemma-3-4b-it to CPU to free memory for models/Qwen2.5-7B-Instruct
+2026-08-04 22:52:13 | INFO | models | Moving models/Qwen2.5-7B-Instruct to cuda
+The following generation flags are not valid and may be ignored: ['temperature', 'top_p', 'top_k']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+srun: Job step aborted: Waiting up to 302 seconds for job step to finish.
+MedQuad:   0%|          | 1/1000 [02:34<42:55:16, 154.67s/it]slurmstepd: error: *** STEP 124252.0 ON dscog024 CANCELLED AT 2026-08-04T22:55:47 ***
+slurmstepd: error: *** JOB 124252 ON dscog024 CANCELLED AT 2026-08-04T22:55:47 ***

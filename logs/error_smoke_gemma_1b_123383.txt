@@ -1,0 +1,610 @@
+2026-08-01 12:32:19 | WARNING | models | Failed to register ministral3: The config you are passing has a `model_type` attribute that is not consistent with the model type you passed (config has mistral and you passed ministral3. Fix one of those so they match!
+2026-08-01 12:32:19 | INFO | data_loader | Loading local dataset: medquad (20 items)
+MedQuad:   0%|          | 0/20 [00:00<?, ?it/s]'(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/tokenizer_config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 4e274b39-7631-4e63-9aaf-bbf7a6a3d43c)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/tokenizer_config.json
+2026-08-01 12:32:37 | WARNING | huggingface_hub.utils._http | '(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/tokenizer_config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 4e274b39-7631-4e63-9aaf-bbf7a6a3d43c)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/tokenizer_config.json
+Retrying in 1s [Retry 1/5].
+2026-08-01 12:32:37 | WARNING | huggingface_hub.utils._http | Retrying in 1s [Retry 1/5].
+'(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/tokenizer_config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: c8ab29f7-0c83-420c-98ec-c42687dda472)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/tokenizer_config.json
+2026-08-01 12:32:44 | WARNING | huggingface_hub.utils._http | '(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/tokenizer_config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: c8ab29f7-0c83-420c-98ec-c42687dda472)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/tokenizer_config.json
+Retrying in 2s [Retry 2/5].
+2026-08-01 12:32:44 | WARNING | huggingface_hub.utils._http | Retrying in 2s [Retry 2/5].
+'(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/tokenizer_config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 5ed37827-9617-46e6-9f3f-1d8ef9c73972)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/tokenizer_config.json
+2026-08-01 12:32:51 | WARNING | huggingface_hub.utils._http | '(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/tokenizer_config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 5ed37827-9617-46e6-9f3f-1d8ef9c73972)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/tokenizer_config.json
+Retrying in 4s [Retry 3/5].
+2026-08-01 12:32:51 | WARNING | huggingface_hub.utils._http | Retrying in 4s [Retry 3/5].
+'(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/tokenizer_config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 92dff645-5ef2-47fd-8c4c-0075a7a7eb7f)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/tokenizer_config.json
+2026-08-01 12:33:05 | WARNING | huggingface_hub.utils._http | '(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/tokenizer_config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 92dff645-5ef2-47fd-8c4c-0075a7a7eb7f)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/tokenizer_config.json
+Retrying in 8s [Retry 4/5].
+2026-08-01 12:33:05 | WARNING | huggingface_hub.utils._http | Retrying in 8s [Retry 4/5].
+'(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/tokenizer_config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 2df0ccb5-5da6-4d97-9827-9b1d4115d186)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/tokenizer_config.json
+2026-08-01 12:33:25 | WARNING | huggingface_hub.utils._http | '(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/tokenizer_config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 2df0ccb5-5da6-4d97-9827-9b1d4115d186)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/tokenizer_config.json
+Retrying in 8s [Retry 5/5].
+2026-08-01 12:33:25 | WARNING | huggingface_hub.utils._http | Retrying in 8s [Retry 5/5].
+'(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/tokenizer_config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 4562c067-eb52-4260-90a3-44fbb67ac046)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/tokenizer_config.json
+2026-08-01 12:33:39 | WARNING | huggingface_hub.utils._http | '(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/tokenizer_config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 4562c067-eb52-4260-90a3-44fbb67ac046)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/tokenizer_config.json
+'(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 2decfb2d-09c8-4578-acb4-390f05083639)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/config.json
+2026-08-01 12:33:43 | WARNING | huggingface_hub.utils._http | '(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 2decfb2d-09c8-4578-acb4-390f05083639)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/config.json
+Retrying in 1s [Retry 1/5].
+2026-08-01 12:33:43 | WARNING | huggingface_hub.utils._http | Retrying in 1s [Retry 1/5].
+'(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 14323310-74fb-4f55-98b8-873f4cff56f4)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/config.json
+2026-08-01 12:33:49 | WARNING | huggingface_hub.utils._http | '(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 14323310-74fb-4f55-98b8-873f4cff56f4)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/config.json
+Retrying in 2s [Retry 2/5].
+2026-08-01 12:33:49 | WARNING | huggingface_hub.utils._http | Retrying in 2s [Retry 2/5].
+'(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: f18f281b-0274-4ddf-a546-4d3af411b4ad)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/config.json
+2026-08-01 12:33:54 | WARNING | huggingface_hub.utils._http | '(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: f18f281b-0274-4ddf-a546-4d3af411b4ad)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/config.json
+Retrying in 4s [Retry 3/5].
+2026-08-01 12:33:54 | WARNING | huggingface_hub.utils._http | Retrying in 4s [Retry 3/5].
+'(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 0a7adc3a-82cb-454c-aa84-d6932846517f)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/config.json
+2026-08-01 12:34:04 | WARNING | huggingface_hub.utils._http | '(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 0a7adc3a-82cb-454c-aa84-d6932846517f)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/config.json
+Retrying in 8s [Retry 4/5].
+2026-08-01 12:34:04 | WARNING | huggingface_hub.utils._http | Retrying in 8s [Retry 4/5].
+'(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 5461479d-e799-4081-a961-7b9bffe607b0)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/config.json
+2026-08-01 12:34:22 | WARNING | huggingface_hub.utils._http | '(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 5461479d-e799-4081-a961-7b9bffe607b0)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/config.json
+Retrying in 8s [Retry 5/5].
+2026-08-01 12:34:22 | WARNING | huggingface_hub.utils._http | Retrying in 8s [Retry 5/5].
+'(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 4261c46b-7c14-48ec-ae93-6b0ee1e148c3)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/config.json
+2026-08-01 12:34:45 | WARNING | huggingface_hub.utils._http | '(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 4261c46b-7c14-48ec-ae93-6b0ee1e148c3)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/config.json
+'(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/tokenizer_config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 397495f4-4573-4569-8948-37c79ee14249)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/tokenizer_config.json
+2026-08-01 12:35:06 | WARNING | huggingface_hub.utils._http | '(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/tokenizer_config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 397495f4-4573-4569-8948-37c79ee14249)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/tokenizer_config.json
+Retrying in 1s [Retry 1/5].
+2026-08-01 12:35:06 | WARNING | huggingface_hub.utils._http | Retrying in 1s [Retry 1/5].
+'(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/tokenizer_config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: e4922139-b2db-49c8-b6e6-078afe19506c)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/tokenizer_config.json
+2026-08-01 12:35:10 | WARNING | huggingface_hub.utils._http | '(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/tokenizer_config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: e4922139-b2db-49c8-b6e6-078afe19506c)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/tokenizer_config.json
+Retrying in 2s [Retry 2/5].
+2026-08-01 12:35:10 | WARNING | huggingface_hub.utils._http | Retrying in 2s [Retry 2/5].
+'(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/tokenizer_config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 96cbe7b2-5b9c-410f-80f2-632db94a2819)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/tokenizer_config.json
+2026-08-01 12:35:22 | WARNING | huggingface_hub.utils._http | '(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/tokenizer_config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 96cbe7b2-5b9c-410f-80f2-632db94a2819)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/tokenizer_config.json
+Retrying in 4s [Retry 3/5].
+2026-08-01 12:35:22 | WARNING | huggingface_hub.utils._http | Retrying in 4s [Retry 3/5].
+'(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/tokenizer_config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 5dca47aa-3b2e-45e5-a973-448fd2811243)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/tokenizer_config.json
+2026-08-01 12:35:29 | WARNING | huggingface_hub.utils._http | '(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/tokenizer_config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 5dca47aa-3b2e-45e5-a973-448fd2811243)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/tokenizer_config.json
+Retrying in 8s [Retry 4/5].
+2026-08-01 12:35:29 | WARNING | huggingface_hub.utils._http | Retrying in 8s [Retry 4/5].
+'(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/tokenizer_config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 2a203615-a7df-4487-8e86-c93f6d61130d)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/tokenizer_config.json
+2026-08-01 12:35:40 | WARNING | huggingface_hub.utils._http | '(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/tokenizer_config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 2a203615-a7df-4487-8e86-c93f6d61130d)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/tokenizer_config.json
+Retrying in 8s [Retry 5/5].
+2026-08-01 12:35:40 | WARNING | huggingface_hub.utils._http | Retrying in 8s [Retry 5/5].
+'(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/tokenizer_config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 224700c1-5a93-4584-885d-6b78dba63484)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/tokenizer_config.json
+2026-08-01 12:35:57 | WARNING | huggingface_hub.utils._http | '(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/tokenizer_config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 224700c1-5a93-4584-885d-6b78dba63484)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/tokenizer_config.json
+'(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: b76ddb3e-1ee4-4211-b301-a025ae2eff84)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/config.json
+2026-08-01 12:36:01 | WARNING | huggingface_hub.utils._http | '(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: b76ddb3e-1ee4-4211-b301-a025ae2eff84)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/config.json
+Retrying in 1s [Retry 1/5].
+2026-08-01 12:36:01 | WARNING | huggingface_hub.utils._http | Retrying in 1s [Retry 1/5].
+'(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 7f647aee-000b-4b43-8f40-0c1e840533fb)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/config.json
+2026-08-01 12:36:05 | WARNING | huggingface_hub.utils._http | '(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 7f647aee-000b-4b43-8f40-0c1e840533fb)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/config.json
+Retrying in 2s [Retry 2/5].
+2026-08-01 12:36:05 | WARNING | huggingface_hub.utils._http | Retrying in 2s [Retry 2/5].
+'(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 4865756f-bbdd-459c-8b8e-8c7827728211)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/config.json
+2026-08-01 12:36:12 | WARNING | huggingface_hub.utils._http | '(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 4865756f-bbdd-459c-8b8e-8c7827728211)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/config.json
+Retrying in 4s [Retry 3/5].
+2026-08-01 12:36:12 | WARNING | huggingface_hub.utils._http | Retrying in 4s [Retry 3/5].
+'(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 478f2396-e883-492c-94bd-b03ec8cd9400)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/config.json
+2026-08-01 12:36:22 | WARNING | huggingface_hub.utils._http | '(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 478f2396-e883-492c-94bd-b03ec8cd9400)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/config.json
+Retrying in 8s [Retry 4/5].
+2026-08-01 12:36:22 | WARNING | huggingface_hub.utils._http | Retrying in 8s [Retry 4/5].
+'(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: bba9d1fd-c77c-432b-8e9e-274b17f9cea2)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/config.json
+2026-08-01 12:36:49 | WARNING | huggingface_hub.utils._http | '(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: bba9d1fd-c77c-432b-8e9e-274b17f9cea2)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/config.json
+Retrying in 8s [Retry 5/5].
+2026-08-01 12:36:49 | WARNING | huggingface_hub.utils._http | Retrying in 8s [Retry 5/5].
+'(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 5afd43e1-d466-48ab-b425-82953b44e107)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/config.json
+2026-08-01 12:37:00 | WARNING | huggingface_hub.utils._http | '(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 5afd43e1-d466-48ab-b425-82953b44e107)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/config.json
+MedQuad:   0%|          | 0/20 [04:40<?, ?it/s]
+Traceback (most recent call last):
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/urllib3/connection.py", line 204, in _new_conn
+    sock = connection.create_connection(
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/urllib3/util/connection.py", line 85, in create_connection
+    raise err
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/urllib3/util/connection.py", line 73, in create_connection
+    sock.connect(sa)
+OSError: [Errno 101] Network is unreachable
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/urllib3/connectionpool.py", line 488, in _make_request
+    raise new_e
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/urllib3/connectionpool.py", line 464, in _make_request
+    self._validate_conn(conn)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
+    conn.connect()
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/urllib3/connection.py", line 759, in connect
+    self.sock = sock = self._new_conn()
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/urllib3/connection.py", line 219, in _new_conn
+    raise NewConnectionError(
+urllib3.exceptions.NewConnectionError: HTTPSConnection(host='huggingface.co', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/requests/adapters.py", line 644, in send
+    resp = conn.urlopen(
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/urllib3/util/retry.py", line 535, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host='huggingface.co', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/huggingface_hub/file_download.py", line 1543, in _get_metadata_or_catch_error
+    metadata = get_hf_file_metadata(
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py", line 114, in _inner_fn
+    return fn(*args, **kwargs)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/huggingface_hub/file_download.py", line 1460, in get_hf_file_metadata
+    r = _request_wrapper(
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/huggingface_hub/file_download.py", line 283, in _request_wrapper
+    response = _request_wrapper(
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/huggingface_hub/file_download.py", line 306, in _request_wrapper
+    response = http_backoff(method=method, url=url, **params)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/huggingface_hub/utils/_http.py", line 325, in http_backoff
+    raise err
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/huggingface_hub/utils/_http.py", line 306, in http_backoff
+    response = session.request(method=method, url=url, **kwargs)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/requests/sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/requests/sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/huggingface_hub/utils/_http.py", line 95, in send
+    return super().send(request, *args, **kwargs)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/requests/adapters.py", line 677, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: (MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 4261c46b-7c14-48ec-ae93-6b0ee1e148c3)')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/transformers/utils/hub.py", line 479, in cached_files
+    hf_hub_download(
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py", line 114, in _inner_fn
+    return fn(*args, **kwargs)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/huggingface_hub/file_download.py", line 1007, in hf_hub_download
+    return _hf_hub_download_to_cache_dir(
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/huggingface_hub/file_download.py", line 1114, in _hf_hub_download_to_cache_dir
+    _raise_on_head_call_error(head_call_error, force_download, local_files_only)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/huggingface_hub/file_download.py", line 1658, in _raise_on_head_call_error
+    raise LocalEntryNotFoundError(
+huggingface_hub.errors.LocalEntryNotFoundError: An error happened while trying to locate the file on the Hub and we cannot find the requested files in the local cache. Please check your connection and try again or make sure your Internet connection is on.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/users/al00113/SycEval_implementation/models.py", line 99, in _ensure_hf
+    tok = AutoTokenizer.from_pretrained(model_name, use_fast=True, trust_remote_code=True)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/transformers/models/auto/tokenization_auto.py", line 1109, in from_pretrained
+    config = AutoConfig.from_pretrained(
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/transformers/models/auto/configuration_auto.py", line 1332, in from_pretrained
+    config_dict, unused_kwargs = PretrainedConfig.get_config_dict(pretrained_model_name_or_path, **kwargs)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/transformers/configuration_utils.py", line 662, in get_config_dict
+    config_dict, kwargs = cls._get_config_dict(pretrained_model_name_or_path, **kwargs)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/transformers/configuration_utils.py", line 721, in _get_config_dict
+    resolved_config_file = cached_file(
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/transformers/utils/hub.py", line 322, in cached_file
+    file = cached_files(path_or_repo_id=path_or_repo_id, filenames=[filename], **kwargs)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/transformers/utils/hub.py", line 553, in cached_files
+    raise OSError(
+OSError: We couldn't connect to 'https://huggingface.co' to load the files, and couldn't find them in the cached files.
+Check your internet connection or see how to run the library in offline mode at 'https://huggingface.co/docs/transformers/installation#offline-mode'.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/urllib3/connection.py", line 204, in _new_conn
+    sock = connection.create_connection(
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/urllib3/util/connection.py", line 85, in create_connection
+    raise err
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/urllib3/util/connection.py", line 73, in create_connection
+    sock.connect(sa)
+OSError: [Errno 101] Network is unreachable
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/urllib3/connectionpool.py", line 488, in _make_request
+    raise new_e
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/urllib3/connectionpool.py", line 464, in _make_request
+    self._validate_conn(conn)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
+    conn.connect()
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/urllib3/connection.py", line 759, in connect
+    self.sock = sock = self._new_conn()
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/urllib3/connection.py", line 219, in _new_conn
+    raise NewConnectionError(
+urllib3.exceptions.NewConnectionError: HTTPSConnection(host='huggingface.co', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/requests/adapters.py", line 644, in send
+    resp = conn.urlopen(
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/urllib3/util/retry.py", line 535, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host='huggingface.co', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/huggingface_hub/file_download.py", line 1543, in _get_metadata_or_catch_error
+    metadata = get_hf_file_metadata(
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py", line 114, in _inner_fn
+    return fn(*args, **kwargs)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/huggingface_hub/file_download.py", line 1460, in get_hf_file_metadata
+    r = _request_wrapper(
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/huggingface_hub/file_download.py", line 283, in _request_wrapper
+    response = _request_wrapper(
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/huggingface_hub/file_download.py", line 306, in _request_wrapper
+    response = http_backoff(method=method, url=url, **params)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/huggingface_hub/utils/_http.py", line 325, in http_backoff
+    raise err
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/huggingface_hub/utils/_http.py", line 306, in http_backoff
+    response = session.request(method=method, url=url, **kwargs)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/requests/sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/requests/sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/huggingface_hub/utils/_http.py", line 95, in send
+    return super().send(request, *args, **kwargs)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/requests/adapters.py", line 677, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: (MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 5afd43e1-d466-48ab-b425-82953b44e107)')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/transformers/utils/hub.py", line 479, in cached_files
+    hf_hub_download(
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py", line 114, in _inner_fn
+    return fn(*args, **kwargs)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/huggingface_hub/file_download.py", line 1007, in hf_hub_download
+    return _hf_hub_download_to_cache_dir(
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/huggingface_hub/file_download.py", line 1114, in _hf_hub_download_to_cache_dir
+    _raise_on_head_call_error(head_call_error, force_download, local_files_only)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/huggingface_hub/file_download.py", line 1658, in _raise_on_head_call_error
+    raise LocalEntryNotFoundError(
+huggingface_hub.errors.LocalEntryNotFoundError: An error happened while trying to locate the file on the Hub and we cannot find the requested files in the local cache. Please check your connection and try again or make sure your Internet connection is on.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/users/al00113/SycEval_implementation/run_eval.py", line 306, in <module>
+    main()
+  File "/users/al00113/SycEval_implementation/run_eval.py", line 243, in main
+    df = run_medquad(cfg, checkpoint_path=checkpoint_path)
+  File "/users/al00113/SycEval_implementation/run_eval.py", line 155, in run_medquad
+    ai0, lab0 = initial_answer(cfg, item)
+  File "/users/al00113/SycEval_implementation/run_eval.py", line 47, in initial_answer
+    model_answer = ask_model(cfg.tested_model, f"Question:\n{q}\nAnswer:", temperature=cfg.temperature, backend=cfg.backend)
+  File "/users/al00113/SycEval_implementation/models.py", line 317, in ask_model
+    return prov.ask(model, prompt, system, temperature, max_new_tokens=max_new_tokens)
+  File "/users/al00113/SycEval_implementation/models.py", line 258, in ask
+    h = self._ensure_hf(model)
+  File "/users/al00113/SycEval_implementation/models.py", line 103, in _ensure_hf
+    tok = AutoTokenizer.from_pretrained(model_name, use_fast=False, trust_remote_code=True)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/transformers/models/auto/tokenization_auto.py", line 1109, in from_pretrained
+    config = AutoConfig.from_pretrained(
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/transformers/models/auto/configuration_auto.py", line 1332, in from_pretrained
+    config_dict, unused_kwargs = PretrainedConfig.get_config_dict(pretrained_model_name_or_path, **kwargs)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/transformers/configuration_utils.py", line 662, in get_config_dict
+    config_dict, kwargs = cls._get_config_dict(pretrained_model_name_or_path, **kwargs)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/transformers/configuration_utils.py", line 721, in _get_config_dict
+    resolved_config_file = cached_file(
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/transformers/utils/hub.py", line 322, in cached_file
+    file = cached_files(path_or_repo_id=path_or_repo_id, filenames=[filename], **kwargs)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/transformers/utils/hub.py", line 553, in cached_files
+    raise OSError(
+OSError: We couldn't connect to 'https://huggingface.co' to load the files, and couldn't find them in the cached files.
+Check your internet connection or see how to run the library in offline mode at 'https://huggingface.co/docs/transformers/installation#offline-mode'.
+srun: error: dscog003: task 0: Exited with exit code 1
+2026-08-01 12:37:06 | WARNING | models | Failed to register ministral3: The config you are passing has a `model_type` attribute that is not consistent with the model type you passed (config has mistral and you passed ministral3. Fix one of those so they match!
+2026-08-01 12:37:07 | INFO | data_loader | Loading local dataset: medquad (20 items)
+Calibration:   0%|          | 0/10 [00:00<?, ?it/s]'(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/tokenizer_config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: d8f52bda-dbf1-4c55-8808-fd37bffa16cc)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/tokenizer_config.json
+2026-08-01 12:37:10 | WARNING | huggingface_hub.utils._http | '(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/tokenizer_config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: d8f52bda-dbf1-4c55-8808-fd37bffa16cc)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/tokenizer_config.json
+Retrying in 1s [Retry 1/5].
+2026-08-01 12:37:10 | WARNING | huggingface_hub.utils._http | Retrying in 1s [Retry 1/5].
+'(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/tokenizer_config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 1335ab47-ff61-4b0a-8c3f-413a904ac1c3)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/tokenizer_config.json
+2026-08-01 12:37:14 | WARNING | huggingface_hub.utils._http | '(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/tokenizer_config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 1335ab47-ff61-4b0a-8c3f-413a904ac1c3)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/tokenizer_config.json
+Retrying in 2s [Retry 2/5].
+2026-08-01 12:37:14 | WARNING | huggingface_hub.utils._http | Retrying in 2s [Retry 2/5].
+'(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/tokenizer_config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: b123bd67-9156-43e7-ab9c-64ac7d6bbbb7)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/tokenizer_config.json
+2026-08-01 12:37:19 | WARNING | huggingface_hub.utils._http | '(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/tokenizer_config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: b123bd67-9156-43e7-ab9c-64ac7d6bbbb7)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/tokenizer_config.json
+Retrying in 4s [Retry 3/5].
+2026-08-01 12:37:19 | WARNING | huggingface_hub.utils._http | Retrying in 4s [Retry 3/5].
+'(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/tokenizer_config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 3fc26713-116c-4434-aae0-7f7b6e4e2a65)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/tokenizer_config.json
+2026-08-01 12:37:26 | WARNING | huggingface_hub.utils._http | '(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/tokenizer_config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 3fc26713-116c-4434-aae0-7f7b6e4e2a65)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/tokenizer_config.json
+Retrying in 8s [Retry 4/5].
+2026-08-01 12:37:26 | WARNING | huggingface_hub.utils._http | Retrying in 8s [Retry 4/5].
+'(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/tokenizer_config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 425cc9ef-5100-4a4a-a0a3-507a54873206)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/tokenizer_config.json
+2026-08-01 12:37:37 | WARNING | huggingface_hub.utils._http | '(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/tokenizer_config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 425cc9ef-5100-4a4a-a0a3-507a54873206)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/tokenizer_config.json
+Retrying in 8s [Retry 5/5].
+2026-08-01 12:37:37 | WARNING | huggingface_hub.utils._http | Retrying in 8s [Retry 5/5].
+'(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/tokenizer_config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 09e6ff00-243b-4852-a706-0e226c92bd2d)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/tokenizer_config.json
+2026-08-01 12:37:50 | WARNING | huggingface_hub.utils._http | '(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/tokenizer_config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 09e6ff00-243b-4852-a706-0e226c92bd2d)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/tokenizer_config.json
+'(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 147efcad-8b53-453a-af8b-8bb41769f18c)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/config.json
+2026-08-01 12:37:54 | WARNING | huggingface_hub.utils._http | '(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 147efcad-8b53-453a-af8b-8bb41769f18c)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/config.json
+Retrying in 1s [Retry 1/5].
+2026-08-01 12:37:54 | WARNING | huggingface_hub.utils._http | Retrying in 1s [Retry 1/5].
+'(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: f7c53725-5cc7-4d15-880a-53d0b8f942b4)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/config.json
+2026-08-01 12:37:59 | WARNING | huggingface_hub.utils._http | '(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: f7c53725-5cc7-4d15-880a-53d0b8f942b4)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/config.json
+Retrying in 2s [Retry 2/5].
+2026-08-01 12:37:59 | WARNING | huggingface_hub.utils._http | Retrying in 2s [Retry 2/5].
+'(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 584806bd-5a90-41d9-8c7e-8be245c55367)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/config.json
+2026-08-01 12:38:05 | WARNING | huggingface_hub.utils._http | '(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 584806bd-5a90-41d9-8c7e-8be245c55367)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/config.json
+Retrying in 4s [Retry 3/5].
+2026-08-01 12:38:05 | WARNING | huggingface_hub.utils._http | Retrying in 4s [Retry 3/5].
+'(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: d5cfcdfa-d02e-4d44-b55a-295672aeed68)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/config.json
+2026-08-01 12:38:12 | WARNING | huggingface_hub.utils._http | '(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: d5cfcdfa-d02e-4d44-b55a-295672aeed68)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/config.json
+Retrying in 8s [Retry 4/5].
+2026-08-01 12:38:12 | WARNING | huggingface_hub.utils._http | Retrying in 8s [Retry 4/5].
+'(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 2d8249be-e7c5-4a2e-a7d1-4d1bdc1c4d62)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/config.json
+2026-08-01 12:38:26 | WARNING | huggingface_hub.utils._http | '(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 2d8249be-e7c5-4a2e-a7d1-4d1bdc1c4d62)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/config.json
+Retrying in 8s [Retry 5/5].
+2026-08-01 12:38:26 | WARNING | huggingface_hub.utils._http | Retrying in 8s [Retry 5/5].
+'(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: d6d04c36-a65a-46d0-b803-28cf97cb5437)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/config.json
+2026-08-01 12:38:47 | WARNING | huggingface_hub.utils._http | '(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: d6d04c36-a65a-46d0-b803-28cf97cb5437)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/config.json
+'(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/tokenizer_config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 4ea84e23-baf8-4df3-904d-a6c0d1eaca42)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/tokenizer_config.json
+2026-08-01 12:38:57 | WARNING | huggingface_hub.utils._http | '(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/tokenizer_config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 4ea84e23-baf8-4df3-904d-a6c0d1eaca42)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/tokenizer_config.json
+Retrying in 1s [Retry 1/5].
+2026-08-01 12:38:57 | WARNING | huggingface_hub.utils._http | Retrying in 1s [Retry 1/5].
+'(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/tokenizer_config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 5fded7c2-d9c4-4431-8a34-e3793bbb0a43)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/tokenizer_config.json
+2026-08-01 12:39:07 | WARNING | huggingface_hub.utils._http | '(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/tokenizer_config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 5fded7c2-d9c4-4431-8a34-e3793bbb0a43)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/tokenizer_config.json
+Retrying in 2s [Retry 2/5].
+2026-08-01 12:39:07 | WARNING | huggingface_hub.utils._http | Retrying in 2s [Retry 2/5].
+'(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/tokenizer_config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 20a83ff7-8cbe-425e-a458-558dcc0b15cd)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/tokenizer_config.json
+2026-08-01 12:39:12 | WARNING | huggingface_hub.utils._http | '(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/tokenizer_config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 20a83ff7-8cbe-425e-a458-558dcc0b15cd)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/tokenizer_config.json
+Retrying in 4s [Retry 3/5].
+2026-08-01 12:39:12 | WARNING | huggingface_hub.utils._http | Retrying in 4s [Retry 3/5].
+'(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/tokenizer_config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 6720c281-c43b-48b6-8783-ea319826cf13)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/tokenizer_config.json
+2026-08-01 12:39:30 | WARNING | huggingface_hub.utils._http | '(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/tokenizer_config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 6720c281-c43b-48b6-8783-ea319826cf13)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/tokenizer_config.json
+Retrying in 8s [Retry 4/5].
+2026-08-01 12:39:30 | WARNING | huggingface_hub.utils._http | Retrying in 8s [Retry 4/5].
+'(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/tokenizer_config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 1aaedfe1-9c3d-4742-8177-91e7927a5b13)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/tokenizer_config.json
+2026-08-01 12:39:49 | WARNING | huggingface_hub.utils._http | '(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/tokenizer_config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 1aaedfe1-9c3d-4742-8177-91e7927a5b13)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/tokenizer_config.json
+Retrying in 8s [Retry 5/5].
+2026-08-01 12:39:49 | WARNING | huggingface_hub.utils._http | Retrying in 8s [Retry 5/5].
+'(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/tokenizer_config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 4e6579c8-324f-47ef-8051-28873319e342)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/tokenizer_config.json
+2026-08-01 12:40:02 | WARNING | huggingface_hub.utils._http | '(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/tokenizer_config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 4e6579c8-324f-47ef-8051-28873319e342)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/tokenizer_config.json
+'(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 2fb9d0ea-9cfd-4e79-aaa4-cd585b38382a)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/config.json
+2026-08-01 12:40:06 | WARNING | huggingface_hub.utils._http | '(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 2fb9d0ea-9cfd-4e79-aaa4-cd585b38382a)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/config.json
+Retrying in 1s [Retry 1/5].
+2026-08-01 12:40:06 | WARNING | huggingface_hub.utils._http | Retrying in 1s [Retry 1/5].
+'(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 1edccae8-6b14-4f4a-9ab5-3d1278d2bd5d)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/config.json
+2026-08-01 12:40:14 | WARNING | huggingface_hub.utils._http | '(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 1edccae8-6b14-4f4a-9ab5-3d1278d2bd5d)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/config.json
+Retrying in 2s [Retry 2/5].
+2026-08-01 12:40:14 | WARNING | huggingface_hub.utils._http | Retrying in 2s [Retry 2/5].
+'(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: aacd793e-5b5f-4a5d-ad2d-a5838a66e848)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/config.json
+2026-08-01 12:40:28 | WARNING | huggingface_hub.utils._http | '(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: aacd793e-5b5f-4a5d-ad2d-a5838a66e848)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/config.json
+Retrying in 4s [Retry 3/5].
+2026-08-01 12:40:28 | WARNING | huggingface_hub.utils._http | Retrying in 4s [Retry 3/5].
+'(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: a6a69f1f-8221-4493-b7e1-5e7a2537f0fd)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/config.json
+2026-08-01 12:40:41 | WARNING | huggingface_hub.utils._http | '(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: a6a69f1f-8221-4493-b7e1-5e7a2537f0fd)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/config.json
+Retrying in 8s [Retry 4/5].
+2026-08-01 12:40:41 | WARNING | huggingface_hub.utils._http | Retrying in 8s [Retry 4/5].
+'(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: b4077faa-355d-42d1-8f11-b73b28a863e5)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/config.json
+2026-08-01 12:40:55 | WARNING | huggingface_hub.utils._http | '(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: b4077faa-355d-42d1-8f11-b73b28a863e5)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/config.json
+Retrying in 8s [Retry 5/5].
+2026-08-01 12:40:55 | WARNING | huggingface_hub.utils._http | Retrying in 8s [Retry 5/5].
+'(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 5f62f834-deca-4ae6-9ab2-e38e1516a57b)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/config.json
+2026-08-01 12:41:37 | WARNING | huggingface_hub.utils._http | '(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 5f62f834-deca-4ae6-9ab2-e38e1516a57b)')' thrown while requesting HEAD https://huggingface.co/models/gemma-3-1b-it/resolve/main/config.json
+Calibration:   0%|          | 0/10 [04:30<?, ?it/s]
+Traceback (most recent call last):
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/urllib3/connection.py", line 204, in _new_conn
+    sock = connection.create_connection(
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/urllib3/util/connection.py", line 85, in create_connection
+    raise err
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/urllib3/util/connection.py", line 73, in create_connection
+    sock.connect(sa)
+OSError: [Errno 101] Network is unreachable
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/urllib3/connectionpool.py", line 488, in _make_request
+    raise new_e
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/urllib3/connectionpool.py", line 464, in _make_request
+    self._validate_conn(conn)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
+    conn.connect()
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/urllib3/connection.py", line 759, in connect
+    self.sock = sock = self._new_conn()
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/urllib3/connection.py", line 219, in _new_conn
+    raise NewConnectionError(
+urllib3.exceptions.NewConnectionError: HTTPSConnection(host='huggingface.co', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/requests/adapters.py", line 644, in send
+    resp = conn.urlopen(
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/urllib3/util/retry.py", line 535, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host='huggingface.co', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/huggingface_hub/file_download.py", line 1543, in _get_metadata_or_catch_error
+    metadata = get_hf_file_metadata(
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py", line 114, in _inner_fn
+    return fn(*args, **kwargs)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/huggingface_hub/file_download.py", line 1460, in get_hf_file_metadata
+    r = _request_wrapper(
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/huggingface_hub/file_download.py", line 283, in _request_wrapper
+    response = _request_wrapper(
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/huggingface_hub/file_download.py", line 306, in _request_wrapper
+    response = http_backoff(method=method, url=url, **params)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/huggingface_hub/utils/_http.py", line 325, in http_backoff
+    raise err
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/huggingface_hub/utils/_http.py", line 306, in http_backoff
+    response = session.request(method=method, url=url, **kwargs)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/requests/sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/requests/sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/huggingface_hub/utils/_http.py", line 95, in send
+    return super().send(request, *args, **kwargs)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/requests/adapters.py", line 677, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: (MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: d6d04c36-a65a-46d0-b803-28cf97cb5437)')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/transformers/utils/hub.py", line 479, in cached_files
+    hf_hub_download(
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py", line 114, in _inner_fn
+    return fn(*args, **kwargs)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/huggingface_hub/file_download.py", line 1007, in hf_hub_download
+    return _hf_hub_download_to_cache_dir(
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/huggingface_hub/file_download.py", line 1114, in _hf_hub_download_to_cache_dir
+    _raise_on_head_call_error(head_call_error, force_download, local_files_only)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/huggingface_hub/file_download.py", line 1658, in _raise_on_head_call_error
+    raise LocalEntryNotFoundError(
+huggingface_hub.errors.LocalEntryNotFoundError: An error happened while trying to locate the file on the Hub and we cannot find the requested files in the local cache. Please check your connection and try again or make sure your Internet connection is on.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/users/al00113/SycEval_implementation/models.py", line 99, in _ensure_hf
+    tok = AutoTokenizer.from_pretrained(model_name, use_fast=True, trust_remote_code=True)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/transformers/models/auto/tokenization_auto.py", line 1109, in from_pretrained
+    config = AutoConfig.from_pretrained(
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/transformers/models/auto/configuration_auto.py", line 1332, in from_pretrained
+    config_dict, unused_kwargs = PretrainedConfig.get_config_dict(pretrained_model_name_or_path, **kwargs)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/transformers/configuration_utils.py", line 662, in get_config_dict
+    config_dict, kwargs = cls._get_config_dict(pretrained_model_name_or_path, **kwargs)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/transformers/configuration_utils.py", line 721, in _get_config_dict
+    resolved_config_file = cached_file(
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/transformers/utils/hub.py", line 322, in cached_file
+    file = cached_files(path_or_repo_id=path_or_repo_id, filenames=[filename], **kwargs)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/transformers/utils/hub.py", line 553, in cached_files
+    raise OSError(
+OSError: We couldn't connect to 'https://huggingface.co' to load the files, and couldn't find them in the cached files.
+Check your internet connection or see how to run the library in offline mode at 'https://huggingface.co/docs/transformers/installation#offline-mode'.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/urllib3/connection.py", line 204, in _new_conn
+    sock = connection.create_connection(
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/urllib3/util/connection.py", line 85, in create_connection
+    raise err
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/urllib3/util/connection.py", line 73, in create_connection
+    sock.connect(sa)
+OSError: [Errno 101] Network is unreachable
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/urllib3/connectionpool.py", line 488, in _make_request
+    raise new_e
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/urllib3/connectionpool.py", line 464, in _make_request
+    self._validate_conn(conn)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
+    conn.connect()
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/urllib3/connection.py", line 759, in connect
+    self.sock = sock = self._new_conn()
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/urllib3/connection.py", line 219, in _new_conn
+    raise NewConnectionError(
+urllib3.exceptions.NewConnectionError: HTTPSConnection(host='huggingface.co', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/requests/adapters.py", line 644, in send
+    resp = conn.urlopen(
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/urllib3/util/retry.py", line 535, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host='huggingface.co', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/huggingface_hub/file_download.py", line 1543, in _get_metadata_or_catch_error
+    metadata = get_hf_file_metadata(
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py", line 114, in _inner_fn
+    return fn(*args, **kwargs)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/huggingface_hub/file_download.py", line 1460, in get_hf_file_metadata
+    r = _request_wrapper(
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/huggingface_hub/file_download.py", line 283, in _request_wrapper
+    response = _request_wrapper(
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/huggingface_hub/file_download.py", line 306, in _request_wrapper
+    response = http_backoff(method=method, url=url, **params)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/huggingface_hub/utils/_http.py", line 325, in http_backoff
+    raise err
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/huggingface_hub/utils/_http.py", line 306, in http_backoff
+    response = session.request(method=method, url=url, **kwargs)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/requests/sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/requests/sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/huggingface_hub/utils/_http.py", line 95, in send
+    return super().send(request, *args, **kwargs)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/requests/adapters.py", line 677, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: (MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /models/gemma-3-1b-it/resolve/main/config.json (Caused by NewConnectionError("HTTPSConnection(host=\'huggingface.co\', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))'), '(Request ID: 5f62f834-deca-4ae6-9ab2-e38e1516a57b)')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/transformers/utils/hub.py", line 479, in cached_files
+    hf_hub_download(
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py", line 114, in _inner_fn
+    return fn(*args, **kwargs)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/huggingface_hub/file_download.py", line 1007, in hf_hub_download
+    return _hf_hub_download_to_cache_dir(
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/huggingface_hub/file_download.py", line 1114, in _hf_hub_download_to_cache_dir
+    _raise_on_head_call_error(head_call_error, force_download, local_files_only)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/huggingface_hub/file_download.py", line 1658, in _raise_on_head_call_error
+    raise LocalEntryNotFoundError(
+huggingface_hub.errors.LocalEntryNotFoundError: An error happened while trying to locate the file on the Hub and we cannot find the requested files in the local cache. Please check your connection and try again or make sure your Internet connection is on.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "/users/al00113/SycEval_implementation/conformal_v2/run_conformal_v2.py", line 1247, in <module>
+    main()  # run main if invoked as a script
+  File "/users/al00113/SycEval_implementation/conformal_v2/run_conformal_v2.py", line 1134, in main
+    tau_claim, tau_claim_fallback, scores, bad, groups, calib_records = calibration_collect(
+  File "/users/al00113/SycEval_implementation/conformal_v2/run_conformal_v2.py", line 344, in calibration_collect
+    ai0, lab0 = initial_answer(cfg, item)
+  File "/users/al00113/SycEval_implementation/conformal_v2/run_conformal_v2.py", line 150, in initial_answer
+    ai0 = ask_model(
+  File "/users/al00113/SycEval_implementation/models.py", line 317, in ask_model
+    return prov.ask(model, prompt, system, temperature, max_new_tokens=max_new_tokens)
+  File "/users/al00113/SycEval_implementation/models.py", line 258, in ask
+    h = self._ensure_hf(model)
+  File "/users/al00113/SycEval_implementation/models.py", line 103, in _ensure_hf
+    tok = AutoTokenizer.from_pretrained(model_name, use_fast=False, trust_remote_code=True)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/transformers/models/auto/tokenization_auto.py", line 1109, in from_pretrained
+    config = AutoConfig.from_pretrained(
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/transformers/models/auto/configuration_auto.py", line 1332, in from_pretrained
+    config_dict, unused_kwargs = PretrainedConfig.get_config_dict(pretrained_model_name_or_path, **kwargs)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/transformers/configuration_utils.py", line 662, in get_config_dict
+    config_dict, kwargs = cls._get_config_dict(pretrained_model_name_or_path, **kwargs)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/transformers/configuration_utils.py", line 721, in _get_config_dict
+    resolved_config_file = cached_file(
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/transformers/utils/hub.py", line 322, in cached_file
+    file = cached_files(path_or_repo_id=path_or_repo_id, filenames=[filename], **kwargs)
+  File "/users/al00113/.conda/envs/syceval/lib/python3.10/site-packages/transformers/utils/hub.py", line 553, in cached_files
+    raise OSError(
+OSError: We couldn't connect to 'https://huggingface.co' to load the files, and couldn't find them in the cached files.
+Check your internet connection or see how to run the library in offline mode at 'https://huggingface.co/docs/transformers/installation#offline-mode'.
+srun: error: dscog003: task 0: Exited with exit code 1

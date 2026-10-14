@@ -1,0 +1,2 @@
+--- HSQ smoke: gemma_1b (N=20, calib_frac=0.2, exact_crc) ---
+--- exited 0 ---

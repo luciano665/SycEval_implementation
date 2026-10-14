@@ -1,0 +1,10 @@
+--- SMOKE TEST: baseline (N=20, medquad) ---
+--- baseline phase exited 0 ---
+--- SMOKE TEST: conformal (N=20, medquad, mode=both, no group thresholds) ---
+--- conformal phase exited 0 ---
+--- SMOKE TEST DONE (both phases exited 0). Inspect: ---
+  results/smoke_test/smoke_baseline_llama_3b.json
+  results/smoke_test/smoke_conformal_llama_3b.json
+  results/smoke_test/smoke_thresholds_llama_3b.json
+  results/smoke_test/smoke_conformal_llama_3b.json.calib.partial.jsonl
+  results/smoke_test/smoke_conformal_llama_3b.json.test.partial.jsonl

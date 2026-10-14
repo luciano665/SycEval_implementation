@@ -1,0 +1,2 @@
+--- oracle-assisted risk scorer, CALIBRATION ONLY, llama_3b, HealthSearchQA (200 calib items, alpha=0.10, exact_crc) ---
+--- oracle-calibration llama_3b (HealthSearchQA) exited 0 ---

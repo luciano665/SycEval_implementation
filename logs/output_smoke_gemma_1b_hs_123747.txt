@@ -1,0 +1,10 @@
+--- SMOKE TEST (healthsearch): baseline (N=20) ---
+--- baseline phase exited 0 ---
+--- SMOKE TEST (healthsearch): conformal (N=20, mode=both, use_group_thresholds) ---
+--- conformal phase exited 0 ---
+--- SMOKE TEST DONE (both phases exited 0). Inspect: ---
+  results/smoke_test/smoke_baseline_gemma_1b_hs.json
+  results/smoke_test/smoke_conformal_gemma_1b_hs.json
+  results/smoke_test/smoke_thresholds_gemma_1b_hs.json
+  results/smoke_test/smoke_conformal_gemma_1b_hs.json.calib.partial.jsonl
+  results/smoke_test/smoke_conformal_gemma_1b_hs.json.test.partial.jsonl

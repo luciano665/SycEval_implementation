@@ -1,0 +1,7 @@
+--- conformal_v9 SMOKE (deployable-only, folding-only): N=20, mode=both ---
+--- conformal phase exited 0 ---
+--- SMOKE TEST DONE. Inspect: ---
+  results/smoke_test_v9/smoke_conformal_gemma_1b.json
+  results/smoke_test_v9/smoke_thresholds_gemma_1b.json
+  results/smoke_test_v9/smoke_conformal_gemma_1b.json.calib.partial.jsonl
+  results/smoke_test_v9/smoke_conformal_gemma_1b.json.test.partial.jsonl

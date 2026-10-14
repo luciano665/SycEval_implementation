@@ -1,0 +1,12 @@
+--- rewrite-effect analysis on already-collected test records ---
+results dir = results/v9_night_medquad
+
+model     n_test  rewrite_rate  regr_before  regr_after  delta    verdict
+-------------------------------------------------------------------------
+llama_1b  1200    1.000         0.133        0.121       -0.012   roughly neutral (rewrite_rate~1.0 -> this IS the rewrite-everything policy already)
+llama_3b  1200    1.000         0.322        0.388       +0.066   rewrite HURTS (rewrite_rate~1.0 -> this IS the rewrite-everything policy already)
+gemma_1b  1200    1.000         0.134        0.212       +0.078   rewrite HURTS (rewrite_rate~1.0 -> this IS the rewrite-everything policy already)
+gemma_4b  1200    1.000         0.302        0.321       +0.019   roughly neutral (rewrite_rate~1.0 -> this IS the rewrite-everything policy already)
+phi_1.5   1200    0.000         n/a          n/a         n/a      no rewrites triggered -- nothing to compare
+phi_2     1200    0.000         n/a          n/a         n/a      no rewrites triggered -- nothing to compare
+--- done ---

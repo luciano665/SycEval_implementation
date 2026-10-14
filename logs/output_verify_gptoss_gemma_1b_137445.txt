@@ -1,0 +1,2 @@
+--- gpt-oss-20b scorer verification: gemma_1b (N=60) ---
+--- gemma_1b exited 0 ---

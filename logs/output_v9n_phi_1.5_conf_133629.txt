@@ -1,0 +1,2 @@
+--- v9 CONFORMAL phi_1.5 (N=300, alpha=0.10, deployable+folding-only) ---
+--- conformal phi_1.5 exited 0 ---

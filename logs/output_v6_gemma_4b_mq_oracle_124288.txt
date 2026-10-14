@@ -1,0 +1,1 @@
+--- Gemma 4B V6 Conformal ORACLE (N=1000, MedQuad, Alpha=0.05, Group-Thresholds, oracle_truth) ---

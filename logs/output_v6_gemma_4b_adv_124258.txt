@@ -1,0 +1,1 @@
+--- Gemma 4B V6 ADVERSARIAL OVERSIGHT (N=1000, Alpha=0.05, Group-Thresholds) ---

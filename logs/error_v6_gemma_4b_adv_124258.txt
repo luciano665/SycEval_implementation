@@ -1,0 +1,17 @@
+mkdir: cannot create directory ‘/scratch/al00113’: Permission denied
+2026-08-04 22:51:41 | WARNING | models | Failed to register ministral3: The config you are passing has a `model_type` attribute that is not consistent with the model type you passed (config has mistral and you passed ministral3. Fix one of those so they match!
+2026-08-04 22:51:42 | INFO | data_loader | Loading local dataset: healthsearch (1000 items)
+Calibration:   0%|          | 0/250 [00:00<?, ?it/s]
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s][A
+Loading checkpoint shards:  50%|█████     | 1/2 [00:00<00:00,  1.99it/s][A
+Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00,  2.60it/s][ALoading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00,  2.49it/s]
+2026-08-04 22:51:48 | INFO | models | Moving models/gemma-3-4b-it to cuda
+The following generation flags are not valid and may be ignored: ['top_p', 'top_k']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s][ALoading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00, 109.61it/s]
+2026-08-04 22:52:15 | INFO | models | Moving models/gemma-3-4b-it to CPU to free memory for models/Qwen2.5-7B-Instruct
+2026-08-04 22:52:17 | INFO | models | Moving models/Qwen2.5-7B-Instruct to cuda
+The following generation flags are not valid and may be ignored: ['temperature', 'top_p', 'top_k']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+srun: Job step aborted: Waiting up to 302 seconds for job step to finish.
+Calibration:   0%|          | 1/250 [02:31<10:29:18, 151.64s/it]slurmstepd: error: *** STEP 124258.0 ON dscog035 CANCELLED AT 2026-08-04T22:55:47 ***
+slurmstepd: error: *** JOB 124258 ON dscog035 CANCELLED AT 2026-08-04T22:55:47 ***

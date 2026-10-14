@@ -1,0 +1,1 @@
+--- gpt-oss-20b scorer SMOKE (judge/rebuttal=Qwen): N=20, mode=both ---

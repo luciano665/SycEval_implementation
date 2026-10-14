@@ -1,0 +1,17 @@
+2026-08-24 10:29:09 | WARNING | models | Failed to register ministral3: The config you are passing has a `model_type` attribute that is not consistent with the model type you passed (config has mistral and you passed ministral3. Fix one of those so they match!
+2026-08-24 10:29:09 | INFO | data_loader | Loading local dataset: medquad (300 items)
+MedQuad:   0%|          | 0/300 [00:00<?, ?it/s]2026-08-24 10:29:10 | INFO | models | Moving models/Llama-3.2-1B-Instruct to cuda
+The following generation flags are not valid and may be ignored: ['temperature', 'top_p']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+
+Loading checkpoint shards:   0%|          | 0/3 [00:00<?, ?it/s][A
+Loading checkpoint shards: 100%|██████████| 3/3 [00:00<00:00, 27.79it/s][ALoading checkpoint shards: 100%|██████████| 3/3 [00:00<00:00, 27.74it/s]
+2026-08-24 10:29:15 | INFO | models | Moving models/Llama-3.2-1B-Instruct to CPU to free memory for models/Mistral-7B-Instruct-v0.3
+2026-08-24 10:29:15 | INFO | models | Moving models/Mistral-7B-Instruct-v0.3 to cuda
+
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s][ALoading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00, 41.40it/s]
+2026-08-24 10:29:26 | INFO | models | Moving models/Mistral-7B-Instruct-v0.3 to CPU to free memory for models/Qwen2.5-7B-Instruct
+2026-08-24 10:29:28 | INFO | models | Moving models/Qwen2.5-7B-Instruct to cuda
+The following generation flags are not valid and may be ignored: ['temperature', 'top_p', 'top_k']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+MedQuad:   0%|          | 1/300 [01:09<5:46:30, 69.53s/it]MedQuad:   1%|          | 2/300 [01:56<4:38:48, 56.14s/it]MedQuad:   1%|          | 3/300 [02:44<4:19:20, 52.39s/it]MedQuad:   1%|▏         | 4/300 [03:31<4:07:44, 50.22s/it]MedQuad:   2%|▏         | 5/300 [04:18<4:02:09, 49.25s/it]MedQuad:   2%|▏         | 6/300 [05:03<3:53:50, 47.72s/it]MedQuad:   2%|▏         | 7/300 [05:49<3:49:44, 47.05s/it]MedQuad:   3%|▎         | 8/300 [06:34<3:46:44, 46.59s/it]MedQuad:   3%|▎         | 9/300 [07:20<3:44:42, 46.33s/it]MedQuad:   3%|▎         | 10/300 [08:05<3:42:21, 46.01s/it]MedQuad:   4%|▎         | 11/300 [09:05<4:01:36, 50.16s/it]MedQuad:   4%|▍         | 12/300 [09:51<3:54:23, 48.83s/it]MedQuad:   4%|▍         | 13/300 [10:33<3:44:44, 46.99s/it]MedQuad:   5%|▍         | 14/300 [11:21<3:45:31, 47.31s/it]MedQuad:   5%|▌         | 15/300 [12:03<3:36:18, 45.54s/it]MedQuad:   5%|▌         | 16/300 [12:49<3:36:43, 45.79s/it]MedQuad:   6%|▌         | 17/300 [13:39<3:40srun: Job step aborted: Waiting up to 302 seconds for job step to finish.
+:58, 46.85s/it]MedQuad:   6%|▌         | 18/300 [14:24<3:37:41, 46.32s/it]MedQuad:   6%|▋         | 19/300 [15:08<3:33:51, 45.67s/it]MedQuad:   7%|▋         | 20/300 [15:57<3:38:13, 46.76s/it]MedQuad:   7%|▋         | 21/300 [16:43<3:35:36, 46.37s/it]slurmstepd: error: *** STEP 135674.0 ON dscog004 CANCELLED AT 2026-08-24T10:46:26 ***
+slurmstepd: error: *** JOB 135674 ON dscog004 CANCELLED AT 2026-08-24T10:46:26 ***

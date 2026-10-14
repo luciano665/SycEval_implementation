@@ -1,0 +1,7 @@
+--- SMOKE TEST (no_oracle_truth, medquad): conformal (N=20, mode=both) ---
+--- conformal phase exited 0 ---
+--- SMOKE TEST DONE. Inspect: ---
+  results/smoke_test/smoke_conformal_gemma_1b_no_oracle.json
+  results/smoke_test/smoke_thresholds_gemma_1b_no_oracle.json
+  results/smoke_test/smoke_conformal_gemma_1b_no_oracle.json.calib.partial.jsonl
+  results/smoke_test/smoke_conformal_gemma_1b_no_oracle.json.test.partial.jsonl

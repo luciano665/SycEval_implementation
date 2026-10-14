@@ -1,0 +1,2 @@
+--- oracle-assisted risk scorer, CALIBRATION ONLY, llama_1b, MedQuad (200 calib items, alpha=0.10, exact_crc) ---
+--- oracle-calibration llama_1b (MedQuad) exited 0 ---

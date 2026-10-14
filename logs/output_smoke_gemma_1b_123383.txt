@@ -1,0 +1,8 @@
+--- SMOKE TEST: baseline (N=20, medquad) ---
+--- SMOKE TEST: conformal (N=20, medquad, mode=both, no group thresholds) ---
+--- SMOKE TEST DONE. Inspect: ---
+  results/smoke_test/smoke_baseline_gemma_1b.json
+  results/smoke_test/smoke_conformal_gemma_1b.json
+  results/smoke_test/smoke_thresholds_gemma_1b.json
+  results/smoke_test/smoke_conformal_gemma_1b.json.calib.partial.jsonl
+  results/smoke_test/smoke_conformal_gemma_1b.json.test.partial.jsonl

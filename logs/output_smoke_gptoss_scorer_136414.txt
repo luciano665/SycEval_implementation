@@ -1,0 +1,4 @@
+--- gpt-oss-20b scorer SMOKE (judge/rebuttal=Qwen): N=20, mode=both ---
+--- exited 0 ---
+--- SMOKE TEST DONE. Inspect: ---
+  results/smoke_test_gptoss_scorer/smoke_conformal_llama_1b.json.calib.partial.jsonl

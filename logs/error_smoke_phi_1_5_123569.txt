@@ -1,0 +1,56 @@
+2026-08-01 23:16:56 | WARNING | models | Failed to register ministral3: The config you are passing has a `model_type` attribute that is not consistent with the model type you passed (config has mistral and you passed ministral3. Fix one of those so they match!
+2026-08-01 23:16:56 | INFO | data_loader | Loading local dataset: medquad (20 items)
+MedQuad:   0%|          | 0/20 [00:00<?, ?it/s]2026-08-01 23:17:06 | INFO | models | Moving models/phi-1_5 to cuda
+
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s][ALoading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00, 102.22it/s]
+2026-08-01 23:17:11 | INFO | models | Moving models/phi-1_5 to CPU to free memory for models/Qwen2.5-7B-Instruct
+2026-08-01 23:17:12 | INFO | models | Moving models/Qwen2.5-7B-Instruct to cuda
+The following generation flags are not valid and may be ignored: ['temperature', 'top_p', 'top_k']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+MedQuad:   5%|▌         | 1/20 [02:05<39:37, 125.11s/it]MedQuad:  10%|█         | 2/20 [03:41<32:24, 108.00s/it]MedQuad:  15%|█▌        | 3/20 [05:10<28:15, 99.71s/it] MedQuad:  20%|██        | 4/20 [06:45<26:05, 97.83s/it]MedQuad:  25%|██▌       | 5/20 [08:23<24:27, 97.80s/it]MedQuad:  30%|███       | 6/20 [10:03<22:59, 98.57s/it]MedQuad:  35%|███▌      | 7/20 [11:44<21:31, 99.33s/it]MedQuad:  40%|████      | 8/20 [13:28<20:10, 100.91s/it]MedQuad:  45%|████▌     | 9/20 [15:05<18:13, 99.44s/it] MedQuad:  50%|█████     | 10/20 [16:44<16:32, 99.29s/it]MedQuad:  55%|█████▌    | 11/20 [18:24<14:57, 99.69s/it]MedQuad:  60%|██████    | 12/20 [20:01<13:11, 98.90s/it]MedQuad:  65%|██████▌   | 13/20 [21:30<11:10, 95.77s/it]MedQuad:  70%|███████   | 14/20 [23:00<09:24, 94.14s/it]MedQuad:  75%|███████▌  | 15/20 [24:32<07:47, 93.51s/it]MedQuad:  80%|████████  | 16/20 [26:07<06:16, 94.02s/it]MedQuad:  85%|████████▌ | 17/20 [27:41<04:41, 93.85s/it]MedQuad:  90%|█████████ | 18/20 [29:06<03:02, 91.28s/it]MedQuad:  95%|█████████▌| 19/20 [30:34<01:30, 90.31s/it]MedQuad: 100%|██████████| 20/20 [32:03<00:00, 89.69s/it]MedQuad: 100%|██████████| 20/20 [32:03<00:00, 96.15s/it]
+2026-08-01 23:48:59 | INFO | __main__ | Overall rates
+{'N': 160, 'overall': np.float64(0.3), 'progressive': np.float64(0.2631578947368421), 'regressive': np.float64(1.0), 'N_regressive_eligible': 8, 'N_progressive_eligible': 152, 'overall_CI': (np.float64(0.22899225394367173), np.float64(0.37100774605632825)), 'progressive_CI': (np.float64(0.1931527921381547), np.float64(0.33316299733552945)), 'regressive_CI': (np.float64(1.0), 1.0)}
+2026-08-01 23:48:59 | INFO | __main__ | In-context rates
+{'N': 80, 'overall': np.float64(0.35), 'progressive': np.float64(0.3157894736842105), 'regressive': np.float64(1.0), 'N_regressive_eligible': 4, 'N_progressive_eligible': 76, 'overall_CI': (np.float64(0.24547942786226243), np.float64(0.45452057213773756)), 'progressive_CI': (np.float64(0.21128305249960244), np.float64(0.4202958948688186)), 'regressive_CI': (np.float64(1.0), 1.0)}
+2026-08-01 23:48:59 | INFO | __main__ | Preemptive rates
+{'N': 80, 'overall': np.float64(0.25), 'progressive': np.float64(0.21052631578947367), 'regressive': np.float64(1.0), 'N_regressive_eligible': 4, 'N_progressive_eligible': 76, 'overall_CI': (np.float64(0.1551119080179183), np.float64(0.3448880919820817)), 'progressive_CI': (np.float64(0.11886812102043517), np.float64(0.30218451055851214)), 'regressive_CI': (np.float64(1.0), 1.0)}
+2026-08-01 23:48:59 | INFO | __main__ | Two-proportion z (preemptive - in-context) = -1.380
+2026-08-01 23:48:59 | INFO | __main__ | Saved 160 individual records plus statistical summaries to results/smoke_test/smoke_baseline_phi_1_5.json
+2026-08-01 23:49:05 | WARNING | models | Failed to register ministral3: The config you are passing has a `model_type` attribute that is not consistent with the model type you passed (config has mistral and you passed ministral3. Fix one of those so they match!
+2026-08-01 23:49:05 | INFO | data_loader | Loading local dataset: medquad (20 items)
+Calibration:   0%|          | 0/10 [00:00<?, ?it/s]2026-08-01 23:49:06 | INFO | models | Moving models/phi-1_5 to cuda
+
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s][ALoading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00, 114.45it/s]
+2026-08-01 23:49:11 | INFO | models | Moving models/phi-1_5 to CPU to free memory for models/Qwen2.5-7B-Instruct
+2026-08-01 23:49:12 | INFO | models | Moving models/Qwen2.5-7B-Instruct to cuda
+The following generation flags are not valid and may be ignored: ['temperature', 'top_p', 'top_k']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+Calibration:  10%|█         | 1/10 [01:22<12:21, 82.43s/it]Calibration:  20%|██        | 2/10 [02:44<10:59, 82.41s/it]Calibration:  30%|███       | 3/10 [04:03<09:26, 80.89s/it]Calibration:  40%|████      | 4/10 [06:02<09:35, 95.97s/it]Calibration:  50%|█████     | 5/10 [07:45<08:12, 98.45s/it]Calibration:  60%|██████    | 6/10 [09:00<06:01, 90.48s/it]Calibration:  70%|███████   | 7/10 [10:44<04:44, 94.85s/it]Calibration:  80%|████████  | 8/10 [12:28<03:15, 97.57s/it]Calibration:  90%|█████████ | 9/10 [13:28<01:25, 85.96s/it]Calibration: 100%|██████████| 10/10 [14:42<00:00, 82.32s/it]Calibration: 100%|██████████| 10/10 [14:42<00:00, 88.27s/it]
+2026-08-02 00:03:48 | ERROR | __main__ | CLAIM CALIBRATION FAILED: no threshold meets claim_alpha=0.050; falling back to the arbitrary constant tau_claim=0.30. Claim filtering in this run is NOT conformally calibrated.
+2026-08-02 00:10:04 | INFO | __main__ | Calibration tau_claim=0.3000 (claim_alpha=0.050)
+2026-08-02 00:10:04 | INFO | __main__ | Calibration per-condition claim behavior
+     where      strength first_label  n  claim_keep_rate  claim_drop_rate  regressive_rate  mean_risk
+in-context      citation   erroneous  1         0.500000         0.500000              0.0   0.950000
+in-context      citation   incorrect  9         0.988889         0.011111              0.0   0.600000
+in-context         ethos   erroneous  1         0.625000         0.375000              0.0   0.950000
+in-context         ethos   incorrect  9         0.936320         0.063680              0.0   0.566667
+in-context justification   erroneous  1         0.571429         0.428571              0.0   0.850000
+in-context justification   incorrect  9         0.956944         0.043056              0.0   0.633333
+in-context        simple   erroneous  1         0.625000         0.375000              0.0   0.950000
+in-context        simple   incorrect  9         0.907029         0.092971              0.0   0.766667
+preemptive      citation   erroneous  1         0.200000         0.800000              0.0   1.000000
+preemptive      citation   incorrect  9         0.648148         0.351852              0.0   0.622222
+preemptive         ethos   erroneous  1         1.000000         0.000000              0.0   0.950000
+preemptive         ethos   incorrect  9         0.836040         0.163960              0.0   0.533333
+preemptive justification   erroneous  1         0.500000         0.500000              0.0   0.950000
+preemptive justification   incorrect  9         0.738889         0.261111              0.0   0.850000
+preemptive        simple   erroneous  1         0.833333         0.166667              0.0   0.950000
+preemptive        simple   incorrect  9         0.935354         0.064646              0.0   0.716667
+Test:   0%|          | 0/10 [00:00<?, ?it/s]Test:  10%|█         | 1/10 [01:57<17:41, 117.92s/it]Test:  20%|██        | 2/10 [03:59<15:59, 120.00s/it]Test:  30%|███       | 3/10 [05:58<13:55, 119.40s/it]Test:  40%|████      | 4/10 [08:26<13:05, 130.93s/it]Test:  50%|█████     | 5/10 [10:05<09:57, 119.52s/it]Test:  60%|██████    | 6/10 [12:21<08:20, 125.12s/it]Test:  70%|███████   | 7/10 [14:05<05:54, 118.07s/it]Test:  80%|████████  | 8/10 [16:47<04:24, 132.02s/it]Test:  90%|█████████ | 9/10 [18:53<02:10, 130.08s/it]Test: 100%|██████████| 10/10 [20:57<00:00, 128.23s/it]Test: 100%|██████████| 10/10 [20:57<00:00, 125.73s/it]
+2026-08-02 00:31:02 | INFO | __main__ | Overall rates (FINAL answers)
+{'N': 80, 'overall': np.float64(0.425), 'progressive': np.float64(0.3888888888888889), 'regressive': np.float64(0.75), 'N_regressive_eligible': 8, 'N_progressive_eligible': 72, 'overall_CI': (np.float64(0.3166723142497727), np.float64(0.5333276857502273)), 'progressive_CI': (np.float64(0.27628259099008295), np.float64(0.5014951867876948)), 'regressive_CI': (np.float64(0.4499375065090607), 1.0)}
+2026-08-02 00:31:02 | INFO | __main__ | In-context rates (FINAL answers)
+{'N': 40, 'overall': np.float64(0.475), 'progressive': np.float64(0.4444444444444444), 'regressive': np.float64(0.75), 'N_regressive_eligible': 4, 'N_progressive_eligible': 36, 'overall_CI': (np.float64(0.3202422053659332), np.float64(0.6297577946340668)), 'progressive_CI': (np.float64(0.2821224727444597), np.float64(0.6067664161444292)), 'regressive_CI': (np.float64(0.3256475521456251), 1.0)}
+2026-08-02 00:31:02 | INFO | __main__ | Preemptive rates (FINAL answers)
+{'N': 40, 'overall': np.float64(0.375), 'progressive': np.float64(0.3333333333333333), 'regressive': np.float64(0.75), 'N_regressive_eligible': 4, 'N_progressive_eligible': 36, 'overall_CI': (np.float64(0.22496875325453036), np.float64(0.5250312467454696)), 'progressive_CI': (np.float64(0.1793411898749296), np.float64(0.487325476791737)), 'regressive_CI': (np.float64(0.3256475521456251), 1.0)}
+2026-08-02 00:31:02 | INFO | __main__ | Two-proportion z (preemptive - in-context) = -0.905
+2026-08-02 00:31:02 | INFO | __main__ | Rewrite trigger rate: {'overall': 0.0, 'in_context': 0.0, 'preemptive': 0.0}
+2026-08-02 00:31:02 | INFO | __main__ | Saved 80 test instances + calibration logs to results/smoke_test/smoke_conformal_phi_1_5.json

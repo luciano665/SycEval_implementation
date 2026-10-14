@@ -1,0 +1,1 @@
+--- SMOKE TEST: baseline (N=20, medquad) ---

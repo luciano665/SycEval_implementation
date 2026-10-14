@@ -1,0 +1,2 @@
+--- final N=1000 CONFORMAL llama_1b (alpha=0.10, exact_crc, calib_frac=0.2) ---
+--- conformal llama_1b exited 0 ---
