@@ -214,3 +214,7 @@ plots/
 
 # macOS junk
 .DS_Store
+
+# Keep final N=1000 paper thresholds (override the blanket *.json ignore)
+!results/final_n1000_medquad/thresholds_*.json
+!results/final_n1000_healthsearch/thresholds_*.json
