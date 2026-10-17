@@ -12,13 +12,14 @@
 |---|---|---|
 | **Verified — matches code / result files** | 78 | Source cited as `path:line`; number or behavior confirmed. Includes 7 cells that are right only up to a 0.1 rounding artifact (S4). |
 | **Unverifiable here** | 1 | The 30 `\cite` keys — no `.bib` in the repo (C4) |
-| **Mismatch / error** | 5 | Paper contradicts the code or the data (C1–C5) |
+| **Mismatch / error** | 4 | Paper contradicts the code or the data (C1–C4) |
+| **Disclosure needed** | 1 | Figure 1 is an illustrative example from a preliminary run (author-confirmed); caption must say so (S8) |
 
 **The 6 things to fix before submission, in order:**
 
 1. **MedQuad size is wrong.** The paper says "approximately 60,000 question-answer pairs" (l.692). The dataset file actually used has **16,407** rows. The 60k figure appears to be a raw line count of the CSV (answers contain embedded newlines), not a row count. The original MedQuAD release is ~47k pairs, so 60k is wrong under either reading.
 2. **The paper says the rewritten answer is *not* re-filtered; the code re-filters it.** §3.2.4 (l.631–634) states claim filtering happens once and the rewrite output is not passed through filtering again. `run_conformal_v2.py:708–714` runs `purify_answer_with_claims(rewritten, …)` on every rewrite. This also changes how Table 4's "After" column must be described (it is rewrite **+ a second filter pass**, not rewrite alone).
-3. **Figure 1's case does not exist in the final run — confirmed across all 96 VWD rows in the suite.** The caption says LLaMA-3.2 3B, HealthSearchQA, simple-strength rebuttal, 5 claims with 2 dropped, s = 0.95, draft incorrect → filtered correct. No row in any of the six final HealthSearchQA run files has 5 claims / 2 dropped; the closest LLaMA-3B row (in-context, simple, life-expectancy question) has 15 claims, 0 dropped, s = 0.9, and stays incorrect. The example is from an earlier run and must be re-sourced, relabelled, or dropped (C5).
+3. **Figure 1 is from a preliminary run, not the reported N = 1,000 suite (author-confirmed).** The caption currently presents it as a datapoint of the reported experiment. Add one sentence disclosing that it is an illustrative example from an earlier run of the same pipeline, soften "isolates" to "illustrates", and add the missing `\ref` (S1/S8). Paste-ready caption in S8.
 4. **HealthSearchQA's reference answers are not from HealthSearchQA, and the source is uncited.** The answers come from the OLAPH / MedLFQA benchmark (dmis-lab/OLAPH; Jeong et al. 2024), which are LLM-generated. The paper cites only Singhal 2023 and says "Both provide ground-truth answers" (l.701). Singhal's HealthSearchQA ships questions only. OLAPH must be cited and the answers' provenance disclosed.
 5. **No `.bib` file is in the repo.** `\bibliography{sample-base}` (l.1216) cannot be resolved here, so none of the 30 cite keys could be checked, and `jeong2024olaph` is not among them. If the `.bib` lives only in Overleaf, confirm every key exists there.
 6. **Seven table cells are off by 0.1 because Δ was computed from rounded values** — including the "−21.0 points" quoted twice in the text (raw: −21.1). Details in S4. Figure 1 (`fig:case-vwd`) is also never `\ref`'d (S1).
@@ -70,7 +71,9 @@ Everything that the paper's *argument* rests on checks out: all 12 Table 2 α_mi
 - **Evidence:** `find . -name '*.bib'` (excluding `venv/`) returns nothing. `sample-base` is the ACM template's sample bibliography name. 30 distinct keys are cited (`angelopoulos2023gentle … zheng2023judging`; full list in §5). No local LaTeX toolchain (`pdflatex`, `acmart.cls` not found), so a compile could not be attempted.
 - **Fix:** Commit the `.bib` (or confirm it in Overleaf), then check every key resolves — the fastest check is to compile and grep the `.blg`/log for "Warning--I didn't find a database entry" and the PDF for `[?]`. Add `jeong2024olaph` (C3). Rename away from `sample-base.bib` so it is obviously yours.
 
-### C5. Figure 1 case cannot be found in the final run
+### C5. Figure 1 case cannot be found in the final run — RESOLVED as a disclosure item (see S8)
+
+*Author confirmed 2026-10-17 that the figure is an example from an earlier run. The evidence below is retained for the record; the required change is the caption in S8, not a new experiment.*
 
 - **.tex (l.973, l.985–993, l.1004–1014):** `Case: Claim Filtering on a Sycophantic Draft (LLaMA-3.2 3B, HealthSearchQA)` … `simple-strength rebuttal` … five claims scored `[0.20] [0.80] [0.60] [0.60] [0.20]`, two dropped … `the answer-level rewrite ($s=0.95>\tau$) also fires`.
 - **Evidence (HPC, 2026-10-17, `hpc_verify_paper.py` §E):** `results/final_n1000_healthsearch/run_conformal_llama_3b.json` contains 16 rows whose question mentions von Willebrand (two questions, `idx` 42 and 92, × 8 drafts). The four `strength == "simple"` rows are:
@@ -145,6 +148,32 @@ Everything that the paper's *argument* rests on checks out: all 12 Table 2 α_mi
 - **.tex (l.298):** `we adopt this protocol in Section~3.1.`
 - **Evidence:** `\label{sec:sycophancy_protocol}` exists (l.393) and is currently §3.1, but the label is never used.
 - **Fix:** `Section~\ref{sec:sycophancy_protocol}`.
+
+### S8. Figure 1 caption must disclose it is from a preliminary run
+
+- **.tex (l.1004–1014):** caption presents the case as "(LLaMA-3.2 3B, simple-strength rebuttal, HealthSearchQA)" with no indication it is outside the reported runs, and says the example "isolates the claim-filtering stage".
+- **Evidence:** C5 (no matching row in the final suite); author confirmation.
+- **Fix — replace the caption with:**
+
+  ```latex
+  \caption{Claim filtering on a sycophantic draft (LLaMA-3.2 3B, simple-strength
+  rebuttal, HealthSearchQA). \emph{Illustrative example drawn from a preliminary
+  run of the same pipeline (same model, prompts, judge, and fallback
+  $\tau_{\text{claim}}$); it is not one of the $N=1{,}000$ instances
+  summarized in Tables~\ref{tab:baseline}--\ref{tab:oracle}.} The question asks
+  the life expectancy of von Willebrand disease; the initial answer (correct)
+  states a normal life expectancy, and the rebuttal falsely asserts VWD
+  significantly reduces it. The draft accepts the false claim and adds social
+  filler; filtering at the uncalibrated fallback $\tau_{\text{claim}}=0.30$
+  drops the two lowest-scoring claims, restoring a correct answer. This
+  illustrates the claim-filtering mechanism that \S\ref{sec:attr} identifies
+  as the source of CCR's end-to-end benefit. LLaMA-3.2 3B is uncertified
+  ($\tau=-1$), so the answer-level rewrite ($s=0.95>\tau$) also fires; its
+  effect, net harmful for this model, is reported separately in
+  Table~\ref{tab:attr}.}
+  ```
+  Optionally also change the tcolorbox title (l.973) to `…(LLaMA-3.2 3B, HealthSearchQA; illustrative)`. If you want to name the source run, `grep -rl "significantly reduce life expectancy" results/ --include='*llama_3b*.json'` on the HPC will find it.
+- **And reference it (S1):** at l.966–968 change to: `The remaining component acting on every response is claim filtering at the uncalibrated fallback $\tau_{\text{claim}}=0.3$, the one stage that carries no statistical guarantee; Figure~\ref{fig:case-vwd} shows the mechanism on a single draft.`
 
 ---
 
