@@ -1,0 +1,1239 @@
+%%
+%% This is file `sigconf.tex',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% samples.dtx  (with options: `all,proceedings,sigconf')
+%% 
+%% IMPORTANT NOTICE:
+%% 
+%% For the copyright see the source file.
+%% 
+%% Any modified versions of this file must be renamed
+%% with new filenames distinct from sigconf.tex.
+%% 
+%% For distribution of the original source see the terms
+%% for copying and modification in the file samples.dtx.
+%% 
+%% This generated file may be distributed as long as the
+%% original source files, as listed above, are part of the
+%% same distribution. (The sources need not necessarily be
+%% in the same archive or directory.)
+%%
+%%
+%% Commands for TeXCount
+%TC:macro \cite [option:text,text]
+%TC:macro \citep [option:text,text]
+%TC:macro \citet [option:text,text]
+%TC:envir table 0 1
+%TC:envir table* 0 1
+%TC:envir tabular [ignore] word
+%TC:envir displaymath 0 word
+%TC:envir math 0 word
+%TC:envir comment 0 0
+%%
+%% The first command in your LaTeX source must be the \documentclass
+%% command.
+%%
+%% For submission and review of your manuscript please change the
+%% command to \documentclass[manuscript, screen, review]{acmart}.
+%%
+%% When submitting camera ready or to TAPS, please change the command
+%% to \documentclass[sigconf]{acmart} or whichever template is required
+%% for your publication.
+%%
+%%
+\documentclass[sigconf, review, anonymous]{acmart}
+\usepackage{multirow}
+%%
+%% \BibTeX command to typeset BibTeX logo in the docs
+\AtBeginDocument{%
+  \providecommand\BibTeX{{%
+    Bib\TeX}}}
+
+%% Rights management information.  This information is sent to you
+%% when you complete the rights form.  These commands have SAMPLE
+%% values in them; it is your responsibility as an author to replace
+%% the commands and values with those provided to you when you
+%% complete the rights form.
+\setcopyright{acmlicensed}
+\copyrightyear{2027}
+\acmYear{2027}
+\acmDOI{XXXXXXX.XXXXXXX}
+%% These commands are for a PROCEEDINGS abstract or paper.
+\acmConference[TRUST '27]{ACM Conference on Trustworthy and Responsible AI and Computing Systems}{March 7--9, 2027}{Washington, DC, USA}
+%%
+%%  Uncomment \acmBooktitle if the title of the proceedings is different
+%%  from ``Proceedings of ...''!
+%%
+%%\acmBooktitle{Woodstock '18: ACM Symposium on Neural Gaze Detection,
+%%  June 03--05, 2018, Woodstock, NY}
+\acmISBN{978-1-4503-XXXX-X/2027/03}
+
+
+%%
+%% Submission ID.
+%% Use this when submitting an article to a sponsored event. You'll
+%% receive a unique submission ID from the organizers
+%% of the event, and this ID should be used as the parameter to this command.
+%%\acmSubmissionID{123-A56-BU3}
+
+%%
+%% For managing citations, it is recommended to use bibliography
+%% files in BibTeX format.
+%%
+%% You can then either use BibTeX with the ACM-Reference-Format style,
+%% or BibLaTeX with the acmnumeric or acmauthoryear sytles, that include
+%% support for advanced citation of software artefact from the
+%% biblatex-software package, also separately available on CTAN.
+%%
+%% Look at the sample-*-biblatex.tex files for templates showcasing
+%% the biblatex styles.
+%%
+%%
+%% The majority of ACM publications use numbered citations and
+%% references.  The command \citestyle{authoryear} switches to the
+%% "author year" style.
+%%
+%% If you are preparing content for an event
+%% sponsored by ACM SIGGRAPH, you must use the "author year" style of
+%% citations and references.
+%% Uncommenting
+%% the next command will enable that style.
+%%\citestyle{acmauthoryear}
+
+
+%%
+%% end of the preamble, start of the body of the document source.
+\usepackage{flafter}
+\usepackage{tcolorbox}
+\usepackage[normalem]{ulem}
+\usepackage{float} % keep floats from appearing before their definition
+
+\begin{document}
+
+%%
+%% The "title" command has an optional parameter,
+%% allowing the author to define a "short title" to be used in page headers.
+\title{Auditing Sycophancy with Conformal Risk Control}
+
+%%
+%% The "author" command and its associated commands are used to define
+%% the authors and their affiliations.
+%% Of note is the shared affiliation of the first two authors, and the
+%% "authornote" and "authornotemark" commands
+%% used to denote shared contribution to the research.
+\author{Anonymous Author(s)}
+\affiliation{%
+  \institution{Anonymous Institution}
+  \country{}
+}
+
+\renewcommand{\shortauthors}{Anonymous Author(s)}
+
+%%
+%% The abstract is a short summary of the work to be presented in the
+%% article.
+\begin{abstract}
+Large Language Models (LLMs) often exhibit sycophancy---agreeing with incorrect
+user assertions rather than prioritizing factual accuracy. This behavior poses
+serious reliability risks, particularly in healthcare, where misleading
+agreement can compromise the quality and safety of medical question answering. We present, to our knowledge, the first evaluation of conformal risk control
+as a deployable safeguard against sycophancy, under the realistic constraint that no
+reference answer is available at inference time. We introduce Conformal Claim
+Refinement (CCR), which decomposes responses into atomic claims and filters
+them by validity, scores each response for sycophancy risk, and calibrates an
+answer-level acceptance threshold against a finite-sample risk bound before rewriting high-risk responses. Using a finite-sample conformal
+bound rather than an asymptotic approximation, we characterize certifiability
+directly: we report per-model $\alpha_{\min}$, the loosest error target
+admitting any certifiable region, which replaces coarse threshold sweeps with
+a single summary quantity and localizes how far each model sits from
+certifiability. Across six models spanning three families and two medical
+question-answering datasets, MedQuad and HealthSearchQA, certification
+succeeds for only two of six models at a 10\% target---the two
+non-instruction-tuned Phi models, on both datasets. For both, the certified
+threshold accepts every response: certification reflects a regressive rate
+kept low by low initial accuracy, not a risk scorer that singles out risky
+responses. We further show that the blanket-rewrite fallback
+induced by failed calibration is itself harmful, increasing regressive
+sycophancy for every model that receives it, on both datasets, and helping none. These
+results establish conformal calibration as an audit instrument for detecting
+when LLM-based risk scoring cannot support selective intervention, and
+quantify the gap that any such method must close.
+\end{abstract}
+
+%% TODO: Generate real CCS concepts at https://dl.acm.org/ccs.cfm and paste them here, e.g.:
+%% \begin{CCSXML}
+%% ...
+%% \end{CCSXML}
+%% \ccsdesc[500]{...}
+%%
+\keywords{sycophancy, large language models, conformal prediction, conformal
+risk control, medical question answering, LLM reliability, selective prediction}
+
+%%
+%% This command processes the author and affiliation and title
+%% information and builds the first part of the formatted document.
+\maketitle
+
+
+\section{Introduction}
+
+Large Language Models (LLMs) are increasingly integrated into healthcare
+systems, including clinical documentation, medical question answering,
+patient triage, and decision support~\citep{he2025,singhal2023}. Their capacity to
+synthesize biomedical knowledge and produce fluent natural language has made
+them attractive for deployment~\citep{he2025}. As these systems enter
+high-stakes environments, reliability, factual consistency, and resistance
+to misinformation become requirements rather than desirable
+properties~\citep{schroeder2025}.
+
+Despite improvements in scale and alignment, LLMs continue to exhibit
+well-documented failure modes, including hallucination, calibration error,
+and sycophantic behavior~\citep{ji2023}. Among these, sycophancy---the
+tendency to agree with a user's stated belief even when it contradicts
+factual knowledge---remains persistent and comparatively
+underaddressed~\citep{sharma2024towards}. In medical settings this behavior carries
+specific risk. A patient who incorrectly asserts a drug dosage, dismisses a
+symptom, or repeats a health misconception may receive validation rather
+than correction, reinforcing misinformation precisely where the cost of
+error is highest~\citep{chen2024}. Unlike hallucination, which reflects
+absent knowledge, sycophancy reflects a failure of robustness: the model
+possesses the correct information and abandons it under social pressure.
+While evaluation protocols for sycophancy have become more
+standardized~\citep{fanous2025syceval}, mitigation strategies remain limited. Most
+existing approaches rely on fine-tuning, reinforcement learning, or
+alignment interventions requiring access to model weights and additional
+training data---constraints that are impractical in many deployment
+settings.
+
+Conformal Prediction (CP) offers a principled, distribution-free framework
+for uncertainty quantification, providing calibrated statistical guarantees
+without strong assumptions about the underlying model or data
+distribution~\citep{vovk2005algorithmic,angelopoulos2023gentle}. Originally developed for
+classification and regression, conformal methods have been extended to
+question answering and open-ended language
+generation~\citep{quach2024conformal,mohri2024language}, suggesting they may provide a theoretically
+grounded mechanism for identifying unreliable model outputs.
+
+This motivates a natural question: can conformal risk control serve as a
+lightweight, post-hoc defense against sycophancy, quantifying risk in
+generated outputs and suppressing high-risk content without retraining? We
+investigate this by introducing Conformal Claim Refinement (CCR), a
+training-free pipeline that decomposes responses into atomic claims and
+filters them by validity, scores each response for sycophancy risk,
+calibrates an answer-level acceptance threshold against a
+finite-sample risk bound, and rewrites responses judged high-risk.
+
+Critically, we evaluate CCR under a constraint that governs whether such a
+safeguard is deployable at all: no component acting on a response at test
+time may access the reference answer. Ground truth is available only for
+evaluation---assigning correctness labels and producing calibration
+labels---never to the claim scorer, the risk scorer, or the rewrite. A
+threshold calibrated on reference-informed scores does not transfer to a
+setting where no reference exists, so relaxing this constraint would
+invalidate the guarantee the framework is meant to provide.
+
+Under this constraint, we find that the framework does not deliver its
+intended guarantee, and we characterize precisely where it breaks. Using a
+finite-sample bound, only two of six models admit any certifiable
+threshold at a 10\% target on either dataset. For the remaining four, no
+threshold exists at any operating point, and the pipeline degenerates into
+rewriting every response---a fallback we show to be actively harmful. The
+reduction in sycophancy that is observed end-to-end proves attributable to
+claim-level filtering operating at an uncalibrated fallback threshold,
+rather than to the conformal components. Our contributions are as follows:
+
+\begin{enumerate}
+    \item We present a systematic quantification of sycophantic behavior
+    across two medical question answering datasets, MedQuad and
+    HealthSearchQA, and six models drawn from three open-source LLM
+    families: LLaMA, Gemma, and Phi. This provides a comparative benchmark
+    for how sycophancy manifests across model families and parameter scales
+    in healthcare-oriented settings.
+
+    \item We introduce Conformal Claim Refinement (CCR), a training-free
+    pipeline combining claim-level filtering with answer-level conformal risk
+    control and a rewrite intervention, and evaluate it under
+    deployment-realistic conditions in
+    which no reference answer is available to any component acting on a
+    response at test time.
+
+    \item We show that conformal calibration functions as a diagnostic
+    instrument in this setting. Using a finite-sample bound, we
+    report per-model $\alpha_{\min}$---the loosest error target at which any
+    certifiable region exists---replacing coarse threshold sweeps with a single summary quantity that also measures how far an uncertifiable model
+    sits from certifiability. We further show that the rewrite fallback
+    triggered by failed calibration increases regressive sycophancy in all
+    eight model-dataset pairs where it fires, and that the reduction
+    observed end-to-end originates in the one component carrying no
+    statistical guarantee.
+\end{enumerate}
+
+\section{Related Work}
+
+\subsection{Sycophancy in Large Language Models}
+
+Sycophancy refers to the tendency of language models to tailor responses
+to a user's stated beliefs rather than to factual accuracy. Perez et
+al.~\cite{perez2023discovering} identified it as a behavior that
+grows with model scale, and Wei et al.~\cite{wei2023simple} found that both
+scaling and instruction tuning increase it. It is widely attributed to
+Reinforcement Learning from Human Feedback~\cite{ouyang2022training}:
+Sharma et al.~\cite{sharma2024towards} show that human preference judgments
+and the preference models trained on them favor convincingly written
+sycophantic responses over correct ones a non-negligible fraction of the
+time, so optimizing against them can trade truthfulness for agreement.
+
+A growing body of work measures how models respond when users push back.
+Wang et al.~\cite{wang2023chatgpt} find that models frequently abandon
+correct reasoning when challenged with invalid arguments, and the FlipFlop
+experiment~\cite{laban2023flipflop} shows that a simple ``Are you sure?''
+causes models to flip their answers 46\% of the time on average, with a
+corresponding drop in accuracy. SycEval~\cite{fanous2025syceval}
+formalizes this setting by distinguishing \emph{regressive} sycophancy
+(correct$\to$incorrect) from \emph{progressive} sycophancy
+(incorrect$\to$correct) under in-context and preemptive rebuttals of
+increasing strength; we adopt this protocol in Section~\ref{sec:sycophancy_protocol}. In medicine,
+Chen et al.~\cite{chen2025helpfulness} show that frontier models comply
+with illogical drug-related requests at rates up to 100\%, generating
+false information despite having the knowledge to reject the request.
+
+Mitigation has received less attention, and existing approaches act on the
+model rather than on its outputs. Wei et al.~\cite{wei2023simple}
+fine-tune on synthetic data that decouples truth from user opinion;
+Rimsky et al.~\cite{rimsky2024steering} steer internal activations with
+contrastive vectors; and Papadatos and Freedman~\cite{papadatos2024linear}
+penalize sycophancy features probed from the reward model during RL
+fine-tuning. Each requires model weights, internal activations, or
+additional training. CCR instead operates post hoc on generated responses
+and requires none of these, which makes it applicable to models accessed
+only through generation.
+
+
+\subsection{Conformal Methods for LLM Reliability}
+
+Conformal prediction provides distribution-free, finite-sample guarantees
+under exchangeability, using a held-out calibration set to construct
+prediction sets that contain the ground truth with a user-specified
+probability~\cite{vovk2005algorithmic,angelopoulos2023gentle}. Conformal
+risk control~\cite{angelopoulos2024conformal} extends these guarantees from
+coverage to the expected value of any bounded loss that is monotone in the
+threshold, and Learn then Test~\cite{angelopoulos2025learn} handles
+non-monotone risks by treating threshold selection as a multiple-testing
+problem, so that the guarantee survives a scan over many candidate
+thresholds.
+
+These tools have been adapted to language generation. Quach et
+al.~\cite{quach2024conformal} calibrate sampling and rejection rules so
+that a set of generations contains an acceptable answer with high
+probability. Mohri and Hashimoto~\cite{mohri2024language} decompose
+responses into atomic claims, in the style of
+FActScore~\cite{min2023factscore}, and remove low-scoring claims so that
+the retained output is correct with a guaranteed probability; CCR's
+claim-level filtering follows this design. Cherian et
+al.~\cite{cherian2024large} strengthen these guarantees to hold
+conditionally and learn better claim scores. Related procedures decide when
+to abstain~\cite{yadkori2024mitigating}, which outputs to
+trust~\cite{gui2024conformal}, and when an LLM judge's verdict can be
+accepted without escalation~\cite{jung2025trust}. In all of these, validity
+holds for any scoring function, but usefulness does not: as Cherian et
+al.\ note, an imperfect score forces the procedure to discard many accurate
+claims. A sufficiently weak score leaves no non-trivial threshold at all,
+which is the regime our results characterize.
+
+Prior work targets hallucination and factual error, where the scorer
+assesses the content of a response. Sycophancy differs: the error is
+induced by the user's input, so a reference-free scorer must judge whether
+an answer shifted under pressure rather than whether it is true. There is
+reason to doubt LLMs can do this reliably: LLM judges show systematic
+biases~\cite{zheng2023judging}, and models struggle to correct their own
+reasoning without external feedback~\cite{huang2024large}. To our
+knowledge, this work is the first to evaluate conformal risk control
+against sycophancy. We use calibration both as a candidate safeguard and as
+an audit of whether a reference-free risk scorer can support selective
+intervention at all.
+
+
+\section{Method}
+\label{sec:method}
+
+We investigate whether conformal risk control can support selective
+intervention against sycophantic behavior in medical question
+answering when no reference answer is available to the intervention
+at inference time. We introduce \emph{Conformal Claim Refinement}
+(CCR), a training-free, post-hoc pipeline that operates on responses
+generated after a model is exposed to user pressure. CCR combines
+claim-level filtering with answer-level risk scoring: individual
+factual claims are assessed for validity, while the response as a
+whole is scored for evidence of pressure-driven change. A threshold
+estimated from held-out calibration data determines whether the
+filtered response is retained or rewritten.
+
+A central design constraint is that CCR is
+\emph{reference-blind at intervention time}. Dataset reference
+answers are used to construct calibration labels and to evaluate
+model outputs, but they are not provided to the claim scorer,
+answer-level risk scorer, or rewrite procedure. This separation is
+necessary because the scoring function used during calibration must
+match the one available at test time. Otherwise, calibration would
+characterize an oracle-assisted system rather than the intervention
+that could actually be applied without access to ground truth.
+
+We treat conformal calibration as both a mechanism for selecting an
+operating threshold and a diagnostic of whether the underlying risk
+score is sufficiently informative for selective intervention.
+Accordingly, failure to identify a threshold satisfying the target
+risk criterion is recorded explicitly rather than hidden behind an
+operational fallback.
+
+
+\subsection{Sycophancy Evaluation Protocol}
+\label{sec:sycophancy_protocol}
+
+We follow the SycEval protocol~\cite{fanous2025syceval} to measure how model
+responses change under adversarial user pressure. For each medical
+question $q$, the evaluated model first produces an initial response
+$a_0$ using greedy decoding. A separate evaluation judge compares
+$a_0$ with the dataset reference answer and labels the response as
+\emph{correct}, \emph{incorrect}, or \emph{erroneous}.
+
+The initial label determines the direction of the rebuttal. If the
+initial answer is correct, the rebuttal presents a plausible
+contradictory position and tests whether the model abandons its
+correct response under pressure. If the initial answer is incorrect
+or erroneous, the rebuttal instead presents a corrective position
+and tests whether the model updates toward the correct answer. The
+model then generates a rebuttal-induced draft, which is evaluated
+using the same three-way labeling scheme.
+
+We use a folding-based definition of regressive sycophancy. A
+response is counted as regressive only when a model moves from a
+correct initial answer to a factually incorrect answer after the
+rebuttal:
+\begin{equation}
+    Y^{\mathrm{reg}}
+    =
+    \mathbb{1}
+    [
+        \ell_0 = \mathrm{correct}
+        \land
+        \ell_f = \mathrm{incorrect}
+    ].
+    \label{eq:regressive}
+\end{equation}
+
+Transitions from correct to erroneous are not counted as regressive
+sycophancy. The erroneous category includes refusals and outputs for
+which a valid correctness judgment cannot be obtained. Such outcomes
+may represent a separate reliability failure, but they do not
+demonstrate that the model adopted the user's incorrect position.
+
+Progressive behavior is defined as an incorrect initial response
+becoming correct after the rebuttal:
+\begin{equation}
+    Y^{\mathrm{prog}}
+    =
+    \mathbb{1}
+    [
+        \ell_0 = \mathrm{incorrect}
+        \land
+        \ell_f = \mathrm{correct}
+    ].
+    \label{eq:progressive}
+\end{equation}
+
+All other transitions, including those involving the erroneous
+category, are treated as neither regressive nor progressive
+sycophancy.
+
+Following SycEval, each rebuttal is instantiated at four levels of
+persuasive strength: a direct contradiction, an appeal to clinical
+authority, a contradiction accompanied by explicit justification,
+and a contradiction accompanied by a fabricated citation. Each
+formulation is evaluated under two elicitation modes. In the
+\emph{in-context} setting, the rebuttal is introduced after the model
+has already committed to an initial answer. In the
+\emph{preemptive} setting, the rebuttal is incorporated into the
+prompt before the model generates its response. Together, these
+conditions produce eight rebuttal-induced drafts per question.
+
+
+\subsection{Conformal Claim Refinement}
+\label{sec:ccr}
+
+CCR uses two complementary signals. Claim-level scoring identifies
+which factual statements should be retained, while answer-level risk
+scoring estimates whether the response exhibits evidence of an
+unjustified shift following the rebuttal. The two components are
+calibrated separately and serve different roles in the intervention.
+
+
+\subsubsection{Claim-Level Filtering}
+\label{sec:claim_filtering}
+
+Each rebuttal-induced draft is decomposed into atomic factual claims,
+with each claim intended to express a single independently
+assessable proposition. An auxiliary model assigns each claim a
+validity score $v_j \in [0,1]$ using the question, initial response,
+rebuttal, and claim itself. Higher scores indicate that the claim is
+more likely to represent medically grounded content, while lower
+scores indicate greater risk of unsupported or pressure-driven
+content.
+
+The claim scorer does not receive the dataset reference answer.
+Reference information is used only during calibration, where a
+separate support-labeling step determines whether each calibration
+claim is supported by the ground-truth answer. These support labels
+are used to fit a claim-level threshold
+$\tau_{\mathrm{claim}}$: the most permissive threshold for which the 95\%
+Wilson upper bound on the rate of unsupported claims among retained
+calibration claims is at most $\alpha = 0.10$. This criterion is stricter
+than the conformal risk control form used for the answer-level threshold
+(Section~\ref{sec:threshold_calibration}).
+
+At test time, claims satisfying
+$v_j \geq \tau_{\mathrm{claim}}$ are retained and concatenated to
+form the filtered draft.
+
+If no claim-level threshold satisfies the target calibration
+criterion, we record claim-level calibration failure and use the
+predefined fallback $\tau_{\mathrm{claim}}=0.3$. This fallback allows
+the complete pipeline to be evaluated, but it is not interpreted as
+a conformally calibrated threshold and carries no conformal
+guarantee.
+In practice, this criterion was infeasible for all six models on both
+datasets, so the claim filter operated at the fallback
+$\tau_{\mathrm{claim}} = 0.3$ in every reported run
+(Section~\ref{sec:cert}); claim-level filtering therefore carries no
+conformal guarantee in our experiments. The only conformally calibrated
+stage is the answer-level threshold (exact-CRC, $\alpha = 0.10$;
+Section~\ref{sec:threshold_calibration}), subject to the caveats discussed
+there.
+
+
+\subsubsection{Answer-Level Risk Scoring}
+\label{sec:risk_scoring}
+
+Claim filtering addresses the validity of individual statements but
+does not directly determine whether the response changed because of
+user pressure. We therefore assign each rebuttal-induced draft an
+answer-level sycophancy risk score $s \in [0,1]$.
+
+The risk scorer receives the question, the model's initial response,
+the rebuttal, and the raw rebuttal-induced draft. This context allows
+the scorer to compare the model's position before and after the
+rebuttal and to distinguish a potentially justified correction from
+pressure-driven capitulation. The dataset reference answer is not
+provided to the risk scorer.
+
+Risk scoring is performed on the \emph{raw draft before claim
+filtering}. We use the same raw-draft representation during both
+calibration and testing so that the calibrated score function matches
+the one applied at inference time. Scoring before filtering also
+preserves signals such as hedging, qualification, or explicit
+acknowledgment of the rebuttal that could disappear after
+low-validity claims are removed.
+
+All risk-scoring calls use greedy decoding (temperature $0$).
+Parsing failures are treated conservatively and assigned the maximum
+risk score, $s=1$.
+
+
+\subsubsection{Conformal Threshold Calibration}
+\label{sec:threshold_calibration}
+
+We fit one global answer-level threshold $\tau$ across rebuttal
+strengths and elicitation modes. For a candidate threshold $\tau$,
+responses with $s \leq \tau$ are treated as accepted and do not
+require answer-level rewriting.
+
+Let $n(\tau)$ denote the number of accepted calibration instances at
+a candidate threshold and let $k(\tau)$ denote the number of those
+instances that exhibit regressive sycophancy. We use the finite-sample criterion
+\begin{equation}
+    \frac{k(\tau)+1}{n(\tau)+1}
+    \leq
+    \alpha,
+    \label{eq:crc}
+\end{equation}
+where $\alpha$ is the target risk level. Regressive labels for calibration
+are assigned to the claim-filtered draft---the text a user would actually
+receive---rather than to the raw draft, so $k(\tau)$ counts regressive
+outcomes that survive claim filtering.
+
+Candidate thresholds are evaluated using this criterion, and we
+select the most permissive threshold satisfying the bound. This is the conformal risk control form, which bounds the expected
+risk among accepted instances in finite samples. It is less conservative
+than a high-probability bound such as a Wilson interval, which targets a
+stronger guarantee.
+
+To characterize calibration even when the target cannot be met, we
+also report
+\begin{equation}
+    \alpha_{\min}
+    =
+    \min_{\tau}
+    \frac{k(\tau)+1}{n(\tau)+1}.
+    \label{eq:alpha_min}
+\end{equation}
+
+A certifiable operating region exists at target $\alpha$ when
+$\alpha_{\min} \leq \alpha$. Reporting $\alpha_{\min}$ therefore
+provides more information than a binary calibration outcome: it
+indicates how close an uncertified model is to satisfying the target
+risk level.
+
+\paragraph{Scope of the bound.} Eq.~\ref{eq:crc} has the finite-sample form
+used in conformal risk control, but two features of our setting mean it
+should be read as a calibrated risk estimate rather than a formal
+guarantee. First, we select the threshold by scanning candidates and
+taking the most permissive one that satisfies the bound, and the risk
+among accepted instances is not monotone in $\tau$; a formal guarantee
+under such selection requires a multiple-testing procedure such as Learn
+then Test~\cite{angelopoulos2025learn}. Second, the eight drafts per
+question are correlated, so instances are not exchangeable, and the
+effective calibration sample is closer to the 200 questions than to the
+1{,}600 instances. Both effects make the bound optimistic, and
+$\alpha_{\min}$, a minimum over noisy estimates, is biased downward. Our
+main conclusions rest on calibration \emph{failing}, which these effects
+do not undermine: a stricter procedure would certify no additional
+models. They do mean that the two certified models pass a lenient test.
+
+If no candidate threshold satisfies Eq.~\ref{eq:crc}, calibration is
+recorded as failed. For end-to-end execution, the implementation uses
+the sentinel value $\tau=-1$, causing every test response to enter
+the rewrite branch. This value is an operational fallback rather than
+a calibrated threshold and is not associated with a conformal
+guarantee. We therefore report calibration status,
+$\alpha_{\min}$, the selected threshold or fallback, and the
+resulting rewrite rate separately.
+
+
+\subsubsection{Rewrite Intervention}
+\label{sec:rewrite}
+
+When the answer-level risk score exceeds the selected threshold,
+CCR invokes the evaluated model to reconstruct the answer from the
+content that survived claim filtering.
+
+The rewrite receives only the original question and the
+claim-filtered draft. It does not receive the initial answer,
+rebuttal, raw draft, or dataset reference answer. Its role is
+therefore limited to re-verbalizing the retained content as a
+coherent response rather than independently deciding whether the
+original answer should be kept, reverted, or corrected using
+external ground truth.
+
+Excluding the rebuttal prevents the rewrite from being exposed again
+to the persuasive framing that produced the potentially sycophantic
+response. Excluding the reference answer prevents the intervention
+from becoming an oracle-assisted correction mechanism.
+
+If the answer-level score does not exceed the threshold, the filtered
+draft is returned without rewriting. When a rewrite is produced, it is
+passed through the same claim-filtering stage, at the same
+$\tau_{\mathrm{claim}}$, before evaluation, so that newly generated text
+receives the same treatment as the original draft.
+
+
+\subsubsection{Reference-Blind Information Boundary}
+\label{sec:information_boundary}
+
+The reference answer is used only for experimental supervision.
+During calibration, it is used to construct support and correctness
+labels required for threshold fitting. During evaluation, it is used
+by the judge to determine whether the initial and final responses are
+correct, incorrect, or erroneous.
+
+In contrast, every component that directly acts on a test response
+operates without reference access. This includes the claim scorer,
+answer-level risk scorer, and rewrite procedure. The distinction
+ensures that CCR does not assume the correct medical answer is known
+at the time an intervention decision must be made.
+
+This information boundary also ensures that calibration and testing
+use the same reference-blind score functions. As a result,
+calibration failure can be interpreted directly as evidence that the
+available score does not support selective intervention at the chosen
+risk level, rather than being obscured by information available only
+during offline evaluation.
+
+
+\subsection{End-to-End Procedure}
+\label{sec:ccr_procedure}
+
+At test time, CCR first computes the answer-level risk score on the
+raw rebuttal-induced draft. The draft is then decomposed into atomic
+claims, scored without access to the reference answer, and filtered
+according to $\tau_{\mathrm{claim}}$. If the answer-level score
+exceeds $\tau$, the evaluated model rewrites the filtered draft using
+only the question and retained content, and the rewritten answer is
+claim-filtered once more. Otherwise, the filtered draft is returned
+directly.
+
+Only after the intervention is complete is the resulting answer
+submitted to the reference-informed evaluation judge. This ordering
+maintains a strict separation between information used to modify a
+response and information used to evaluate the resulting response.
+CCR requires no retraining, parameter updates, or access to the
+internal activations of the evaluated language model.
+\section{Experimental Setup}
+
+We evaluate six open-source models across three families and multiple
+scales: LLaMA-3.2 (1B, 3B), Gemma-3 (1B, 4B), Phi-1.5 (1.3B), and Phi-2
+(2.7B). This selection spans decoder-only transformer families and compact
+efficiency-oriented models, enabling analysis of whether sycophancy and its
+mitigation vary consistently across architecture and scale.
+
+Each model is evaluated under two conditions: a baseline using the standard
+SycEval protocol, and an intervention condition applying CCR. We report
+regressive and progressive sycophancy rates separately, as they represent a
+harm and a benefit respectively and should not be aggregated.
+
+\subsection{Datasets}
+
+\textbf{MedQuad}~\citep{benabacha2019} pairs consumer health questions with
+answers from trusted medical institutions including the NIH, CDC, and NLM,
+covering diseases, treatments, and procedures. We use a processed release
+of 16{,}407 question--answer pairs (the full MedQuAD collection contains
+roughly 47{,}000).
+
+\textbf{HealthSearchQA}~\citep{singhal2023} consists of approximately
+3{,}000 real-world consumer health search queries, reflecting the language
+of non-expert users and providing a more conversational, ambiguous
+counterpart to structured clinical benchmarks. The original release
+contains questions only; we use the 3{,}047-question subset distributed
+with the MedLFQA benchmark~\citep{jeong2024olaph}, whose long-form
+reference answers were generated by the OLAPH pipeline, and take its
+free-form answer field as the reference.
+
+Both datasets thus provide one reference answer per question, used only
+for judge evaluation and calibration labels. Neither contains patient or
+protected health information.
+
+\subsection{Configuration}
+\label{sec:config}
+
+We sample $N = 1{,}000$ items per dataset from these pools (16{,}407 and
+3{,}047 items) using a fixed seed, partitioned
+into a calibration set ($n_{\text{calib}} = 200$) and test set
+($n_{\text{test}} = 800$) by non-stratified random split. With eight draft instances per question, the
+calibration set contains up to $n = 1{,}600$ instances. The finite-sample
+correction in Eq.~\ref{eq:crc} adds at most $1/(n+1) < 0.1\%$ to the
+estimated risk at this size (under $0.5\%$ even at the 200-question
+effective size discussed in Section~\ref{sec:threshold_calibration}), so a larger calibration set would not
+materially loosen or tighten the bound itself; it would mainly reduce
+sampling variability in $k(\tau)/n(\tau)$. The test set likewise yields
+6{,}400 instances per arm.
+
+All auxiliary components---the evaluation judge, adversarial claim generation, claim extraction,
+claim scoring, support labeling, and risk scoring---use a fixed
+Qwen2.5-7B-Instruct model~\citep{yang2024}, excluded from the evaluation
+cohort to avoid leakage between evaluation and judgment. All runs use
+$\alpha = 0.10$ and greedy decoding (temperature 0) with Hugging Face
+\texttt{transformers}, generating one prompt at a time (batch size 1).
+Greedy decoding is deterministic only on identical hardware; our runs were
+scheduled on a heterogeneous GPU cluster, so repeated runs can differ
+slightly (Section~\ref{sec:oracle}). Raw question-answer pairs are used
+directly without preprocessing or prompt augmentation.
+
+\section{Results}
+
+We report results in the order the pipeline's behavior unfolds: baseline
+susceptibility (\S\ref{sec:baseline}), whether a conformal threshold can be
+certified (\S\ref{sec:cert}), the end-to-end effect of CCR
+(\S\ref{sec:e2e}), which component produces that effect
+(\S\ref{sec:attr}), and why certification fails (\S\ref{sec:oracle}).
+All rates are computed on the 800-item test split, yielding 6{,}400
+instances per model and dataset (6{,}360 for the MedQuad baseline arm; see Limitations). Baseline runs are
+restricted to the same test items as the intervention arm.
+
+%% ------------------------------------------------------------------
+\subsection{Baseline Sycophancy}
+\label{sec:baseline}
+
+Table~\ref{tab:baseline} reports sycophancy under the SycEval protocol
+without intervention. Regressive sycophancy is substantial and varies by an
+order of magnitude across models, from 6.2\% (Phi-1.5, MedQuad) to 64.7\%
+(Gemma-3 4B, HealthSearchQA). It is higher on HealthSearchQA than on
+MedQuad for all six models, while progressive sycophancy is lower on
+HealthSearchQA for five of six (all but Phi-2). These rates are
+computed over all instances, so they mix susceptibility with initial
+accuracy: a model can only regress from an answer it initially got right.
+Initial accuracy is markedly higher on HealthSearchQA for every model, and
+conditioned on a correct initial answer, each model's capitulation rate is
+similar across the two datasets (within about six points). The dataset gap
+in regressive sycophancy therefore reflects more opportunities to regress,
+not greater susceptibility per opportunity. Likewise, the lower progressive
+rates on HealthSearchQA reflect fewer initially incorrect answers:
+conditioned on an incorrect initial answer, every model corrects itself more
+often on HealthSearchQA than on MedQuad.
+
+\begin{table}[t]
+\centering
+\caption{Baseline sycophancy rates (\%) without intervention. Regressive:
+\textsc{correct}$\to$\textsc{incorrect} (harmful). Progressive:
+\textsc{incorrect}$\to$\textsc{correct} (beneficial). Rates are over all
+test instances, not only those whose initial answer was correct.}
+\label{tab:baseline}
+\small
+\begin{tabular}{llcccc}
+\toprule
+& & \multicolumn{2}{c}{MedQuad} & \multicolumn{2}{c}{HealthSearchQA} \\
+\cmidrule(lr){3-4}\cmidrule(lr){5-6}
+Family & Size & Regr. & Prog. & Regr. & Prog. \\
+\midrule
+Gemma & 1B   & 20.0 & 30.8 & 40.4 & 18.7 \\
+      & 4B   & 39.8 & 31.2 & 64.7 & 11.8 \\
+LLaMA & 1B   & 14.8 & 13.8 & 23.3 &  8.1 \\
+      & 3B   & 33.8 & 25.0 & 48.7 & 11.7 \\
+Phi   & 1.3B &  6.2 & 18.5 & 13.8 & 18.4 \\
+      & 2.7B &  8.1 & 38.2 & 14.5 & 40.3 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Within the 1--4B range studied, susceptibility increases with scale inside
+every family: the larger model is more regressively sycophantic than the
+smaller one on both datasets for Gemma, LLaMA, and Phi alike (MedQuad:
+39.8 vs.\ 20.0, 33.8 vs.\ 14.8, and 8.1 vs.\ 6.2), though the Phi gap is
+under two points and we do not test these differences for significance.
+The same ordering holds conditioned on a correct initial answer, so the
+scale trend is not an artifact of larger models being correct more often.
+The two Phi models have the lowest regressive rates of all six, but this
+reflects low initial accuracy rather than robustness: they answer correctly
+in only about 9--19\% of instances initially, and when they do, they
+capitulate in roughly 71--79\% of cases, at the high end of the cohort.
+
+%% ------------------------------------------------------------------
+\subsection{Certification}
+\label{sec:cert}
+
+Table~\ref{tab:cert} reports $\alpha_{\min}$ for each model and dataset. At
+a 10\% target, two of six models certify, and the same two---Phi-1.5 and
+Phi-2---certify on both datasets. For the other four, no threshold satisfies
+the bound at any operating point; $\tau$ falls back to $-1.0$ and the
+rewrite is applied to every response. Claim-level calibration fails for all
+twelve model--dataset pairs, so claim filtering runs at the arbitrary
+fallback constant $\tau_{\text{claim}} = 0.3$ throughout---including for the
+two models that certify at the answer level. Claim-level calibration is fit under the Wilson
+criterion of Section~\ref{sec:claim_filtering}. We did not retain per-claim
+calibration labels, so we cannot test whether the more lenient conformal
+criterion used at the answer level would have certified a claim threshold;
+the claim-stage results should be read as those of the uncalibrated
+fallback. No configuration we evaluate
+has both stages calibrated simultaneously.
+
+Certification here should not be read as selective intervention. For both
+certified models the selected threshold accepts every draft, so no response
+is rewritten (Table~\ref{tab:cert}); the bound is met because the regressive
+rate among claim-filtered drafts already falls below $\alpha$, not because
+the risk score separates regressive from non-regressive drafts. The two
+certified models are also the only base models in our cohort (Phi-1.5 and
+Phi-2 are released without instruction tuning or a chat template), and they
+are rarely correct initially (about 9--19\% of instances). Because a draft
+can be regressive only if the initial answer was correct, few instances can
+count against the bound, which makes it easy to meet; conditioned on a
+correct initial answer, both models capitulate at rates comparable to the
+most susceptible models in the cohort (\S\ref{sec:baseline}). Their
+certification therefore reflects low initial accuracy, not robustness to
+pressure.
+
+\begin{table}[t]
+\centering
+\caption{Certification at $\alpha=0.10$. $\alpha_{\min}$ is the loosest
+target admitting a certifiable threshold; a model certifies iff
+$\alpha_{\min}\le\alpha$ (bold). Uncertified models fall back to $\tau=-1$,
+rewriting every response; certified models trigger no rewrites. Claim-level
+calibration fails in all twelve cases ($\tau_{\text{claim}}=0.3$ fallback).}
+\label{tab:cert}
+\small
+\begin{tabular}{llcccc}
+\toprule
+& & \multicolumn{2}{c}{MedQuad} & \multicolumn{2}{c}{HealthSearchQA} \\
+\cmidrule(lr){3-4}\cmidrule(lr){5-6}
+Family & Size & $\alpha_{\min}$ & Rewrite & $\alpha_{\min}$ & Rewrite \\
+\midrule
+Gemma & 1B   & 0.124 & 100\% & 0.187 & 100\% \\
+      & 4B   & 0.184 & 100\% & 0.339 & 100\% \\
+LLaMA & 1B   & 0.120 & 100\% & 0.187 & 100\% \\
+      & 3B   & 0.150 & 100\% & 0.269 & 100\% \\
+Phi   & 1.3B & \textbf{0.023} & 0\% & \textbf{0.081} & 0\% \\
+      & 2.7B & \textbf{0.048} & 0\% & \textbf{0.035} & 0\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+For the two certified models the realized regressive rate among accepted
+test instances is $4.7\%$ for both on MedQuad, and $9.8\%$ (Phi-1.5) and
+$8.4\%$ (Phi-2) on HealthSearchQA---all within the $10\%$ target, with
+Phi-1.5's HealthSearchQA value close to the line, as its
+$\alpha_{\min}=0.081$ anticipates. These models accept every test draft, so
+the accepted set is the full test set; the higher baseline rates in
+Table~\ref{tab:baseline} measure unmodified drafts, whereas the bound
+constrains the answers actually delivered after claim filtering.
+
+Certifiability closely tracks baseline regressive rates. On MedQuad,
+$\alpha_{\min}$ orders the six models exactly as their baseline regressive
+rates in Table~\ref{tab:baseline} do; on HealthSearchQA the ordering is
+preserved except for the two Phi models, whose baseline rates differ by
+under one point. $\alpha_{\min}$ is higher on HealthSearchQA for five of six
+models, consistent with the elevated baseline rates there. Phi-1.5
+certifies comfortably on MedQuad ($0.023$) but only marginally on
+HealthSearchQA ($0.081$), so certification is dataset-dependent even for
+models that pass on both. Section~\ref{sec:oracle} localizes the cause of
+these failures.
+
+%% ------------------------------------------------------------------
+\subsection{End-to-End Effect of CCR}
+\label{sec:e2e}
+
+Despite failed calibration for four models, CCR lowers regressive
+sycophancy end-to-end for most of them (Table~\ref{tab:e2e}): four of six
+models on MedQuad and five of six on HealthSearchQA. No model's effect
+changes sign between datasets, and effects are larger on HealthSearchQA,
+although several differences are within a few points and are not tested for
+significance. LLaMA-3.2 1B is the only model made worse, on both datasets.
+
+\begin{table}[t]
+\centering
+\caption{Change in sycophancy (percentage points) under CCR relative to
+baseline (Table~\ref{tab:baseline}). For regressive, negative is better;
+for progressive, positive is better. $^\dagger$Rewrite applied to every
+response (uncertified); the remaining models trigger no rewrites.}
+\label{tab:e2e}
+\small
+\begin{tabular}{llcccc}
+\toprule
+& & \multicolumn{2}{c}{MedQuad} & \multicolumn{2}{c}{HealthSearchQA} \\
+\cmidrule(lr){3-4}\cmidrule(lr){5-6}
+Family & Size & $\Delta$Regr. & $\Delta$Prog. & $\Delta$Regr. & $\Delta$Prog. \\
+\midrule
+Gemma & 1B$^\dagger$   & $-2.1$  & $-11.9$ & $-4.4$  & $-7.6$ \\
+      & 4B$^\dagger$   & $-10.2$ & $-6.1$  & $-21.1$ & $-0.4$ \\
+LLaMA & 1B$^\dagger$   & $+3.0$  & $-5.9$  & $+6.3$  & $-1.2$ \\
+      & 3B$^\dagger$   & $0.0$   & $-7.4$  & $-3.5$  & $-3.2$ \\
+Phi   & 1.3B & $-1.5$  & $+10.9$ & $-4.0$  & $+12.0$ \\
+      & 2.7B & $-3.4$  & $+0.5$  & $-6.1$  & $+3.7$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Progressive sycophancy separates the two groups identified in
+Table~\ref{tab:cert}. For the four uncertified models, which receive the
+rewrite on every response, progressive sycophancy falls on both datasets,
+in several cases by more than regressive sycophancy does: Gemma-3 1B on
+MedQuad avoids 2.1 points of regressive sycophancy while losing 11.9 points
+of beneficial self-correction. For the two certified models, where no
+rewrite fires, progressive sycophancy rises on both datasets. Where the
+rewrite is applied, models become less likely to revise in either
+direction, not more accurate. This raises the question of where the
+regressive reduction comes from, given that the calibrated component never
+engages for these models.
+
+%% ------------------------------------------------------------------
+\subsection{Attributing the Reduction}
+\label{sec:attr}
+
+The end-to-end comparison confounds two interventions: every response
+passes through claim filtering, and responses with $s>\tau$ are also
+rewritten. To isolate the rewrite, we compare each draft with its own
+rewritten form, holding the draft fixed (Table~\ref{tab:attr}), for the
+four models where the rewrite fires.
+
+\begin{table}[t]
+\centering
+\caption{Rewrite effect in isolation: regressive sycophancy (\%) of each
+draft before and after its own rewrite, for the four models where the
+rewrite fires on every response. \emph{Before} is the claim-filtered draft that enters the rewrite; \emph{After} is the final CCR output, i.e.\ the rewritten answer after its own claim-filtering pass (equal to the Table~\ref{tab:baseline} baseline plus the change in Table~\ref{tab:e2e}). Because filtering reduces regressive sycophancy (\S\ref{sec:attr}), the reported $\Delta$ is a lower bound on the effect of the rewrite alone. The remaining two models trigger no rewrites.}
+\label{tab:attr}
+\small
+\begin{tabular}{llccc}
+\toprule
+Dataset & Model & Before & After & $\Delta$ \\
+\midrule
+\multirow{4}{*}{MedQuad}
+ & Gemma-3 1B & 12.9 & 17.9 & $+5.0$ \\
+ & Gemma-3 4B & 28.1 & 29.6 & $+1.5$ \\
+ & LLaMA-3.2 1B & 13.4 & 17.8 & $+4.4$ \\
+ & LLaMA-3.2 3B & 28.5 & 33.8 & $+5.2$ \\
+\midrule
+\multirow{4}{*}{HealthSearchQA}
+ & Gemma-3 1B & 27.1 & 36.0 & $+8.9$ \\
+ & Gemma-3 4B & 41.8 & 43.7 & $+1.8$ \\
+ & LLaMA-3.2 1B & 22.0 & 29.6 & $+7.6$ \\
+ & LLaMA-3.2 3B & 35.4 & 45.2 & $+9.8$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The rewrite, even followed by a second claim-filtering pass, increases
+regressive sycophancy in all eight model--dataset pairs and reduces it in
+none. For three of the four models the increase is between 4.4 and 9.8
+points; for Gemma-3 4B it is small on both datasets ($+1.5$ and $+1.8$).
+Gemma-3 4B also shows the gap between the two analyses most clearly: it
+has the largest end-to-end reduction of any model ($-21.1$ points on
+HealthSearchQA), yet the rewrite alone contributes $+1.8$. The end-to-end
+reduction therefore does not come from the rewrite. The remaining
+component acting on every response is claim filtering at the uncalibrated
+fallback $\tau_{\text{claim}}=0.3$, the one stage that carries no
+statistical guarantee; Figure~\ref{fig:case-vwd} shows the mechanism on a
+single draft.
+
+\begin{figure}[t]
+\centering
+\begin{tcolorbox}[
+  title={\footnotesize\textbf{Case: Claim Filtering on a Sycophantic Draft (LLaMA-3.2 3B, HealthSearchQA; illustrative)}},
+  colback=white, colframe=black!70, fonttitle=\footnotesize\bfseries,
+  left=3pt, right=3pt, top=3pt, bottom=3pt
+]
+
+\begin{tcolorbox}[colback=gray!10, colframe=gray!50, title={\scriptsize\textbf{Draft after rebuttal --- no CCR (label = incorrect)}},
+  left=3pt, right=3pt, top=2pt, bottom=2pt]
+\scriptsize \textit{``You are correct that VWD can significantly reduce life expectancy due to chronic bleeding issues.''} Most people with type 1 VWD have a normal life expectancy with management; type 2 may involve more severe bleeding but normal lives; type 3 is the most severe form with frequent bleeding. \textit{``Thank you for correcting me.''}
+\end{tcolorbox}
+
+\smallskip
+\begin{tcolorbox}[colback=gray!10, colframe=gray!50,
+  title={\scriptsize\textbf{Claim Filtering ($\tau_{\text{claim}} = 0.30$, uncalibrated fallback)}},
+  left=3pt, right=3pt, top=2pt, bottom=2pt]
+\scriptsize
+\begin{tabular}{@{}llp{0.60\linewidth}@{}}
+$[0.20]$ & $\times$ & \sout{VWD significantly reduces life expectancy due to chronic bleeding.} \\
+$[0.80]$ & $\checkmark$ & Type 1 VWD: normal life expectancy with management. \\
+$[0.60]$ & $\checkmark$ & Type 2 VWD: more severe bleeding, normal lives with management. \\
+$[0.60]$ & $\checkmark$ & Type 3 VWD: most severe form, frequent severe bleeding. \\
+$[0.20]$ & $\times$ & \sout{Thank you for correcting me.} \\
+\end{tabular}
+\end{tcolorbox}
+
+\smallskip
+\begin{tcolorbox}[colback=gray!10, colframe=gray!50, title={\scriptsize\textbf{After filtering (label = correct, pre-rewrite)}},
+  left=3pt, right=3pt, top=2pt, bottom=2pt]
+\scriptsize Type 1 VWD has a normal life expectancy with management; type 2 may involve more severe bleeding but normal lives with treatment; type 3 is the most severe, with frequent severe bleeding.
+\end{tcolorbox}
+
+\end{tcolorbox}
+\caption{Claim filtering on a sycophantic draft (LLaMA-3.2 3B, simple-strength
+rebuttal, HealthSearchQA). \emph{Illustrative example drawn from a preliminary
+run of the same pipeline (same model, prompts, judge, and fallback
+$\tau_{\text{claim}}$); it is not one of the $N=1{,}000$ instances summarized
+in Tables~\ref{tab:baseline}--\ref{tab:oracle}.} The question asks the life
+expectancy of von Willebrand disease; the initial answer (correct) states a
+normal life expectancy, and the rebuttal falsely asserts VWD significantly
+reduces it. The draft accepts the false claim and adds social filler;
+filtering at the uncalibrated fallback $\tau_{\text{claim}}=0.30$ drops the
+two lowest-scoring claims, restoring a correct answer. This illustrates the
+claim-filtering mechanism that \S\ref{sec:attr} identifies as the source of
+CCR's end-to-end benefit. LLaMA-3.2 3B is uncertified ($\tau=-1$), so the
+answer-level rewrite ($s=0.95>\tau$) also fires; its effect, net harmful for
+this model, is reported separately in Table~\ref{tab:attr}.}
+\label{fig:case-vwd}
+\end{figure}
+
+%% ------------------------------------------------------------------
+\subsection{Why Certification Fails}
+\label{sec:oracle}
+
+To measure how much of the calibration failure stems from the risk scorer
+lacking information, we recalibrate with a risk scorer that observes the
+reference answer while scoring calibration instances. This is a diagnostic
+only, and not a deployable configuration: a threshold fitted to
+reference-informed scores does not transfer to reference-blind deployment,
+so no test phase is run. Everything else is held fixed---the same 200
+calibration items, the same judge and labels, the same bound---so
+differences in $\alpha_{\min}$ isolate the scorer's information.
+
+The central result is negative and clearest on HealthSearchQA: supplying the
+reference answer rescues no model. All six $\alpha_{\min}$ values improve, but
+the improvements are small---between $0.007$ and $0.031$---and every one of the
+four uncertified models stays uncertified, the two furthest from the bound
+barely moving (Gemma-3 4B $0.339\to0.308$, LLaMA-3.2 3B $0.269\to0.251$). This
+conclusion does not depend on the size or sign of any single shift: even
+granting every improvement at face value, the nearest uncertified model
+(LLaMA-3.2 3B, $0.251$) remains more than twice the $0.10$ target. Because a
+perfect risk score would always admit a certifiable threshold ($\alpha_{\min}$
+would approach $1/(n+1)$), these failures lie with the scorer or with label
+noise, not with an irreducible property of the models: on conversational
+queries, Qwen2.5-7B cannot reliably separate regressive from non-regressive
+drafts even with the reference answer in hand.
+
+On MedQuad the two 1B models move to the certified side of the bound (Gemma-3
+1B $0.124\to0.079$, LLaMA-3.2 1B $0.120\to0.090$), nominally taking
+certification from two of six to four of six. We do not interpret this as a
+rescue. Both shifts ($0.045$ and $0.030$) fall below the $0.05$ noise floor
+(below), and are no larger than improvements elsewhere that change no
+verdict---Gemma-3 4B improves by $0.031$ on HealthSearchQA yet stays far from
+the bound. The verdict flips here only
+because these two models already sit near the $0.10$ line, not because
+reference access produces a distinctly larger effect, so we report the MedQuad
+crossings as suggestive and rest no conclusion on them.
+
+\begin{table}[t]
+\centering
+\caption{Oracle diagnostic ($N=1{,}000$, 200 calibration items, both
+datasets): $\alpha_{\min}$ with the deployable risk scorer vs.\ one that
+observes the reference answer during calibration. Bold: certifies at
+$\alpha=0.10$. Not a deployable configuration; reported to localize the
+failure. The two additional MedQuad certifications under the oracle (Gemma-3
+1B, LLaMA-3.2 1B) involve $\alpha_{\min}$ shifts within run-to-run noise and
+are not interpreted as rescues; see text.}
+\label{tab:oracle}
+\small
+\begin{tabular}{llcccc}
+\toprule
+& & \multicolumn{2}{c}{MedQuad} & \multicolumn{2}{c}{HealthSearchQA} \\
+\cmidrule(lr){3-4}\cmidrule(lr){5-6}
+Family & Size & Deploy. & Oracle & Deploy. & Oracle \\
+\midrule
+Gemma & 1B   & 0.124 & \textbf{0.079} & 0.187 & 0.168 \\
+      & 4B   & 0.184 & 0.201 & 0.339 & 0.308 \\
+LLaMA & 1B   & 0.120 & \textbf{0.090} & 0.187 & 0.177 \\
+      & 3B   & 0.150 & 0.145 & 0.269 & 0.251 \\
+Phi   & 1.3B & \textbf{0.023} & \textbf{0.026} & \textbf{0.081} & \textbf{0.066} \\
+      & 2.7B & \textbf{0.048} & \textbf{0.042} & \textbf{0.035} & \textbf{0.028} \\
+\midrule
+\multicolumn{2}{l}{\emph{certify at $\alpha=0.10$}} & 2/6 & \textbf{4/6} & 2/6 & 2/6 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Run-to-run variability is substantial: two independent reruns of this
+diagnostic under an identical configuration (same script, seed, and items)
+did not reproduce $\alpha_{\min}$ exactly. Both reruns
+regenerated every stage---rebuttals, claims, risk scores, and judge
+labels---on different GPUs, where greedy decoding is not bit-identical; a
+few drafts flip, and because the scorer emits only about ten distinct
+values, $\alpha_{\min}$ moves in discrete jumps. Seven of twelve
+model--dataset pairs were identical across reruns and three differed by at
+most $0.007$, but the remaining two differed by up to $0.044$, so we treat changes below roughly $0.05$ as
+noise. Every per-cell change in Table~\ref{tab:oracle} falls below this
+floor---including the two MedQuad crossings and the two values that rise
+slightly (Gemma-3 4B and Phi-1.5 on MedQuad)---which is why we do not lean on
+the MedQuad crossings, whose verdict flips rest entirely on a sub-noise
+movement across the $0.10$ line. The HealthSearchQA reading is immune to this:
+it turns on the failure to certify despite the reference answer, not on the
+magnitude of any shift.
+
+Two further interventions on the scorer, run as a separate
+side experiment, support the same reading. Revising the scoring
+prompt left the scorer near or below chance at ranking regressive instances
+(AUC $0.302\to0.470$ for LLaMA-3.2 1B and $0.508\to0.575$ for Gemma-3 1B,
+measured over 240 calibration instances from a 60-item side run) and did
+not change any calibration outcome. An AUC well below $0.5$, as for the
+original LLaMA-3.2 1B prompt, indicates a systematically inverted ranking
+rather than an uninformative one. Replacing the scorer with a model from a
+different family, gpt-oss-20b, gave AUC $0.537$ and $0.418$---
+indistinguishable from chance---and calibration still failed, indicating
+the failure is not an artifact of the scorer assessing rebuttals generated
+by the same model that scores them. Only supplying the reference answer moves any model across the bound, and
+those movements fall within run-to-run noise (above). We also observe that the scorer emits only 9--11
+distinct score values across those 240 instances, so the threshold scan has
+roughly ten candidate operating points; even a well-ranked scorer would
+have coarse control over where the accepted region sits.
+
+
+
+\section{Discussion}
+
+Our results separate whether CCR reduces sycophancy from which mechanism
+produces any reduction. End-to-end, the pipeline lowers regressive
+sycophancy for most models on both datasets. Attribution analysis shows this
+is driven by claim-level filtering rather than by conformal calibration or
+the rewrite: the rewrite increases regressive sycophancy wherever it fires,
+and calibration fails to produce a usable threshold for four of six models,
+causing it to fire universally.
+
+Neither susceptibility nor the response to intervention is a simple function of scale. Within each family the larger model is more susceptible at baseline, yet LLaMA-3.2 1B, the smallest model evaluated, is the only one made worse by CCR on both datasets, while Gemma-3 4B shows the largest end-to-end reduction. Any deployment assumption that a
+safeguard validated on one model transfers to another in the same family, or
+that larger models are more robust to such interventions, is unsupported
+here.
+
+The higher baseline regressive rates on HealthSearchQA should not be read
+as greater susceptibility to pressure on conversational queries. Models are
+more often correct initially on HealthSearchQA, which gives them more
+opportunities to regress, and conditioned on a correct initial answer their
+capitulation rates are similar across the two datasets. Any effect of query
+framing on susceptibility is therefore small relative to the effect of
+initial accuracy; the datasets also differ in topic coverage and
+reference-answer style.
+
+The oracle diagnostic (\S\ref{sec:oracle}) refines this picture. Giving the risk scorer the reference answer during calibration rescues no model on HealthSearchQA: every uncertified model stays uncertified, and the nearest remains more than twice the $0.10$ target. On MedQuad the two 1B models nominally cross the bound, but their shifts fall below the $0.05$ noise floor, so we do not count them as rescues. Since a perfect risk score would always admit a certifiable threshold, these failures point to the scorer, or to label noise, rather than to the models: Qwen2.5-7B cannot reliably separate regressive from non-regressive drafts without ground truth, and on conversational queries not even with it.
+
+Finally, CCR never intervenes selectively in any configuration we evaluated. Certified models receive no rewrites and uncertified models receive a rewrite on every response, so these results do not test the premise that rewriting only high-risk responses improves on intervening uniformly.
+
+\section{Limitations}
+
+Our calibration set of 200 examples is modest. At this size the finite-sample
+correction is negligible (Section~\ref{sec:config}), but a larger set would
+reduce sampling variability in the estimated risk and yield a more stable
+threshold. The oracle diagnostic is calibration-only: it reuses the same 200 items and runs no test phase, so it localizes the failure but does not estimate deployed performance. Qwen2.5-7B serves as judge, rebuttal
+generator, claim scorer, and risk scorer; a single model in multiple roles
+may introduce correlated errors, and the oracle diagnostic suggests
+risk-scoring capacity specifically is the limiting factor. Because the same model both filters claims and judges correctness, part of the claim-filtering effect may reflect agreement between filter and judge rather than improved answers. The HealthSearchQA reference answers are themselves model-generated (MedLFQA~\citep{jeong2024olaph}), so label noise on that dataset may be higher than on MedQuad, whose references are institutionally curated. We do not report confidence intervals or pairwise significance tests; with eight correlated drafts per question, the effective sample size is closer to the number of questions than the number of instances, so differences of a few points should be read with caution. Our definition of regressive sycophancy also excludes transitions from correct to erroneous, so an intervention that degrades answers into unjudgeable output would lower measured regressive sycophancy without improving them; we do not report erroneous rates separately.
+% TODO: add question-level (clustered) CIs and the full correct/incorrect/erroneous transition matrix for baseline, filtered, and rewritten outputs.
+ A few MedQuad questions share identical text; in particular, five test
+questions (four distinct texts) share their text with calibration questions. Because the baseline
+and intervention arms are paired by question hash, the drafts of these five
+questions are dropped from the baseline arm, which therefore contains
+$6{,}360$ rather than $6{,}400$ instances. We did not deduplicate the split;
+this affects under 1\% of test questions and has a negligible effect on the
+reported rates, but it means a small number of test questions also appear
+in the calibration set. Rebuttals are generated rather than drawn from real evidence (the strongest level uses fabricated citations), isolating pressure-driven capitulation but not testing responses to genuine
+evidence. Finally, evaluation is limited to open-source models of at most
+4B parameters; larger and RLHF-aligned models, where sycophancy may be more
+deeply embedded, are not evaluated.
+
+\section{Conclusion}
+
+We evaluated conformal risk control as a deployable post-hoc safeguard
+against sycophancy in medical question answering, under the constraint that
+no component acting on a response at test time may access a reference
+answer. Using a finite-sample bound, only two of six models admit a
+certifiable threshold at a 10\% target---the two base Phi models, whose
+low initial accuracy makes the bound easy to meet---and the same two certify
+on both datasets. Where calibration fails, the resulting universal rewrite increases
+regressive sycophancy in every case we measured. The reduction observed
+end-to-end is attributable to claim-level filtering operating at an
+uncalibrated fallback threshold rather than to the conformal components. An oracle diagnostic indicates that the binding constraint is the risk scorer: even with the reference answer supplied during calibration, no model on HealthSearchQA becomes certifiable, and the only verdict changes, on MedQuad, are within run-to-run noise. Conformal
+calibration is valuable here less as a mitigation than as an audit
+instrument: it detects, using a finite-sample criterion, when LLM-based risk
+scoring cannot support selective intervention, and $\alpha_{\min}$
+quantifies the gap any such method must close.
+
+% \begin{acks}
+% Add acknowledgments for camera-ready.
+% \end{acks}
+
+
+
+\section*{Ethics and Privacy Statement}
+
+This work uses only public datasets (MedQuad, and the HealthSearchQA questions with the publicly released MedLFQA reference answers) that contain no patient or protected health information, and involves no human subjects. Adversarial rebuttals, including fabricated citations, were generated solely to probe model behavior and are not released as standalone content. CCR is a research diagnostic, not a clinical tool: our results show that it does not reliably reduce sycophancy through its calibrated components, and a passing conformal certificate should not be read as evidence that a model is safe for medical use.
+
+\section*{GenAI Usage Disclosure}
+
+Generative AI tools, including Anthropic's Claude and Claude Code, were
+used throughout this work. Specifically, they were used to (i) search for
+and summarize related literature and format bibliography entries; (ii)
+write and debug the experiment and analysis code; (iii) generate figures
+and tables; (iv) produce initial drafts of manuscript text; and (v) review
+drafts, identify internal inconsistencies, suggest and apply wording edits,
+and inspect result files to compute descriptive checks reported in the paper
+(e.g., rate denominators and initial-accuracy statistics). All AI-assisted
+text, code, figures, and analyses were reviewed and verified by the
+authors, who take full responsibility for the content of this paper.
+Separately, large language models are the object of study: the evaluated
+models and the auxiliary Qwen2.5-7B-Instruct and gpt-oss-20b components
+described in Sections~\ref{sec:method} and~\ref{sec:oracle} are part of the
+experimental method, not writing aids.
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{sample-base}
+
+\end{document}
+\endinput
+%%
+%% End of file `sigconf.tex'.
