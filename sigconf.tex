@@ -490,10 +490,10 @@ criterion, we record claim-level calibration failure and use the
 predefined fallback $\tau_{\mathrm{claim}}=0.3$. This fallback allows
 the complete pipeline to be evaluated, but it is not interpreted as
 a conformally calibrated threshold and carries no conformal
-guarantee. The value was set by hand as a lenient cutoff, which removes
-only claims the scorer rates clearly low, and was fixed before any of the
-reported runs; it was not tuned, and the end-to-end results are specific
-to it.
+guarantee. The value was set by hand during development as a lenient
+cutoff, which removes only claims the scorer rates clearly low, and was
+fixed before any of the reported runs; the end-to-end results are
+specific to it.
 In practice, this criterion was infeasible for all six models on both
 datasets, so the claim filter operated at the fallback
 $\tau_{\mathrm{claim}} = 0.3$ in every reported run
