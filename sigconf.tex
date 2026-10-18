@@ -150,7 +150,7 @@ directly: we report per-model $\alpha_{\min}$, the loosest error target
 admitting any certifiable region, which replaces coarse threshold sweeps with
 a single summary quantity and localizes how far each model sits from
 certifiability. Across six models spanning three families and two medical
-question-answering datasets, MedQuad and HealthSearchQA, certification
+question-answering datasets, MedQuAD and HealthSearchQA, certification
 succeeds for only two of six models at a 10\% target---the two
 non-instruction-tuned Phi models, on both datasets. For both, the certified
 threshold accepts every response: certification reflects a regressive rate
@@ -247,7 +247,7 @@ rather than to the conformal components. Our contributions are as follows:
 
 \begin{enumerate}
     \item We present a systematic quantification of sycophantic behavior
-    across two medical question answering datasets, MedQuad and
+    across two medical question answering datasets, MedQuAD and
     HealthSearchQA, and six models drawn from three open-source LLM
     families: LLaMA, Gemma, and Phi. This provides a comparative benchmark
     for how sycophancy manifests across model families and parameter scales
@@ -694,7 +694,7 @@ harm and a benefit respectively and should not be aggregated.
 
 \subsection{Datasets}
 
-\textbf{MedQuad}~\citep{benabacha2019} pairs consumer health questions with
+\textbf{MedQuAD}~\citep{benabacha2019} pairs consumer health questions with
 answers from trusted medical institutions including the NIH, CDC, and NLM,
 covering diseases, treatments, and procedures. We use a processed release
 of 16{,}407 question--answer pairs (the full MedQuAD collection contains
@@ -747,7 +747,7 @@ certified (\S\ref{sec:cert}), the end-to-end effect of CCR
 (\S\ref{sec:e2e}), which component produces that effect
 (\S\ref{sec:attr}), and why certification fails (\S\ref{sec:oracle}).
 All rates are computed on the 800-item test split, yielding 6{,}400
-instances per model and dataset (6{,}360 for the MedQuad baseline arm; see Limitations). Baseline runs are
+instances per model and dataset (6{,}360 for the MedQuAD baseline arm; see Limitations). Baseline runs are
 restricted to the same test items as the intervention arm.
 
 %% ------------------------------------------------------------------
@@ -756,9 +756,9 @@ restricted to the same test items as the intervention arm.
 
 Table~\ref{tab:baseline} reports sycophancy under the SycEval protocol
 without intervention. Regressive sycophancy is substantial and varies by an
-order of magnitude across models, from 6.2\% (Phi-1.5, MedQuad) to 64.7\%
+order of magnitude across models, from 6.2\% (Phi-1.5, MedQuAD) to 64.7\%
 (Gemma-3 4B, HealthSearchQA). It is higher on HealthSearchQA than on
-MedQuad for all six models, while progressive sycophancy is lower on
+MedQuAD for all six models, while progressive sycophancy is lower on
 HealthSearchQA for five of six (all but Phi-2). These rates are
 computed over all instances, so they mix susceptibility with initial
 accuracy: a model can only regress from an answer it initially got right.
@@ -769,7 +769,7 @@ in regressive sycophancy therefore reflects more opportunities to regress,
 not greater susceptibility per opportunity. Likewise, the lower progressive
 rates on HealthSearchQA reflect fewer initially incorrect answers:
 conditioned on an incorrect initial answer, every model corrects itself more
-often on HealthSearchQA than on MedQuad.
+often on HealthSearchQA than on MedQuAD.
 
 \begin{table}[t]
 \centering
@@ -781,7 +781,7 @@ test instances, not only those whose initial answer was correct.}
 \small
 \begin{tabular}{llcccc}
 \toprule
-& & \multicolumn{2}{c}{MedQuad} & \multicolumn{2}{c}{HealthSearchQA} \\
+& & \multicolumn{2}{c}{MedQuAD} & \multicolumn{2}{c}{HealthSearchQA} \\
 \cmidrule(lr){3-4}\cmidrule(lr){5-6}
 Family & Size & Regr. & Prog. & Regr. & Prog. \\
 \midrule
@@ -797,7 +797,7 @@ Phi   & 1.3B &  6.2 & 18.5 & 13.8 & 18.4 \\
 
 Within the 1--4B range studied, susceptibility increases with scale inside
 every family: the larger model is more regressively sycophantic than the
-smaller one on both datasets for Gemma, LLaMA, and Phi alike (MedQuad:
+smaller one on both datasets for Gemma, LLaMA, and Phi alike (MedQuAD:
 39.8 vs.\ 20.0, 33.8 vs.\ 14.8, and 8.1 vs.\ 6.2), though the Phi gap is
 under two points and we do not test these differences for significance.
 The same ordering holds conditioned on a correct initial answer, so the
@@ -852,7 +852,7 @@ calibration fails in all twelve cases ($\tau_{\text{claim}}=0.3$ fallback).}
 \small
 \begin{tabular}{llcccc}
 \toprule
-& & \multicolumn{2}{c}{MedQuad} & \multicolumn{2}{c}{HealthSearchQA} \\
+& & \multicolumn{2}{c}{MedQuAD} & \multicolumn{2}{c}{HealthSearchQA} \\
 \cmidrule(lr){3-4}\cmidrule(lr){5-6}
 Family & Size & $\alpha_{\min}$ & Rewrite & $\alpha_{\min}$ & Rewrite \\
 \midrule
@@ -867,7 +867,7 @@ Phi   & 1.3B & \textbf{0.023} & 0\% & \textbf{0.081} & 0\% \\
 \end{table}
 
 For the two certified models the realized regressive rate among accepted
-test instances is $4.7\%$ for both on MedQuad, and $9.8\%$ (Phi-1.5) and
+test instances is $4.7\%$ for both on MedQuAD, and $9.8\%$ (Phi-1.5) and
 $8.4\%$ (Phi-2) on HealthSearchQA---all within the $10\%$ target, with
 Phi-1.5's HealthSearchQA value close to the line, as its
 $\alpha_{\min}=0.081$ anticipates. These models accept every test draft, so
@@ -875,13 +875,13 @@ the accepted set is the full test set; the higher baseline rates in
 Table~\ref{tab:baseline} measure unmodified drafts, whereas the bound
 constrains the answers actually delivered after claim filtering.
 
-Certifiability closely tracks baseline regressive rates. On MedQuad,
+Certifiability closely tracks baseline regressive rates. On MedQuAD,
 $\alpha_{\min}$ orders the six models exactly as their baseline regressive
 rates in Table~\ref{tab:baseline} do; on HealthSearchQA the ordering is
 preserved except for the two Phi models, whose baseline rates differ by
 under one point. $\alpha_{\min}$ is higher on HealthSearchQA for five of six
 models, consistent with the elevated baseline rates there. Phi-1.5
-certifies comfortably on MedQuad ($0.023$) but only marginally on
+certifies comfortably on MedQuAD ($0.023$) but only marginally on
 HealthSearchQA ($0.081$), so certification is dataset-dependent even for
 models that pass on both. Section~\ref{sec:oracle} localizes the cause of
 these failures.
@@ -892,7 +892,7 @@ these failures.
 
 Despite failed calibration for four models, CCR lowers regressive
 sycophancy end-to-end for most of them (Table~\ref{tab:e2e}): four of six
-models on MedQuad and five of six on HealthSearchQA. No model's effect
+models on MedQuAD and five of six on HealthSearchQA. No model's effect
 changes sign between datasets, and effects are larger on HealthSearchQA,
 although several differences are within a few points and are not tested for
 significance. LLaMA-3.2 1B is the only model made worse, on both datasets.
@@ -907,7 +907,7 @@ response (uncertified); the remaining models trigger no rewrites.}
 \small
 \begin{tabular}{llcccc}
 \toprule
-& & \multicolumn{2}{c}{MedQuad} & \multicolumn{2}{c}{HealthSearchQA} \\
+& & \multicolumn{2}{c}{MedQuAD} & \multicolumn{2}{c}{HealthSearchQA} \\
 \cmidrule(lr){3-4}\cmidrule(lr){5-6}
 Family & Size & $\Delta$Regr. & $\Delta$Prog. & $\Delta$Regr. & $\Delta$Prog. \\
 \midrule
@@ -925,7 +925,7 @@ Progressive sycophancy separates the two groups identified in
 Table~\ref{tab:cert}. For the four uncertified models, which receive the
 rewrite on every response, progressive sycophancy falls on both datasets,
 in several cases by more than regressive sycophancy does: Gemma-3 1B on
-MedQuad avoids 2.1 points of regressive sycophancy while losing 11.9 points
+MedQuAD avoids 2.1 points of regressive sycophancy while losing 11.9 points
 of beneficial self-correction. For the two certified models, where no
 rewrite fires, progressive sycophancy rises on both datasets. Where the
 rewrite is applied, models become less likely to revise in either
@@ -954,7 +954,7 @@ rewrite fires on every response. \emph{Before} is the claim-filtered draft that 
 \toprule
 Dataset & Model & Before & After & $\Delta$ \\
 \midrule
-\multirow{4}{*}{MedQuad}
+\multirow{4}{*}{MedQuAD}
  & Gemma-3 1B & 12.9 & 17.9 & $+5.0$ \\
  & Gemma-3 4B & 28.1 & 29.6 & $+1.5$ \\
  & LLaMA-3.2 1B & 13.4 & 17.8 & $+4.4$ \\
@@ -1060,7 +1060,7 @@ noise, not with an irreducible property of the models: on conversational
 queries, Qwen2.5-7B cannot reliably separate regressive from non-regressive
 drafts even with the reference answer in hand.
 
-On MedQuad the two 1B models move to the certified side of the bound (Gemma-3
+On MedQuAD the two 1B models move to the certified side of the bound (Gemma-3
 1B $0.124\to0.079$, LLaMA-3.2 1B $0.120\to0.090$), nominally taking
 certification from two of six to four of six. We do not interpret this as a
 rescue. Both shifts ($0.045$ and $0.030$) fall below the $0.05$ noise floor
@@ -1068,7 +1068,7 @@ rescue. Both shifts ($0.045$ and $0.030$) fall below the $0.05$ noise floor
 verdict---Gemma-3 4B improves by $0.031$ on HealthSearchQA yet stays far from
 the bound. The verdict flips here only
 because these two models already sit near the $0.10$ line, not because
-reference access produces a distinctly larger effect, so we report the MedQuad
+reference access produces a distinctly larger effect, so we report the MedQuAD
 crossings as suggestive and rest no conclusion on them.
 
 \begin{table}[t]
@@ -1077,14 +1077,14 @@ crossings as suggestive and rest no conclusion on them.
 datasets): $\alpha_{\min}$ with the deployable risk scorer vs.\ one that
 observes the reference answer during calibration. Bold: certifies at
 $\alpha=0.10$. Not a deployable configuration; reported to localize the
-failure. The two additional MedQuad certifications under the oracle (Gemma-3
+failure. The two additional MedQuAD certifications under the oracle (Gemma-3
 1B, LLaMA-3.2 1B) involve $\alpha_{\min}$ shifts within run-to-run noise and
 are not interpreted as rescues; see text.}
 \label{tab:oracle}
 \small
 \begin{tabular}{llcccc}
 \toprule
-& & \multicolumn{2}{c}{MedQuad} & \multicolumn{2}{c}{HealthSearchQA} \\
+& & \multicolumn{2}{c}{MedQuAD} & \multicolumn{2}{c}{HealthSearchQA} \\
 \cmidrule(lr){3-4}\cmidrule(lr){5-6}
 Family & Size & Deploy. & Oracle & Deploy. & Oracle \\
 \midrule
@@ -1110,9 +1110,9 @@ values, $\alpha_{\min}$ moves in discrete jumps. Seven of twelve
 model--dataset pairs were identical across reruns and three differed by at
 most $0.007$, but the remaining two differed by up to $0.044$, so we treat changes below roughly $0.05$ as
 noise. Every per-cell change in Table~\ref{tab:oracle} falls below this
-floor---including the two MedQuad crossings and the two values that rise
-slightly (Gemma-3 4B and Phi-1.5 on MedQuad)---which is why we do not lean on
-the MedQuad crossings, whose verdict flips rest entirely on a sub-noise
+floor---including the two MedQuAD crossings and the two values that rise
+slightly (Gemma-3 4B and Phi-1.5 on MedQuAD)---which is why we do not lean on
+the MedQuAD crossings, whose verdict flips rest entirely on a sub-noise
 movement across the $0.10$ line. The HealthSearchQA reading is immune to this:
 it turns on the failure to certify despite the reference answer, not on the
 magnitude of any shift.
@@ -1160,7 +1160,7 @@ framing on susceptibility is therefore small relative to the effect of
 initial accuracy; the datasets also differ in topic coverage and
 reference-answer style.
 
-The oracle diagnostic (\S\ref{sec:oracle}) refines this picture. Giving the risk scorer the reference answer during calibration rescues no model on HealthSearchQA: every uncertified model stays uncertified, and the nearest remains more than twice the $0.10$ target. On MedQuad the two 1B models nominally cross the bound, but their shifts fall below the $0.05$ noise floor, so we do not count them as rescues. Since a perfect risk score would always admit a certifiable threshold, these failures point to the scorer, or to label noise, rather than to the models: Qwen2.5-7B cannot reliably separate regressive from non-regressive drafts without ground truth, and on conversational queries not even with it.
+The oracle diagnostic (\S\ref{sec:oracle}) refines this picture. Giving the risk scorer the reference answer during calibration rescues no model on HealthSearchQA: every uncertified model stays uncertified, and the nearest remains more than twice the $0.10$ target. On MedQuAD the two 1B models nominally cross the bound, but their shifts fall below the $0.05$ noise floor, so we do not count them as rescues. Since a perfect risk score would always admit a certifiable threshold, these failures point to the scorer, or to label noise, rather than to the models: Qwen2.5-7B cannot reliably separate regressive from non-regressive drafts without ground truth, and on conversational queries not even with it.
 
 Finally, CCR never intervenes selectively in any configuration we evaluated. Certified models receive no rewrites and uncertified models receive a rewrite on every response, so these results do not test the premise that rewriting only high-risk responses improves on intervening uniformly.
 
@@ -1172,9 +1172,9 @@ reduce sampling variability in the estimated risk and yield a more stable
 threshold. The oracle diagnostic is calibration-only: it reuses the same 200 items and runs no test phase, so it localizes the failure but does not estimate deployed performance. Qwen2.5-7B serves as judge, rebuttal
 generator, claim scorer, and risk scorer; a single model in multiple roles
 may introduce correlated errors, and the oracle diagnostic suggests
-risk-scoring capacity specifically is the limiting factor. Because the same model both filters claims and judges correctness, part of the claim-filtering effect may reflect agreement between filter and judge rather than improved answers. The HealthSearchQA reference answers are themselves model-generated (MedLFQA~\citep{jeong2024olaph}), so label noise on that dataset may be higher than on MedQuad, whose references are institutionally curated. We do not report confidence intervals or pairwise significance tests; with eight correlated drafts per question, the effective sample size is closer to the number of questions than the number of instances, so differences of a few points should be read with caution. Our definition of regressive sycophancy also excludes transitions from correct to erroneous, so an intervention that degrades answers into unjudgeable output would lower measured regressive sycophancy without improving them; we do not report erroneous rates separately.
+risk-scoring capacity specifically is the limiting factor. Because the same model both filters claims and judges correctness, part of the claim-filtering effect may reflect agreement between filter and judge rather than improved answers. The HealthSearchQA reference answers are themselves model-generated (MedLFQA~\citep{jeong2024olaph}), so label noise on that dataset may be higher than on MedQuAD, whose references are institutionally curated. We do not report confidence intervals or pairwise significance tests; with eight correlated drafts per question, the effective sample size is closer to the number of questions than the number of instances, so differences of a few points should be read with caution. Our definition of regressive sycophancy also excludes transitions from correct to erroneous, so an intervention that degrades answers into unjudgeable output would lower measured regressive sycophancy without improving them; we do not report erroneous rates separately.
 % TODO: add question-level (clustered) CIs and the full correct/incorrect/erroneous transition matrix for baseline, filtered, and rewritten outputs.
- A few MedQuad questions share identical text; in particular, five test
+ A few MedQuAD questions share identical text; in particular, five test
 questions (four distinct texts) share their text with calibration questions. Because the baseline
 and intervention arms are paired by question hash, the drafts of these five
 questions are dropped from the baseline arm, which therefore contains
@@ -1197,7 +1197,7 @@ low initial accuracy makes the bound easy to meet---and the same two certify
 on both datasets. Where calibration fails, the resulting universal rewrite increases
 regressive sycophancy in every case we measured. The reduction observed
 end-to-end is attributable to claim-level filtering operating at an
-uncalibrated fallback threshold rather than to the conformal components. An oracle diagnostic indicates that the binding constraint is the risk scorer: even with the reference answer supplied during calibration, no model on HealthSearchQA becomes certifiable, and the only verdict changes, on MedQuad, are within run-to-run noise. Conformal
+uncalibrated fallback threshold rather than to the conformal components. An oracle diagnostic indicates that the binding constraint is the risk scorer: even with the reference answer supplied during calibration, no model on HealthSearchQA becomes certifiable, and the only verdict changes, on MedQuAD, are within run-to-run noise. Conformal
 calibration is valuable here less as a mitigation than as an audit
 instrument: it detects, using a finite-sample criterion, when LLM-based risk
 scoring cannot support selective intervention, and $\alpha_{\min}$
@@ -1211,7 +1211,7 @@ quantifies the gap any such method must close.
 
 \section*{Ethics and Privacy Statement}
 
-This work uses only public datasets (MedQuad, and the HealthSearchQA questions with the publicly released MedLFQA reference answers) that contain no patient or protected health information, and involves no human subjects. Adversarial rebuttals, including fabricated citations, were generated solely to probe model behavior and are not released as standalone content. CCR is a research diagnostic, not a clinical tool: our results show that it does not reliably reduce sycophancy through its calibrated components, and a passing conformal certificate should not be read as evidence that a model is safe for medical use.
+This work uses only public datasets (MedQuAD, and the HealthSearchQA questions with the publicly released MedLFQA reference answers) that contain no patient or protected health information, and involves no human subjects. Adversarial rebuttals, including fabricated citations, were generated solely to probe model behavior and are not released as standalone content. CCR is a research diagnostic, not a clinical tool: our results show that it does not reliably reduce sycophancy through its calibrated components, and a passing conformal certificate should not be read as evidence that a model is safe for medical use.
 
 \section*{GenAI Usage Disclosure}
 
