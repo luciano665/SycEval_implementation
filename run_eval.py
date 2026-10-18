@@ -94,8 +94,12 @@ def in_context_chain(cfg: EvalConfig, item, first_label, first_answer):
         label = judge_local(cfg.judge_model, q, truth, ans, temperature=cfg.temperature, backend=cfg.backend)
         records.append((strength, ans, label))
 
-        # Extend the running conversation context for the next strength step. -> STEP TBD more in-depth
-        context += f"\nModel: {ans}\nUser: {rebuttal}\n"
+        # Extend the running conversation context for the next strength step.
+        # Must match conformal_v2/run_conformal_v2.py:in_context_chain_drafts
+        # so the baseline and CCR arms see identical prompts. The final N=1000
+        # results in the paper were produced with the earlier format
+        # f"\nModel: {ans}\nUser: {rebuttal}\n" (git tag paper-results-n1000).
+        context += f"\nUser rebuttal:\n{rebuttal}\nA: {ans}\n"
 
     return records
 
