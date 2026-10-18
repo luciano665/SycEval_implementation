@@ -107,10 +107,7 @@
 %%
 %% end of the preamble, start of the body of the document source.
 \usepackage{flafter}
-\usepackage{tcolorbox}
-\usepackage[normalem]{ulem}
 \usepackage{bbm} % \mathbbm{1} indicator
-\usepackage{float} % keep floats from appearing before their definition
 
 \begin{document}
 
@@ -377,9 +374,10 @@ filtered response is retained or rewritten.
 
 A central design constraint is that CCR is
 \emph{reference-blind at intervention time}. Dataset reference
-answers are used to construct calibration labels and to evaluate
-model outputs, but they are not provided to the claim scorer,
-answer-level risk scorer, or rewrite procedure. This separation is
+answers are used to write the claim each rebuttal asserts, to
+construct calibration labels, and to evaluate model outputs, but they
+are not provided to the claim scorer, answer-level risk scorer, or
+rewrite procedure. This separation is
 necessary because the scoring function used during calibration must
 match the one available at test time. Otherwise, calibration would
 characterize an oracle-assisted system rather than the intervention
@@ -645,49 +643,6 @@ $\tau_{\mathrm{claim}}$, before evaluation, so that newly generated text
 receives the same treatment as the original draft.
 
 
-\subsubsection{Reference-Blind Information Boundary}
-\label{sec:information_boundary}
-
-The reference answer is used only outside the intervention. The
-rebuttal generator uses it to write the contradictory or corrective
-claim that each rebuttal asserts.
-During calibration, it is used to construct support and correctness
-labels required for threshold fitting. During evaluation, it is used
-by the judge to determine whether the initial and final responses are
-correct, incorrect, or erroneous.
-
-In contrast, every component that directly acts on a test response
-operates without reference access. This includes the claim scorer,
-answer-level risk scorer, and rewrite procedure. The distinction
-ensures that CCR does not assume the correct medical answer is known
-at the time an intervention decision must be made.
-
-This information boundary also ensures that calibration and testing
-use the same reference-blind score functions. As a result,
-calibration failure can be interpreted directly as evidence that the
-available score does not support selective intervention at the chosen
-risk level, rather than being obscured by information available only
-during offline evaluation.
-
-
-\subsection{End-to-End Procedure}
-\label{sec:ccr_procedure}
-
-At test time, CCR first computes the answer-level risk score on the
-raw rebuttal-induced draft. The draft is then decomposed into atomic
-claims, scored without access to the reference answer, and filtered
-according to $\tau_{\mathrm{claim}}$. If the answer-level score
-exceeds $\tau$, the evaluated model rewrites the filtered draft using
-only the question and retained content, and the rewritten answer is
-claim-filtered once more. Otherwise, the filtered draft is returned
-directly.
-
-Only after the intervention is complete is the resulting answer
-submitted to the reference-informed evaluation judge. This ordering
-maintains a strict separation between information used to modify a
-response and information used to evaluate the resulting response.
-CCR requires no retraining, parameter updates, or access to the
-internal activations of the evaluated language model.
 \section{Experimental Setup}
 
 We evaluate six open-source models across three families and multiple
@@ -1008,60 +963,8 @@ HealthSearchQA, most of which is answers withheld rather than corrected;
 reduction therefore does not come from the rewrite. It is consistent with
 the remaining component acting on every response: claim filtering at the
 uncalibrated fallback $\tau_{\text{claim}}=0.3$, the one stage that
-carries no statistical guarantee. Figure~\ref{fig:case-vwd} shows the
-mechanism on a single draft, and \S\ref{sec:e2e} shows that much of the
-effect is answers withheld rather than corrected.
-
-\begin{figure}[t]
-\centering
-\begin{tcolorbox}[
-  title={\footnotesize\textbf{Case: Claim Filtering on a Sycophantic Draft (LLaMA-3.2 3B, HealthSearchQA; illustrative)}},
-  colback=white, colframe=black!70, fonttitle=\footnotesize\bfseries,
-  left=3pt, right=3pt, top=3pt, bottom=3pt
-]
-
-\begin{tcolorbox}[colback=gray!10, colframe=gray!50, title={\scriptsize\textbf{Draft after rebuttal --- no CCR (label = incorrect)}},
-  left=3pt, right=3pt, top=2pt, bottom=2pt]
-\scriptsize \textit{``You are correct that VWD can significantly reduce life expectancy due to chronic bleeding issues.''} Most people with type 1 VWD have a normal life expectancy with management; type 2 may involve more severe bleeding but normal lives; type 3 is the most severe form with frequent bleeding. \textit{``Thank you for correcting me.''}
-\end{tcolorbox}
-
-\smallskip
-\begin{tcolorbox}[colback=gray!10, colframe=gray!50,
-  title={\scriptsize\textbf{Claim Filtering ($\tau_{\text{claim}} = 0.30$, uncalibrated fallback)}},
-  left=3pt, right=3pt, top=2pt, bottom=2pt]
-\scriptsize
-\begin{tabular}{@{}llp{0.60\linewidth}@{}}
-$[0.20]$ & $\times$ & \sout{VWD significantly reduces life expectancy due to chronic bleeding.} \\
-$[0.80]$ & $\checkmark$ & Type 1 VWD: normal life expectancy with management. \\
-$[0.60]$ & $\checkmark$ & Type 2 VWD: more severe bleeding, normal lives with management. \\
-$[0.60]$ & $\checkmark$ & Type 3 VWD: most severe form, frequent severe bleeding. \\
-$[0.20]$ & $\times$ & \sout{Thank you for correcting me.} \\
-\end{tabular}
-\end{tcolorbox}
-
-\smallskip
-\begin{tcolorbox}[colback=gray!10, colframe=gray!50, title={\scriptsize\textbf{After filtering (label = correct, pre-rewrite)}},
-  left=3pt, right=3pt, top=2pt, bottom=2pt]
-\scriptsize Type 1 VWD has a normal life expectancy with management; type 2 may involve more severe bleeding but normal lives with treatment; type 3 is the most severe, with frequent severe bleeding.
-\end{tcolorbox}
-
-\end{tcolorbox}
-\caption{Claim filtering on a sycophantic draft (LLaMA-3.2 3B, simple-strength
-rebuttal, HealthSearchQA). \emph{Illustrative example drawn from a preliminary
-run of the same pipeline (same model, prompts, judge, and fallback
-$\tau_{\text{claim}}$); it is not one of the $N=1{,}000$ instances summarized
-in Tables~\ref{tab:baseline}--\ref{tab:oracle}.} The question asks the life
-expectancy of von Willebrand disease; the initial answer (correct) states a
-normal life expectancy, and the rebuttal falsely asserts VWD significantly
-reduces it. The draft accepts the false claim and adds social filler;
-filtering at the uncalibrated fallback $\tau_{\text{claim}}=0.30$ drops the
-two lowest-scoring claims, restoring a correct answer. This illustrates the
-claim-filtering mechanism that \S\ref{sec:attr} identifies as the source of
-CCR's end-to-end benefit. LLaMA-3.2 3B is uncertified ($\tau=-1$), so the
-answer-level rewrite ($s=0.95>\tau$) also fires; its effect, net harmful for
-this model, is reported separately in Table~\ref{tab:attr}.}
-\label{fig:case-vwd}
-\end{figure}
+carries no statistical guarantee; \S\ref{sec:e2e} shows that much of
+the effect is answers withheld rather than corrected.
 
 %% ------------------------------------------------------------------
 \subsection{Why Certification Fails}
