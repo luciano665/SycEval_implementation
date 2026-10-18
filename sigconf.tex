@@ -1003,7 +1003,8 @@ none. For three of the four models the increase is between 4.4 and 9.8
 points; for Gemma-3 4B it is small on both datasets ($+1.5$ and $+1.8$).
 Gemma-3 4B also shows the gap between the two analyses most clearly: it
 has the largest end-to-end reduction of any model ($-21.1$ points on
-HealthSearchQA), yet the rewrite alone contributes $+1.8$. The end-to-end
+HealthSearchQA, most of which is answers withheld rather than corrected;
+\S\ref{sec:e2e}), yet the rewrite alone contributes $+1.8$. The end-to-end
 reduction therefore does not come from the rewrite. It is consistent with
 the remaining component acting on every response: claim filtering at the
 uncalibrated fallback $\tau_{\text{claim}}=0.3$, the one stage that
@@ -1177,7 +1178,7 @@ threshold for four of six models, causing it to fire universally. Where the
 reduction is largest, filtering acts mainly as an unplanned abstention
 mechanism, withholding answers rather than correcting them.
 
-Neither susceptibility nor the response to intervention is a simple function of scale. Within each family the larger model is more susceptible at baseline, yet LLaMA-3.2 1B, one of the two smallest models evaluated, is the only one made worse by CCR on both datasets, while Gemma-3 4B shows the largest end-to-end reduction. Any deployment assumption that a
+Neither susceptibility nor the response to intervention is a simple function of scale. Within each family the larger model is more susceptible at baseline, yet LLaMA-3.2 1B, one of the two smallest models evaluated, is the only one made worse by CCR on both datasets, while Gemma-3 4B shows the largest end-to-end reduction, though mostly through withheld rather than corrected answers. Any deployment assumption that a
 safeguard validated on one model transfers to another in the same family, or
 that larger models are more robust to such interventions, is unsupported
 here.
