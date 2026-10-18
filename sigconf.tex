@@ -228,10 +228,7 @@ Critically, we evaluate CCR under a constraint that governs whether such a
 safeguard is deployable at all: no component acting on a response at test
 time may access the reference answer. Ground truth is available only for
 evaluation---assigning correctness labels and producing calibration
-labels---never to the claim scorer, the risk scorer, or the rewrite. A
-threshold calibrated on reference-informed scores does not transfer to a
-setting where no reference exists, so relaxing this constraint would
-invalidate the guarantee the framework is meant to provide.
+labels---never to the claim scorer, the risk scorer, or the rewrite.
 
 Under this constraint, we find that the framework does not deliver its
 intended guarantee, and we characterize precisely where it breaks. Using a
@@ -246,19 +243,12 @@ consists mainly of answers withheld rather than corrected. Our
 contributions are as follows:
 
 \begin{enumerate}
-    \item We present a systematic quantification of sycophantic behavior
-    across two medical question answering datasets, MedQuAD and
-    HealthSearchQA, and six models drawn from three open-source LLM
-    families: LLaMA, Gemma, and Phi. This provides a comparative benchmark
-    for how sycophancy manifests across model families and parameter scales
-    in healthcare-oriented settings.
+    \item We quantify sycophancy across two medical question answering
+    datasets, MedQuAD and HealthSearchQA, and six models from three
+    open-source families (LLaMA, Gemma, Phi).
 
-    \item We introduce Conformal Claim Refinement (CCR), a training-free
-    pipeline combining claim-level filtering with answer-level conformal risk
-    control and a rewrite intervention, and evaluate it under
-    deployment-realistic conditions in
-    which no reference answer is available to any component acting on a
-    response at test time.
+    \item We introduce CCR and evaluate it under the deployment-realistic
+    constraint that no intervention component sees the reference answer.
 
     \item We show that conformal calibration functions as a diagnostic
     instrument in this setting. Using a finite-sample bound, we
