@@ -276,10 +276,8 @@ contributions are as follows:
 
 \subsection{Sycophancy in Large Language Models}
 
-Sycophancy refers to the tendency of language models to tailor responses
-to a user's stated beliefs rather than to factual accuracy. Perez et
-al.~\cite{perez2023discovering} identified it as a behavior that
-grows with model scale, and Wei et al.~\cite{wei2023simple} found that both
+Perez et al.~\cite{perez2023discovering} identified sycophancy as a
+behavior that grows with model scale, and Wei et al.~\cite{wei2023simple} found that both
 scaling and instruction tuning increase it. It is widely attributed to
 Reinforcement Learning from Human Feedback~\cite{ouyang2022training}:
 Sharma et al.~\cite{sharma2024towards} show that human preference judgments
@@ -291,8 +289,7 @@ A growing body of work measures how models respond when users push back.
 Wang et al.~\cite{wang2023chatgpt} find that models frequently abandon
 correct reasoning when challenged with invalid arguments, and the FlipFlop
 experiment~\cite{laban2023flipflop} shows that a simple ``Are you sure?''
-causes models to flip their answers 46\% of the time on average, with a
-corresponding drop in accuracy. SycEval~\cite{fanous2025syceval}
+causes models to flip their answers 46\% of the time on average. SycEval~\cite{fanous2025syceval}
 formalizes this setting by distinguishing \emph{regressive} sycophancy
 (correct$\to$incorrect) from \emph{progressive} sycophancy
 (incorrect$\to$correct) under in-context and preemptive rebuttals of
@@ -307,10 +304,8 @@ fine-tune on synthetic data that decouples truth from user opinion;
 Rimsky et al.~\cite{rimsky2024steering} steer internal activations with
 contrastive vectors; and Papadatos and Freedman~\cite{papadatos2024linear}
 penalize sycophancy features probed from the reward model during RL
-fine-tuning. Each requires model weights, internal activations, or
-additional training. CCR instead operates post hoc on generated responses
-and requires none of these, which makes it applicable to models accessed
-only through generation.
+fine-tuning. Each requires model weights, activations, or training; CCR
+operates post hoc on generated responses and requires none of these.
 
 
 \subsection{Conformal Methods for LLM Reliability}
@@ -352,9 +347,7 @@ reason to doubt LLMs can do this reliably: LLM judges show systematic
 biases~\cite{zheng2023judging}, and models struggle to correct their own
 reasoning without external feedback~\cite{huang2024large}. To our
 knowledge, this work is the first to evaluate conformal risk control
-against sycophancy. We use calibration both as a candidate safeguard and as
-an audit of whether a reference-free risk scorer can support selective
-intervention at all.
+against sycophancy, using calibration both as a safeguard and as an audit.
 
 
 \section{Method}
@@ -1071,31 +1064,18 @@ have coarse control over where the accepted region sits.
 
 \section{Discussion}
 
-Our results separate whether CCR reduces sycophancy from which mechanism
-produces any reduction. End-to-end, the pipeline lowers regressive
-sycophancy for most models on both datasets. Attribution analysis is
-consistent with this being driven by claim-level filtering rather than by
-conformal calibration or the rewrite: the rewrite increases regressive
-sycophancy wherever it fires, and calibration fails to produce a usable
-threshold for four of six models, causing it to fire universally. Where the
-reduction is largest, filtering acts mainly as an unplanned abstention
-mechanism, withholding answers rather than correcting them.
+CCR lowers regressive sycophancy end-to-end for most models, but not
+through its conformal components: calibration fails for four of six models,
+the resulting universal rewrite is harmful, and the reduction is consistent
+with claim filtering, which, where the reduction is largest, acts as an
+unplanned abstention mechanism rather than a correction.
 
 Neither susceptibility nor the response to intervention is a simple function of scale. Within each family the larger model is more susceptible at baseline, yet LLaMA-3.2 1B, one of the two smallest models evaluated, is the only one made worse by CCR on both datasets, while Gemma-3 4B shows the largest end-to-end reduction, though mostly through withheld rather than corrected answers. Any deployment assumption that a
 safeguard validated on one model transfers to another in the same family, or
 that larger models are more robust to such interventions, is unsupported
 here.
 
-The higher baseline regressive rates on HealthSearchQA should not be read
-as greater susceptibility to pressure on conversational queries. Models are
-more often correct initially on HealthSearchQA, which gives them more
-opportunities to regress, and conditioned on a correct initial answer their
-capitulation rates are similar across the two datasets. Any effect of query
-framing on susceptibility is therefore small relative to the effect of
-initial accuracy; the datasets also differ in topic coverage and
-reference-answer style.
-
-The oracle diagnostic (\S\ref{sec:oracle}) refines this picture. Giving the risk scorer the reference answer during calibration rescues no model on HealthSearchQA: every uncertified model stays uncertified, and the nearest remains at $0.168$, 1.7 times the $0.10$ target. On MedQuAD the two 1B models nominally cross the bound, but their shifts fall below the $0.05$ noise floor, so we do not count them as rescues. Since a perfect risk score would always admit a certifiable threshold, these failures point to the scorer, or to label noise, rather than to the models: Qwen2.5-7B cannot reliably separate regressive from non-regressive drafts without ground truth, and on conversational queries not even with it.
+The oracle diagnostic (\S\ref{sec:oracle}) places the bottleneck in the risk scorer, or in label noise, rather than in the models: even with the reference answer, Qwen2.5-7B cannot separate regressive from non-regressive drafts well enough to certify any additional model on HealthSearchQA.
 
 Finally, CCR never intervenes selectively in any configuration we evaluated. Certified models receive no rewrites and uncertified models receive a rewrite on every response, so these results do not test the premise that rewriting only high-risk responses improves on intervening uniformly.
 
