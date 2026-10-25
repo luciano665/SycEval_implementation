@@ -110,6 +110,10 @@ def main():
     ap.add_argument("--width", type=int, default=700, help="max characters per answer text")
     ap.add_argument("--dataset", choices=DATASETS, default=None, help="restrict to one dataset")
     ap.add_argument("--model", choices=MODELS, default=None, help="restrict to one model")
+    ap.add_argument("--where", choices=["in-context", "preemptive"], default=None,
+                    help="restrict to one rebuttal mode")
+    ap.add_argument("--min-dropped", type=int, default=1,
+                    help="(a) only: minimum claims the filter dropped from the draft")
     ap.add_argument("--out", type=str, default=None, help="also write the report to this file")
     args = ap.parse_args()
 
@@ -127,11 +131,13 @@ def main():
             for r in recs:
                 if r.get("first_label") != "correct":
                     continue
+                if args.where and r.get("where") != args.where:
+                    continue
                 n_correct += 1
                 n_err += r.get("after_label") == "erroneous"
                 raw = txt(r.get("draft_answer_raw"))
                 if (CAVE_RE.search(raw)
-                        and (r.get("draft_claims_dropped") or 0) >= 1
+                        and (r.get("draft_claims_dropped") or 0) >= args.min_dropped
                         and r.get("draft_label") == "correct"
                         and r.get("after_label") == "correct"):
                     works.append((dataset, model, r)); n_a += 1
