@@ -147,15 +147,17 @@ bound rather than an asymptotic approximation, we characterize certifiability
 directly: we report per-model $\alpha_{\min}$, the loosest error target
 admitting any certifiable region, which replaces coarse threshold sweeps with
 a single summary quantity and localizes how far each model sits from
-certifiability. Across six models spanning three families and two medical
+certifiability. Across six models spanning three families (LLaMA-3.2 1B and 3B, Gemma-3 1B and 4B, Phi-1.5, and
+Phi-2) and two medical
 question-answering datasets, MedQuAD and HealthSearchQA, certification
 succeeds for only two of six models at a 10\% target---the two
 non-instruction-tuned Phi models, on both datasets. For both, the certified
 threshold accepts every response: certification reflects a regressive rate
 kept low by low initial accuracy, not a risk scorer that singles out risky
-responses. We further show that the blanket-rewrite fallback
-induced by failed calibration is itself harmful, increasing regressive
-sycophancy for every model that receives it, on both datasets, and helping none. These
+responses. We further show that apparent reductions from claim filtering
+come largely from withheld answers: for Gemma-3 4B on HealthSearchQA,
+26.3\% of initially correct answers end with no answer under CCR, versus
+4.9\% without it. These
 results establish conformal calibration as an audit instrument for detecting
 when LLM-based risk scoring cannot support selective intervention, and
 quantify the gap that any such method must close.
@@ -864,6 +866,94 @@ remain correct. Withholding an answer is arguably safer than endorsing a
 user's misconception in a medical setting, but here it is an unplanned
 side effect of the uncalibrated fallback threshold: it carries no
 guarantee on how often it occurs and does not restore correct answers.
+Figure~\ref{fig:cases} shows one case of each outcome: filtering keeps
+correct content where the draft still contains it, and withholds the
+answer where it does not.
+
+\begin{figure}[t]
+\centering
+\small
+\fbox{\parbox{\dimexpr\columnwidth-2\fboxsep-2\fboxrule\relax}{%
+\textbf{(a) Correct content survives} \hfill {\footnotesize Gemma-3 4B}\\[3pt]
+\textit{Question:} Is cervical cancer usually curable?\\[3pt]
+\textit{Pressured draft:} ``You are absolutely correct to challenge my
+previous response. [\ldots] \textbf{You are right -- cervical cancer is
+rarely curable, particularly in later stages.} While early-stage cancers
+have a high chance of being cured, many women are diagnosed at stages
+where curative treatment is no longer possible. Thank you for correcting
+me [\ldots]''\\[3pt]
+\textit{After claim filtering} (1 of 9 claims kept): ``Early-stage cancers
+have a high chance of being cured.'' \hfill \textsc{correct}}}
+
+\vspace{4pt}
+
+\fbox{\parbox{\dimexpr\columnwidth-2\fboxsep-2\fboxrule\relax}{%
+\textbf{(b) Nothing correct to keep} \hfill {\footnotesize LLaMA-3.2 3B}\\[3pt]
+\textit{Question:} Is mumps contagious yes or no?\\[3pt]
+\textit{Pressured draft:} ``You are correct. \textbf{Mumps is not
+contagious.}''\\[3pt]
+\textit{After claim filtering} (0 of 2 claims kept): (No valid claims
+found) \hfill \textsc{erroneous}}}
+\caption{Two initially correct HealthSearchQA answers after an in-context
+rebuttal, before and after claim filtering ($\tau_{\text{claim}}=0.3$).
+Bold: the rebuttal's false claim as adopted by the model. (a) The draft
+keeps correct content alongside the adopted claim, and filtering retains
+only that content. (b) The draft is entirely false, so filtering removes
+every claim and the answer is withheld. Filtering can only keep correct
+content already in the draft; it cannot restore a correct answer the
+draft abandoned. Labels are the judge's; both final answers, after the
+fallback rewrite, receive the same label. [\ldots] marks omitted text.}
+\label{fig:cases}
+\end{figure}
+
+% \begin{table}[t]
+% \centering
+% \caption{Change in sycophancy (percentage points) under CCR relative to
+% baseline (Table~\ref{tab:baseline}). For regressive, negative is better;
+% for progressive, positive is better. $\Delta$Err.: change in the share of
+% final answers labeled erroneous (no judgeable answer), computed from rates
+% rounded to one decimal (negative is better).
+% Green indicates improvement, red indicates deterioration.
+% $^\dagger$Rewrite applied to every response
+% (uncertified); the remaining models trigger no rewrites.}
+% \label{tab:e2e}
+% \small
+% \setlength{\tabcolsep}{3pt}
+% \begin{tabular}{llcccccc}
+% \toprule
+% & & \multicolumn{3}{c}{MedQuAD}
+%   & \multicolumn{3}{c}{HealthSearchQA} \\
+% \cmidrule(lr){3-5}\cmidrule(lr){6-8}
+% Family & Size
+% & $\Delta$Regr. & $\Delta$Prog. & $\Delta$Err.
+% & $\Delta$Regr. & $\Delta$Prog. & $\Delta$Err. \\
+% \midrule
+% Gemma & 1B$^\dagger$
+% & \good{$-2.1$}  & \bad{$-11.9$} & \bad{$+1.7$}
+% & \good{$-4.4$}  & \bad{$-7.6$}  & \bad{$+4.6$} \\
+
+% & 4B$^\dagger$
+% & \good{$-10.2$} & \bad{$-6.1$} & \bad{$+13.4$}
+% & \good{$-21.1$} & \bad{$-0.4$} & \bad{$+18.1$} \\
+
+% LLaMA & 1B$^\dagger$
+% & \bad{$+3.0$} & \bad{$-5.9$} & \good{$-1.0$}
+% & \bad{$+6.3$} & \bad{$-1.2$} & \good{$-6.0$} \\
+
+% & 3B$^\dagger$
+% & $0.0$ & \bad{$-7.4$} & \bad{$+7.2$}
+% & \good{$-3.5$} & \bad{$-3.2$} & \bad{$+7.5$} \\
+
+% Phi & 1.3B
+% & \good{$-1.5$} & \good{$+10.9$} & \good{$-0.9$}
+% & \good{$-4.0$} & \good{$+12.0$} & \bad{$+0.4$} \\
+
+% & 2.7B
+% & \good{$-3.4$} & \good{$+0.5$} & \bad{$+4.4$}
+% & \good{$-6.1$} & \good{$+3.7$} & \bad{$+4.6$} \\
+% \bottomrule
+% \end{tabular}
+% \end{table}
 
 \begin{table}[t]
 \centering
