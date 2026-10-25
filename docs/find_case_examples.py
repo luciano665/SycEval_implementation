@@ -7,8 +7,10 @@ Two categories, both restricted to items whose initial answer was judged
 correct (the only items that can show regressive sycophancy):
 
   (a) FILTER WORKS: the raw pressured draft shows capitulation language,
-      the claim filter dropped at least one claim, and both the filtered
-      draft and the final answer are judged correct.
+      the claim filter dropped at least --min-dropped claims, and both the
+      filtered draft and the final answer are judged correct. Ranked by how
+      much of the raw draft's wording the filter removed, so drafts that
+      only apologize and then answer correctly (nothing to rescue) sink.
   (b) WITHHELD: the final answer is "(No valid claims found)" (the filter
       deleted every claim); its judge label is shown, usually erroneous.
       Cases where the filter emptied the draft itself (not only the
@@ -65,6 +67,15 @@ def txt(x):
     return x if isinstance(x, str) else ""
 
 
+def removed_frac(r):
+    """Share of the raw draft's words (capitulation phrases stripped) that
+    are absent from the filtered draft. Near 0 means the filter only
+    re-split the same content; higher means it actually removed content."""
+    raw = set(re.findall(r"[a-z0-9]+", CAVE_RE.sub(" ", txt(r.get("draft_answer_raw")).lower())))
+    kept = set(re.findall(r"[a-z0-9]+", txt(r.get("draft_answer")).lower()))
+    return len(raw - kept) / len(raw) if raw else 0.0
+
+
 def load_records(dataset, model):
     path = f"results/final_n1000_{dataset}/run_conformal_{model}.json"
     if not os.path.exists(path):
@@ -84,7 +95,8 @@ def show(r, dataset, model, width):
         f"Q: {txt(r.get('question'))}",
         f"risk={r.get('risk_score')} tau={r.get('tau')} rewrite={r.get('rewrite_triggered')} | "
         f"draft claims kept/dropped={r.get('draft_claims_kept')}/{r.get('draft_claims_dropped')} | "
-        f"final claims kept/dropped={r.get('final_claims_kept')}/{r.get('final_claims_dropped')}",
+        f"final claims kept/dropped={r.get('final_claims_kept')}/{r.get('final_claims_dropped')} | "
+        f"raw words removed by filter={removed_frac(r):.0%}",
         f"labels: first={r.get('first_label')} filtered_draft={r.get('draft_label')} "
         f"final={r.get('after_label')} | caved-language={bool(CAVE_RE.search(txt(r.get('draft_answer_raw'))))}",
         f"RAW DRAFT: {clip(r.get('draft_answer_raw'), width)}",
@@ -147,8 +159,10 @@ def main():
             counts.append((dataset, model, n_correct, n_a, n_b, n_b_draft,
                            100.0 * n_err / n_correct if n_correct else 0.0))
 
-    # (a): shortest raw drafts first (easiest to read in a figure).
-    works.sort(key=lambda t: len(txt(t[2].get("draft_answer_raw"))))
+    # (a): drafts where the filter removed the most content first (an
+    # apology followed by correct content scores ~0% and sinks), then shortest.
+    works.sort(key=lambda t: (-round(removed_frac(t[2]), 2),
+                              len(txt(t[2].get("draft_answer_raw")))))
     # (b): filter emptied the draft itself first, then drafts that clearly
     # caved, then shortest.
     withheld.sort(key=lambda t: (
@@ -159,18 +173,20 @@ def main():
     works, withheld = one_per_question(works), one_per_question(withheld)
 
     lines = [
-        "COUNTS over records whose initial answer was correct "
-        "(each question counted once per strength x mode):",
+        "COUNTS over records whose initial answer was correct (a question "
+        "contributes one record per strength x mode, up to 8"
+        + (f"; mode={args.where} only" if args.where else "") + "):",
         f"  {'dataset':12s} {'model':9s} {'n_correct':>9s} {'(a)works':>9s} "
         f"{'(b)withheld':>11s} {'(b)draft-empty':>14s} {'%final-erroneous':>16s}",
     ]
     lines += [f"  {d:12s} {m:9s} {c:9d} {a:9d} {b:11d} {bd:14d} {pe:16.1f}"
               for d, m, c, a, b, bd, pe in counts]
-    lines.append("  Sanity check: %final-erroneous for healthsearch/gemma_4b should be "
-                 "26.3 (poster/paper withheld rate).")
-    lines.append(f"\n=== (a) FILTER WORKS: top {args.top} of {len(works)} distinct questions ===")
+    if not args.where:
+        lines.append("  Sanity check: %final-erroneous for healthsearch/gemma_4b should be "
+                     "26.3 (poster/paper withheld rate).")
+    lines.append(f"\n=== (a) FILTER WORKS: top {args.top} of {len(works)} distinct model/question pairs ===")
     lines += [show(r, d, m, args.width) for d, m, r in works[: args.top]]
-    lines.append(f"\n=== (b) WITHHELD: top {args.top} of {len(withheld)} distinct questions ===")
+    lines.append(f"\n=== (b) WITHHELD: top {args.top} of {len(withheld)} distinct model/question pairs ===")
     lines += [show(r, d, m, args.width) for d, m, r in withheld[: args.top]]
 
     # Both panels from the same model/dataset reads best.
