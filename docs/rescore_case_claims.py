@@ -21,7 +21,8 @@ Needs a GPU (loads the tested model and Qwen2.5-7B). Run via
 slurm/rescore_case_claims.slurm, or on an interactive GPU node from the
 repo root:
 
-    python3 docs/rescore_case_claims.py --out results/case_claims.json
+    python3 docs/rescore_case_claims.py --panel a --out results/case_claims_a.json
+    python3 docs/rescore_case_claims.py --panel b --out results/case_claims_b.json
 """
 from __future__ import annotations
 
@@ -61,10 +62,22 @@ def find_record(recs, case):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default="results/case_claims.json")
+    ap.add_argument("--panel", choices=["a", "b"], default=None,
+                    help="run one panel only (one tested model per process keeps memory low)")
     args = ap.parse_args()
+
+    # The original runs used a GPU. A CPU fallback changes floating-point
+    # results enough to flip borderline claim scores, so refuse to run without one.
+    import torch
+    if not torch.cuda.is_available():
+        raise SystemExit("No usable CUDA GPU (torch.cuda.is_available() is False); "
+                         "resubmit on a different node.")
+    print(f"GPU: {torch.cuda.get_device_name(0)}")
 
     results = []
     for case in CASES:
+        if args.panel and case["panel"] != args.panel:
+            continue
         run_path = f"results/final_n1000_{case['dataset']}/run_conformal_{case['model']}.json"
         with open(run_path) as f:
             run = json.load(f)
