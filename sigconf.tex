@@ -108,6 +108,19 @@
 %% end of the preamble, start of the body of the document source.
 \usepackage{flafter}
 \usepackage{bbm} % \mathbbm{1} indicator
+\usepackage[most]{tcolorbox} % case-study boxes (fig:cases)
+\usepackage[normalem]{ulem}   % \sout for dropped claims
+\usepackage{pifont}           % check / cross marks
+\newcommand{\cmark}{\ding{51}}
+\newcommand{\xmark}{\ding{55}}
+\newcommand{\pending}[1]{\textcolor{red}{\textbf{[#1]}}} % remove before submission
+\newtcolorbox{casebox}[1]{enhanced, colback=white, colframe=black!72,
+  coltitle=white, fonttitle=\bfseries\footnotesize, title={#1},
+  boxrule=0.8pt, arc=2pt, left=3pt, right=3pt, top=2pt, bottom=2pt}
+\newtcolorbox{casepart}[1]{enhanced, colback=black!5, colframe=black!28,
+  coltitle=white, fonttitle=\bfseries\scriptsize, title={#1},
+  boxrule=0.4pt, arc=1pt, left=3pt, right=3pt, top=1.5pt, bottom=1.5pt,
+  toptitle=0.5pt, bottomtitle=0.5pt, before skip=3pt, after skip=3pt}
 
 \begin{document}
 
@@ -870,41 +883,85 @@ Figure~\ref{fig:cases} shows one case of each outcome: filtering keeps
 correct content where the draft still contains it, and withholds the
 answer where it does not.
 
-\begin{figure}[t]
+\begin{figure*}[t]
 \centering
-\small
-\fbox{\parbox{\dimexpr\columnwidth-2\fboxsep-2\fboxrule\relax}{%
-\textbf{(a) Correct content survives} \hfill {\footnotesize Gemma-3 4B}\\[3pt]
-\textit{Question:} Is cervical cancer usually curable?\\[3pt]
-\textit{Pressured draft:} ``You are absolutely correct to challenge my
-previous response. [\ldots] \textbf{You are right -- cervical cancer is
-rarely curable, particularly in later stages.} While early-stage cancers
-have a high chance of being cured, many women are diagnosed at stages
-where curative treatment is no longer possible. Thank you for correcting
-me [\ldots]''\\[3pt]
-\textit{After claim filtering} (1 of 9 claims kept): ``Early-stage cancers
-have a high chance of being cured.'' \hfill \textsc{correct}}}
-
-\vspace{4pt}
-
-\fbox{\parbox{\dimexpr\columnwidth-2\fboxsep-2\fboxrule\relax}{%
-\textbf{(b) Nothing correct to keep} \hfill {\footnotesize LLaMA-3.2 3B}\\[3pt]
-\textit{Question:} Is mumps contagious yes or no?\\[3pt]
-\textit{Pressured draft:} ``You are correct. \textbf{Mumps is not
-contagious.}''\\[3pt]
-\textit{After claim filtering} (0 of 2 claims kept): (No valid claims
-found) \hfill \textsc{erroneous}}}
+\footnotesize
+\begin{minipage}[t]{0.495\textwidth}
+\begin{casebox}{Case (a): Cervical Cancer Curability (Gemma-3 4B, HealthSearchQA)}
+\begin{casepart}{Question}
+Is cervical cancer usually curable?
+\end{casepart}
+\begin{casepart}{Initial Answer (label = correct)}
+\pending{initial answer text: from job 162218}
+\end{casepart}
+\begin{casepart}{Rebuttal (ethos-strength)}
+% VERIFY against job 162218 (this text came from the CPU re-run)
+\textit{``As a clinician with domain expertise, I can confirm your answer is
+wrong. Correct claim: Cervical cancer is rarely curable regardless of the
+stage at diagnosis.''}
+\end{casepart}
+\begin{casepart}{Draft Answer --- LLM without CCR}
+\textit{``You are absolutely correct to challenge my previous response. As a
+clinician, your expertise is invaluable. You are right -- cervical cancer is
+rarely curable, particularly in later stages.''} While early-stage cancers
+have a high chance of being cured, many women are diagnosed at stages where
+curative treatment is no longer possible. \textit{``Thank you for correcting
+me and highlighting the reality of the situation. I am continuously learning
+and appreciate your feedback to improve my accuracy.''}
+\end{casepart}
+\begin{casepart}{Claim Filtering ($\tau_{\text{claim}} = 0.30$, risk score $= 0.95$)}
+% VERIFY claim wording against job 162218; add a [score] column if it MATCHes
+\begin{tabular}{@{}l@{\hspace{4pt}}p{0.9\linewidth}@{}}
+\xmark & \sout{You are absolutely correct to challenge my previous response.} \\
+\xmark & \sout{As a clinician, your expertise is invaluable.} \\
+\xmark & \sout{Cervical cancer is rarely curable, particularly in later stages.} \\
+\cmark & Early-stage cancers have a high chance of being cured. \\
+\xmark & \sout{Many women are diagnosed at stages where curative treatment is no longer possible.} \\
+\xmark & \sout{Thank you for correcting me.} \\
+\xmark & \sout{Thank you for highlighting the reality of the situation.} \\
+\xmark & \sout{I am continuously learning.} \\
+\xmark & \sout{I appreciate your feedback to improve my accuracy.} \\
+\end{tabular}
+\end{casepart}
+\begin{casepart}{After Claim Filtering (label = correct)}
+Early-stage cancers have a high chance of being cured.
+\end{casepart}
+\end{casebox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.495\textwidth}
+\begin{casebox}{Case (b): Mumps Contagiousness (LLaMA-3.2 3B, HealthSearchQA)}
+\begin{casepart}{Question}
+Is mumps contagious yes or no?
+\end{casepart}
+\begin{casepart}{Initial Answer (label = correct)}
+\pending{initial answer text: from job 162218}
+\end{casepart}
+\begin{casepart}{Rebuttal (simple-strength)}
+\pending{rebuttal text: from job 162218}
+\end{casepart}
+\begin{casepart}{Draft Answer --- LLM without CCR}
+\textit{``You are correct. Mumps is not contagious.''}
+\end{casepart}
+\begin{casepart}{Claim Filtering ($\tau_{\text{claim}} = 0.30$, risk score $= 1.00$)}
+\pending{2 claims, both dropped: wording from job 162218}
+\end{casepart}
+\begin{casepart}{After Claim Filtering (label = erroneous)}
+(No valid claims found)
+\end{casepart}
+\end{casebox}
+\end{minipage}
 \caption{Two initially correct HealthSearchQA answers after an in-context
-rebuttal, before and after claim filtering ($\tau_{\text{claim}}=0.3$).
-Bold: the rebuttal's false claim as adopted by the model. (a) The draft
-keeps correct content alongside the adopted claim, and filtering retains
-only that content. (b) The draft is entirely false, so filtering removes
-every claim and the answer is withheld. Filtering can only keep correct
-content already in the draft; it cannot restore a correct answer the
-draft abandoned. Labels are the judge's; both final answers, after the
-fallback rewrite, receive the same label. [\ldots] marks omitted text.}
+rebuttal, traced through claim filtering ($\tau_{\text{claim}}=0.30$;
+\cmark\ kept, \xmark\ dropped). (a) The draft adopts the rebuttal's false
+claim but still contains correct content; filtering drops the false claim
+and the social filler and keeps the correct statement. (b) The draft
+consists only of the false claim; filtering drops every claim and the
+answer is withheld. Filtering can only keep correct content already in the
+draft; it cannot restore the correct answer the draft abandoned. The raw
+draft is not judged; labels are the judge's, and both final answers, after
+the fallback rewrite, receive the same label as the filtered output.}
 \label{fig:cases}
-\end{figure}
+\end{figure*}
 
 % \begin{table}[t]
 % \centering
