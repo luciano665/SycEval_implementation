@@ -445,7 +445,7 @@ for detecting when LLM-based risk scoring cannot support selective intervention,
 - **Problem:**
   - "Existing approaches act on the model rather than on its outputs" is contradicted by a paper already cited: Chen et al. (2025) test prompt-only mitigations alongside fine-tuning.
   - "First to evaluate conformal risk control against sycophancy" is safer when it names the nearest work. Two papers are close: one calibrates uncertainty estimates under user suggestions, and one shows that peer pressure from other agents breaks conformal coverage. Neither applies conformal risk control or claim filtering to user-induced sycophancy, so the claim stands once narrowed.
-- **Evidence:** Chen et al., npj Digital Medicine 2025, doi 10.1038/s41746-025-02008-z (prompt-based rejection and recall hints; https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12534679/). Sicilia, Inan, Alikhani, "Accounting for Sycophancy in Language Model Uncertainty Estimation", arXiv:2410.14746 (I confirmed the page; the Findings of NAACL 2025 venue is reported by a search and not confirmed by me). Hu and Su, "Conformity Breaks Conformal Prediction", arXiv:2609.04445, 3 Sep 2026 (I confirmed the page: coverage falls from 90% to 74% under unanimous wrong peers).
+- **Evidence:** Chen et al., npj Digital Medicine 2025, doi 10.1038/s41746-025-02008-z (prompt-based rejection and recall hints; https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12534679/). Sicilia, Inan, Alikhani, "Accounting for Sycophancy in Language Model Uncertainty Estimation", Findings of NAACL 2025, pp. 7851–7866 (https://aclanthology.org/2025.findings-naacl.438/; arXiv:2410.14746). Hu and Su, "Conformity Breaks Conformal Prediction", arXiv:2609.04445, 3 Sep 2026 (I confirmed the page: coverage falls from 90% to 74% under unanimous wrong peers).
 - **Proposed change:**
 
 (a) §2.1
@@ -483,13 +483,15 @@ against user-induced sycophancy, using calibration both as a safeguard and
 as an audit.
 ```
 
-Add to the Overleaf `.bib` (export the first from the ACL Anthology if the NAACL record exists; otherwise use it as an arXiv entry):
+Add to the Overleaf `.bib`:
 ```bibtex
-@article{sicilia2025accounting,
+@inproceedings{sicilia2025accounting,
   title={Accounting for Sycophancy in Language Model Uncertainty Estimation},
   author={Sicilia, Anthony and Inan, Mert and Alikhani, Malihe},
-  journal={arXiv preprint arXiv:2410.14746},
-  year={2024}
+  booktitle={Findings of the Association for Computational Linguistics: NAACL 2025},
+  pages={7851--7866},
+  year={2025},
+  doi={10.18653/v1/2025.findings-naacl.438}
 }
 @article{hu2026conformity,
   title={Conformity Breaks Conformal Prediction},
@@ -990,6 +992,11 @@ These could not be traced to a file in the repo. None looks wrong; each lacks a 
 | "The full MedQuAD collection contains roughly 47,000" (l.589–590) | External fact; the MedQuAD paper reports 47,457 | Nothing needed |
 | Phi-1.5 = 1.3B, Phi-2 = 2.7B parameters | Model cards; not recorded in the repo | Nothing needed |
 | No human validation of the judge (asserted by R11) | Absence of any record under `docs/` | Your confirmation |
+
+**Citations checked against the papers' own pages (12 November).** The statements the draft attributes to these works all match their abstracts: Perez et al. (larger models "repeat back a dialog user's preferred answer"), Wang et al. (Findings of EMNLP 2023), Conformal Risk Control ("any monotone loss function"), Quach et al. (ICLR 2024), Mohri and Hashimoto, Yadkori et al., Gui et al., Jung et al., Zheng et al. (NeurIPS 2023 Datasets and Benchmarks; position, verbosity and self-enhancement biases), Huang et al. (ICLR 2024), Sharma et al., Laban et al., Papadatos and Freedman, Cherian et al., and SycEval (AIES 2025). Two things to check in the Overleaf `.bib`:
+
+- **`rimsky2024steering`.** The arXiv record of "Steering Llama 2 via Contrastive Activation Addition" now lists the first author as Nina Panickssery. The draft hard-codes "Rimsky et al." at l.308. Use the author name as the published version you cite gives it, and make the in-text name agree with the bib entry.
+- **SycEval's treatment of erroneous responses** could not be confirmed from the abstract page; it stays in "Not proposed".
 
 One practical suggestion: `docs/paper_v2_recompute.py` has run successfully on the cluster before, but its output was never saved. Running it once with `tee` and committing the text file closes most of this table.
 
